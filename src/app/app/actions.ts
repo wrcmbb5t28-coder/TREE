@@ -1,0 +1,303 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { db } from "@/lib/db";
+import { requireFamily, canEdit, setCurrentFamily } from "@/lib/auth";
+import { clean, toInt, token } from "@/lib/util";
+import { track } from "@/lib/analytics";
+import { saveFile, deleteFamilyFiles } from "@/lib/storage";
+import { FREE_LIMITS, isPaid } from "@/lib/plans";
+import { isLang } from "@/i18n/config";
+
+async function editor() {
+  const ctx = await requireFamily();
+  if (!canEdit(ctx.role)) throw new Error("You can view this family but not change it.");
+  return ctx;
+}
+
+// ---------- Questions ----------
+
+export async function askQuestion(form: FormData) {
+  const { user, family } = await editor();
+  const storytellerId = clean(form.get("storytellerId"), 40);
+  const text = clean(form.get("custom"), 300) || clean(form.get("question"), 300);
+  const lang = clean(form.get("lang"), 2);
+  const channel = clean(form.get("channel"), 10) || "whatsapp";
+  const teller = await db.person.findFirst({ where: { id: storytellerId, familyId: family.id } });
+  if (!teller || !text) throw new Error("Choose a person and a question.");
+  const q = await db.question.create({
+    data: {
+      familyId: family.id, storytellerId: teller.id, askedById: user.id, text,
+      lang: isLang(lang) ? lang : family.lang, token: token(12),
+      channel: ["whatsapp", "link", "together"].includes(channel) ? channel : "whatsapp",
+      topic: clean(form.get("topic"), 30) || null,
+    },
+  });
+  await track("question_sent", { familyId: family.id, userId: user.id, props: { channel: q.channel, lang: q.lang } });
+  redirect(`/app?asked=${q.id}`);
+}
+
+export async function askFollowUp(storyId: string) {
+  const { user, family } = await editor();
+  const story = await db.story.findFirst({ where: { id: storyId, familyId: family.id }, include: { answer: { include: { question: true } } } });
+  const prev = story?.answer?.question;
+  if (!story?.followUp || !prev) throw new Error("No follow-up question for this story.");
+  const q = await db.question.create({
+    data: { familyId: family.id, storytellerId: prev.storytellerId, askedById: user.id, text: story.followUp, lang: prev.lang, token: token(12), channel: prev.channel, topic: "follow-up" },
+  });
+  await track("question_sent", { familyId: family.id, userId: user.id, props: { channel: q.channel, followUp: true } });
+  redirect(`/app?asked=${q.id}`);
+}
+
+export async function deleteQuestion(id: string) {
+  const { family } = await editor();
+  await db.question.deleteMany({ where: { id, familyId: family.id, status: { not: "answered" } } });
+  revalidatePath("/app");
+}
+
+// ---------- People ----------
+
+export async function addPerson(form: FormData) {
+  const { user, family } = await editor();
+  const firstName = clean(form.get("firstName"), 60);
+  if (!firstName) throw new Error("First name is required.");
+  const rel = clean(form.get("relation"), 80); // "parent-of:<id>" | "child-of:<id>" | "partner-of:<id>" | ""
+  const [kind, otherId] = rel.split(":");
+  const other = otherId ? await db.person.findFirst({ where: { id: otherId, familyId: family.id } }) : null;
+  const generation = other ? (kind === "parent-of" ? other.generation - 1 : kind === "child-of" ? other.generation + 1 : other.generation) : 0;
+  const deathYear = toInt(form.get("deathYear"));
+  const person = await db.person.create({
+    data: {
+      familyId: family.id, firstName,
+      lastName: clean(form.get("lastName"), 60) || null,
+      birthYear: toInt(form.get("birthYear")),
+      birthPlace: clean(form.get("birthPlace"), 80) || null,
+      deathYear,
+      isLiving: !deathYear && form.get("deceased") !== "on",
+      generation,
+    },
+  });
+  if (other && kind === "parent-of") await db.relationship.create({ data: { parentId: person.id, childId: other.id } });
+  if (other && kind === "child-of") await db.relationship.create({ data: { parentId: other.id, childId: person.id } });
+  if (other && kind === "partner-of") {
+    // Partners share children: link the new person as parent of the other's children.
+    const kids = await db.relationship.findMany({ where: { parentId: other.id } });
+    for (const k of kids) await db.relationship.create({ data: { parentId: person.id, childId: k.childId } }).catch(() => {});
+  }
+  if (person.birthYear || person.birthPlace) {
+    await db.lifeEvent.create({ data: { familyId: family.id, personId: person.id, year: person.birthYear, place: person.birthPlace, description: `${firstName} is born`, source: "user" } });
+  }
+  await track("family_member_added", { familyId: family.id, userId: user.id, props: { relation: kind || "none" } });
+  revalidatePath("/app/family");
+  redirect("/app/family");
+}
+
+export async function updatePerson(id: string, form: FormData) {
+  const { family } = await editor();
+  const deathYear = toInt(form.get("deathYear"));
+  await db.person.updateMany({
+    where: { id, familyId: family.id },
+    data: {
+      firstName: clean(form.get("firstName"), 60) || undefined,
+      lastName: clean(form.get("lastName"), 60) || null,
+      birthYear: toInt(form.get("birthYear")),
+      birthPlace: clean(form.get("birthPlace"), 80) || null,
+      deathYear,
+      isLiving: !deathYear && form.get("deceased") !== "on",
+      hidden: form.get("hidden") === "on",
+    },
+  });
+  revalidatePath("/app/family");
+  redirect("/app/family");
+}
+
+export async function deletePerson(id: string) {
+  const { family } = await editor();
+  const answered = await db.question.count({ where: { storytellerId: id, familyId: family.id, status: "answered" } });
+  if (answered > 0) throw new Error("This person has recorded stories. Hide them instead of removing them.");
+  await db.person.deleteMany({ where: { id, familyId: family.id, isSelf: false } });
+  revalidatePath("/app/family");
+  redirect("/app/family");
+}
+
+// ---------- Stories and facts ----------
+
+export async function writeMemory(form: FormData) {
+  const { user, family } = await editor();
+  const body = clean(form.get("body"), 20000);
+  if (body.length < 10) throw new Error("Write a little more.");
+  const story = await db.story.create({
+    data: {
+      familyId: family.id, authorId: user.id,
+      title: clean(form.get("title"), 100) || body.slice(0, 50),
+      body, bodyLang: family.lang,
+      chapter: clean(form.get("chapter"), 40) || null,
+      visibility: form.get("private") === "on" ? "private" : "family",
+    },
+  });
+  await track("story_created", { familyId: family.id, userId: user.id, props: { source: "written" } });
+  redirect(`/app/stories/${story.id}`);
+}
+
+export async function updateStory(id: string, form: FormData) {
+  const { family } = await editor();
+  const vis = clean(form.get("visibility"), 10);
+  await db.story.updateMany({
+    where: { id, familyId: family.id },
+    data: {
+      title: clean(form.get("title"), 100) || undefined,
+      body: clean(form.get("body"), 20000) || undefined,
+      chapter: clean(form.get("chapter"), 40) || null,
+      visibility: ["family", "private", "public"].includes(vis) ? vis : undefined,
+    },
+  });
+  revalidatePath(`/app/stories/${id}`);
+  redirect(`/app/stories/${id}`);
+}
+
+export async function deleteStory(id: string) {
+  const { family } = await editor();
+  await db.story.deleteMany({ where: { id, familyId: family.id } });
+  redirect("/app/stories");
+}
+
+export async function confirmFact(id: string) {
+  const { user, family } = await editor();
+  const fact = await db.fact.findFirst({ where: { id, familyId: family.id, status: "suggested" }, include: { story: { include: { answer: { include: { question: true } } } } } });
+  if (!fact) return;
+  const d = JSON.parse(fact.data || "{}") as { name?: string; relation?: string; year?: number; place?: string; country?: string; description?: string };
+  const teller = fact.story.answer?.question.storytellerId;
+
+  if (fact.kind === "person" && d.name) {
+    const [firstName, ...rest] = d.name.split(" ");
+    const exists = await db.person.findFirst({ where: { familyId: family.id, firstName } });
+    if (!exists) {
+      const anchor = teller ? await db.person.findUnique({ where: { id: teller } }) : null;
+      const rel = (d.relation || "").toLowerCase();
+      let generation = anchor?.generation ?? 0;
+      if (/(mother|father|parent|mutter|vater|mère|père|madre|padre|мать|отец|мама|папа)/.test(rel)) generation -= 1;
+      if (/(son|daughter|child|sohn|tochter|fils|fille|figli|hij|сын|дочь)/.test(rel)) generation += 1;
+      const p = await db.person.create({ data: { familyId: family.id, firstName, lastName: rest.join(" ") || null, generation, birthYear: d.year ?? null, birthPlace: d.place ?? null } });
+      if (anchor && generation === anchor.generation - 1) await db.relationship.create({ data: { parentId: p.id, childId: anchor.id } });
+      if (anchor && generation === anchor.generation + 1) await db.relationship.create({ data: { parentId: anchor.id, childId: p.id } });
+    }
+  } else if (d.year || d.place || d.country) {
+    await db.lifeEvent.create({
+      data: { familyId: family.id, personId: teller ?? null, year: d.year ?? null, place: d.place ?? null, country: d.country?.slice(0, 2).toUpperCase() ?? null, description: d.description || fact.label, source: fact.storyId },
+    });
+  }
+  await db.fact.update({ where: { id }, data: { status: "confirmed" } });
+  await track("fact_confirmed", { familyId: family.id, userId: user.id, props: { kind: fact.kind } });
+  revalidatePath(`/app/stories/${fact.storyId}`);
+}
+
+export async function rejectFact(id: string) {
+  const { family } = await editor();
+  const f = await db.fact.findFirst({ where: { id, familyId: family.id } });
+  await db.fact.updateMany({ where: { id, familyId: family.id }, data: { status: "rejected" } });
+  if (f) revalidatePath(`/app/stories/${f.storyId}`);
+}
+
+// ---------- Photos ----------
+
+export async function uploadPhoto(form: FormData) {
+  const { user, family } = await editor();
+  const file = form.get("photo");
+  if (!(file instanceof File) || file.size === 0) throw new Error("Choose a photo.");
+  if (file.size > 15 * 1024 * 1024) throw new Error("Photo is larger than 15 MB.");
+  if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
+    await track("paywall_viewed", { familyId: family.id, userId: user.id, props: { trigger: "photos" } });
+    redirect("/app/billing?reason=photos");
+  }
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  if (!["jpg", "jpeg", "png", "webp"].includes(ext)) throw new Error("Use a JPG, PNG or WebP photo.");
+  const path = await saveFile(family.id, Buffer.from(await file.arrayBuffer()), ext);
+  const storyId = clean(form.get("storyId"), 40) || null;
+  await db.photo.create({ data: { familyId: family.id, path, caption: clean(form.get("caption"), 200) || null, year: toInt(form.get("year")), storyId } });
+  await track("photo_uploaded", { familyId: family.id, userId: user.id, props: { captioned: !!form.get("caption") } });
+  redirect(storyId ? `/app/stories/${storyId}` : "/app/stories");
+}
+
+// ---------- Journey ----------
+
+export async function addEvent(form: FormData) {
+  const { family } = await editor();
+  const description = clean(form.get("description"), 200);
+  if (!description) throw new Error("Describe what happened.");
+  await db.lifeEvent.create({
+    data: {
+      familyId: family.id, description,
+      year: toInt(form.get("year")),
+      place: clean(form.get("place"), 80) || null,
+      country: clean(form.get("country"), 2).toUpperCase() || null,
+      personId: clean(form.get("personId"), 40) || null,
+    },
+  });
+  revalidatePath("/app/journey");
+}
+
+export async function deleteEvent(id: string) {
+  const { family } = await editor();
+  await db.lifeEvent.deleteMany({ where: { id, familyId: family.id } });
+  revalidatePath("/app/journey");
+}
+
+// ---------- Family, invites, page, settings ----------
+
+export async function createInvite(form: FormData) {
+  const { user, family, role } = await requireFamily();
+  if (role === "viewer") throw new Error("Viewers cannot invite.");
+  const inviteRole = clean(form.get("role"), 12);
+  const t = token(12);
+  await db.invite.create({
+    data: { token: t, familyId: family.id, createdById: user.id, relation: clean(form.get("relation"), 40) || null, role: ["editor", "viewer"].includes(inviteRole) ? inviteRole : "editor" },
+  });
+  await track("invite_sent", { familyId: family.id, userId: user.id, props: { relation: clean(form.get("relation"), 40), channel: "link" } });
+  redirect(`/app/invite?new=${t}`);
+}
+
+export async function togglePage() {
+  const { user, family } = await editor();
+  const updated = await db.family.update({ where: { id: family.id }, data: { pageEnabled: !family.pageEnabled } });
+  if (updated.pageEnabled) await track("family_page_created", { familyId: family.id, userId: user.id });
+  revalidatePath("/app/keep");
+}
+
+export async function updateSettings(form: FormData) {
+  const { family, role } = await requireFamily();
+  if (role !== "owner") throw new Error("Only the owner can change settings.");
+  const lang = clean(form.get("lang"), 2);
+  await db.family.update({
+    where: { id: family.id },
+    data: {
+      name: clean(form.get("name"), 80) || family.name,
+      lang: isLang(lang) ? lang : family.lang,
+      legacyContact: clean(form.get("legacyContact"), 200) || null,
+    },
+  });
+  revalidatePath("/app/settings");
+  redirect("/app/settings?saved=1");
+}
+
+export async function updateProfile(form: FormData) {
+  const { user } = await requireFamily();
+  const lang = clean(form.get("lang"), 2);
+  await db.user.update({ where: { id: user.id }, data: { name: clean(form.get("name"), 60) || null, lang: isLang(lang) ? lang : user.lang } });
+  redirect("/app/settings?saved=1");
+}
+
+export async function deleteFamily(form: FormData) {
+  const { family, role } = await requireFamily();
+  if (role !== "owner") throw new Error("Only the owner can delete the family.");
+  if (clean(form.get("confirm"), 100) !== family.name) throw new Error("Type the family name exactly to confirm.");
+  await deleteFamilyFiles(family.id);
+  await db.family.delete({ where: { id: family.id } });
+  redirect("/app");
+}
+
+export async function switchFamily(id: string) {
+  const { memberships } = await requireFamily();
+  if (memberships.some((m) => m.familyId === id)) await setCurrentFamily(id);
+  redirect("/app");
+}

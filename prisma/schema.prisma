@@ -1,0 +1,257 @@
+// Treename 2.0 data model.
+// SQLite for local development; switch provider to "postgresql" for production.
+// Enums are stored as strings so the schema works on both databases.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  lang        String       @default("en")
+  createdAt   DateTime     @default(now())
+  sessions    Session[]
+  memberships Membership[]
+  stories     Story[]      @relation("StoryAuthor")
+  questions   Question[]   @relation("QuestionAsker")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// One-time sign-in links. `draftFamilyId` ties a family created during
+// onboarding (before sign-up) to the person who signs in.
+model LoginToken {
+  token         String    @id
+  email         String
+  draftFamilyId String?
+  inviteToken   String?
+  expiresAt     DateTime
+  usedAt        DateTime?
+}
+
+model Family {
+  id               String       @id @default(cuid())
+  name             String
+  // Language the family reads stories in (stories are written in this language)
+  lang             String       @default("en")
+  // free | family | legacy | founding
+  plan             String       @default("free")
+  planExpiresAt    DateTime?
+  stripeCustomerId String?
+  // Private family page: /f/<pageSlug> — unguessable, not indexed
+  pageSlug         String       @unique
+  pageEnabled      Boolean      @default(false)
+  // Legacy contact: who keeps the archive (email)
+  legacyContact    String?
+  createdAt        DateTime     @default(now())
+  memberships      Membership[]
+  people           Person[]
+  questions        Question[]
+  stories          Story[]
+  facts            Fact[]
+  events           LifeEvent[]
+  invites          Invite[]
+  photos           Photo[]
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  familyId  String
+  // owner | editor | storyteller | viewer
+  role      String   @default("editor")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, familyId])
+}
+
+model Person {
+  id          String         @id @default(cuid())
+  familyId    String
+  family      Family         @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String?
+  birthYear   Int?
+  birthPlace  String?
+  deathYear   Int?
+  isLiving    Boolean        @default(true)
+  // Marks the person who created the tree ("You")
+  isSelf      Boolean        @default(false)
+  // Generation relative to "You": 0 = you, -1 = parents, -2 = grandparents, 1 = children
+  generation  Int            @default(0)
+  // Hidden branches are visible only to owners/editors
+  hidden      Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  parentLinks Relationship[] @relation("child")
+  childLinks  Relationship[] @relation("parent")
+  questions   Question[]     @relation("Storyteller")
+  events      LifeEvent[]
+}
+
+model Relationship {
+  id       String @id @default(cuid())
+  parentId String
+  childId  String
+  parent   Person @relation("parent", fields: [parentId], references: [id], onDelete: Cascade)
+  child    Person @relation("child", fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, childId])
+}
+
+model Question {
+  id            String    @id @default(cuid())
+  familyId      String
+  family        Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  storytellerId String
+  storyteller   Person    @relation("Storyteller", fields: [storytellerId], references: [id], onDelete: Cascade)
+  askedById     String?
+  askedBy       User?     @relation("QuestionAsker", fields: [askedById], references: [id], onDelete: SetNull)
+  text          String
+  // Language the storyteller sees the page in
+  lang          String    @default("en")
+  // Public, unguessable token for /a/<token> — no account needed to answer
+  token         String    @unique
+  // whatsapp | link | together
+  channel       String    @default("whatsapp")
+  // sent | opened | answered
+  status        String    @default("sent")
+  topic         String?
+  createdAt     DateTime  @default(now())
+  answeredAt    DateTime?
+  answers       Answer[]
+}
+
+model Answer {
+  id           String   @id @default(cuid())
+  questionId   String
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  audioPath    String?
+  durationS    Int?
+  // Verbatim transcript in the original language
+  transcript   String
+  originalLang String?
+  createdAt    DateTime @default(now())
+  story        Story?
+}
+
+model Story {
+  id         String   @id @default(cuid())
+  familyId   String
+  family     Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  answerId   String?  @unique
+  answer     Answer?  @relation(fields: [answerId], references: [id], onDelete: SetNull)
+  authorId   String?
+  author     User?    @relation("StoryAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  title      String
+  // Edited, readable version written by AI from the storyteller's words
+  body       String
+  bodyLang   String   @default("en")
+  // Suggested gentle follow-up question
+  followUp   String?
+  // family | private | public  (public = may appear on the family page)
+  visibility String   @default("family")
+  // Sensitive stories (war, illness, adoption...) are private by default
+  sensitive  Boolean  @default(false)
+  chapter    String?
+  createdAt  DateTime @default(now())
+  facts      Fact[]
+  photos     Photo[]
+}
+
+// Facts extracted by AI from a story. Never added to the tree silently:
+// the family confirms or rejects each one.
+model Fact {
+  id         String   @id @default(cuid())
+  familyId   String
+  family     Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  storyId    String
+  story      Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  // person | place | date | event
+  kind       String
+  label      String
+  // JSON string with structured fields (name, year, place, relation...)
+  data       String   @default("{}")
+  // confirmed | likely | guess   — how sure the source is
+  confidence String   @default("likely")
+  // suggested | confirmed | rejected
+  status     String   @default("suggested")
+  createdAt  DateTime @default(now())
+}
+
+// Dated events for the family timeline and journey map.
+model LifeEvent {
+  id          String   @id @default(cuid())
+  familyId    String
+  family      Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  personId    String?
+  person      Person?  @relation(fields: [personId], references: [id], onDelete: SetNull)
+  year        Int?
+  place       String?
+  country     String?
+  description String
+  // story id or "user"
+  source      String   @default("user")
+  createdAt   DateTime @default(now())
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  storyId   String?
+  story     Story?   @relation(fields: [storyId], references: [id], onDelete: SetNull)
+  path      String
+  caption   String?
+  year      Int?
+  createdAt DateTime @default(now())
+}
+
+model Invite {
+  token       String    @id
+  familyId    String
+  family      Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  role        String    @default("editor")
+  relation    String?
+  createdById String?
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+// Product analytics (see "Analytics" in the Treename 2.0 Blueprint).
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  name      String
+  familyId  String?
+  userId    String?
+  props     String   @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([familyId, createdAt])
+}
+
+// Legacy Gift purchased for someone else: redeemed when the recipient starts their family.
+model GiftCode {
+  code             String    @id
+  purchasedById    String?
+  recipientEmail   String?
+  stripeSessionId  String?   @unique
+  redeemedFamilyId String?
+  redeemedAt       DateTime?
+  createdAt        DateTime  @default(now())
+}
