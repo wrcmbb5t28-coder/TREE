@@ -140,6 +140,7 @@ const it: Dict = {
     recording: "Registrazione…",
     tooShort: "Registra o scrivi ancora un po', per favore.",
     answered: "A questa domanda è già stata data una risposta. Grazie!",
+    sendError: "Non siamo riusciti a inviare la risposta. Riprova tra un minuto. La registrazione è ancora qui.",
   },
   questions: {
     metaTitle: "Domande da fare ai nonni — elenco gratuito per tema | Treename",

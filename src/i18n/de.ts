@@ -140,6 +140,7 @@ const de: Dict = {
     recording: "Aufnahme läuft…",
     tooShort: "Bitte nehmen Sie etwas mehr auf oder schreiben Sie etwas mehr.",
     answered: "Diese Frage wurde bereits beantwortet. Vielen Dank!",
+    sendError: "Ihre Antwort konnte nicht gesendet werden. Bitte versuchen Sie es in einer Minute noch einmal. Ihre Aufnahme ist noch da.",
   },
   questions: {
     metaTitle: "Fragen an die Großeltern — kostenlose Liste nach Themen | Treename",

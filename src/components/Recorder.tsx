@@ -87,10 +87,15 @@ export default function Recorder({ token, t, askerName }: { token: string; t: Di
     }
     try {
       const res = await fetch("/api/answers", { method: "POST", body: fd });
-      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Error");
+      if (res.status === 409) { setError(t.answered); setPhase("done"); return; }
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        console.error("Treename: answer upload failed", res.status, body);
+        throw new Error("send");
+      }
       setPhase("done");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error");
+    } catch {
+      setError(t.sendError);
       setPhase(blob.current ? "recorded" : "idle");
     }
   }

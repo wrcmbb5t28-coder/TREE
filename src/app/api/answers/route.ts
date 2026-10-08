@@ -31,11 +31,24 @@ export async function POST(req: Request) {
     if (audio.size > MAX_UPLOAD_BYTES) return NextResponse.json({ error: "Recording is too long" }, { status: 413 });
     const buf = Buffer.from(await audio.arrayBuffer());
     const ext = (audio.name.split(".").pop() || "webm").toLowerCase();
-    audioPath = await saveFile(q.familyId, buf, ext);
-    const tr = await transcribe(buf, audio.name || `answer.${ext}`);
-    if (tr) {
-      transcript = [tr.text, typed].filter(Boolean).join("\n\n");
-      language = tr.language;
+    if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error("[answers] BLOB_READ_WRITE_TOKEN is missing: connect a Blob store to the project and redeploy");
+      return NextResponse.json({ error: "storage_not_configured" }, { status: 503 });
+    }
+    try {
+      audioPath = await saveFile(q.familyId, buf, ext);
+    } catch (e) {
+      console.error("[answers] saving the recording failed", e);
+      return NextResponse.json({ error: "storage_failed" }, { status: 502 });
+    }
+    try {
+      const tr = await transcribe(buf, audio.name || `answer.${ext}`);
+      if (tr) {
+        transcript = [tr.text, typed].filter(Boolean).join("\n\n");
+        language = tr.language;
+      }
+    } catch (e) {
+      console.error("[answers] transcription failed, keeping the audio", e);
     }
   }
 
@@ -57,6 +70,12 @@ export async function POST(req: Request) {
     props: { storytellerId: q.storytellerId, voice: !!audioPath, duration_s: answer.durationS ?? 0, lang: q.lang },
   });
 
-  await storyFromAnswer(answer.id);
+  // The answer is saved at this point. If the story step fails, the family can
+  // still listen and write it later; the storyteller must not see an error.
+  try {
+    await storyFromAnswer(answer.id);
+  } catch (e) {
+    console.error("[answers] story generation failed", e);
+  }
   return NextResponse.json({ ok: true });
 }

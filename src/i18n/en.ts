@@ -138,6 +138,7 @@ const en = {
     recording: "Recording…",
     tooShort: "Please record or type a little more.",
     answered: "This question has already been answered. Thank you!",
+    sendError: "We could not send your answer. Please try again in a minute. Your recording is still here.",
   },
   questions: {
     metaTitle: "Questions to ask your grandparents — free list by topic | Treename",

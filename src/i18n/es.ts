@@ -140,6 +140,7 @@ const es: Dict = {
     recording: "Grabando…",
     tooShort: "Graba o escribe un poco más, por favor.",
     answered: "Esta pregunta ya tiene respuesta. ¡Gracias!",
+    sendError: "No pudimos enviar tu respuesta. Inténtalo de nuevo en un minuto. Tu grabación sigue aquí.",
   },
   questions: {
     metaTitle: "Preguntas para hacer a los abuelos — lista gratuita por temas | Treename",
