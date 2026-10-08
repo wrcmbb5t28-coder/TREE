@@ -18,7 +18,9 @@ export function familySlug(name: string): string {
 }
 
 export function appUrl(path = ""): string {
-  const base = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  // APP_URL wins; on Vercel fall back to the project's production domain.
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  const base = (process.env.APP_URL || (vercel ? `https://${vercel}` : "http://localhost:3000")).replace(/\/$/, "");
   return base + path;
 }
 

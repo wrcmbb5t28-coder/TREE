@@ -1,16 +1,18 @@
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { put, get, del, list } from "@vercel/blob";
 import { token } from "./util";
 
 /**
- * Simple file storage on a local/persistent volume.
- * Files are never served publicly: /api/files/[...path] checks family membership
- * (or a valid answer token) before streaming them.
- * To use S3-compatible storage (e.g. a Swiss provider), replace these three functions.
+ * File storage for voice recordings and photos. Two drivers:
+ * - Vercel Blob (private store) when BLOB_READ_WRITE_TOKEN is set — production on Vercel.
+ * - Local folder (STORAGE_DIR) otherwise — development.
+ * Files are never public: /api/files/[...path] checks family membership before streaming.
  */
+const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 const ROOT = path.resolve(process.env.STORAGE_DIR || "./storage");
 
-function safe(rel: string): string {
+function safeLocal(rel: string): string {
   const p = path.resolve(ROOT, rel);
   if (!p.startsWith(ROOT + path.sep)) throw new Error("Invalid path");
   return p;
@@ -18,19 +20,37 @@ function safe(rel: string): string {
 
 export async function saveFile(familyId: string, data: Buffer, ext: string): Promise<string> {
   const cleanExt = ext.replace(/[^a-z0-9]/gi, "").slice(0, 5) || "bin";
-  const rel = path.join(familyId, `${Date.now()}-${token(6)}.${cleanExt}`);
-  const abs = safe(rel);
+  const rel = `${familyId}/${Date.now()}-${token(6)}.${cleanExt}`;
+  if (useBlob()) {
+    await put(rel, data, { access: "private", contentType: mimeFor(rel), addRandomSuffix: false });
+    return rel;
+  }
+  const abs = safeLocal(rel);
   await mkdir(path.dirname(abs), { recursive: true });
   await writeFile(abs, data);
-  return rel.split(path.sep).join("/");
+  return rel;
 }
 
 export async function loadFile(rel: string): Promise<Buffer> {
-  return readFile(safe(rel));
+  if (useBlob()) {
+    const res = await get(rel, { access: "private" });
+    if (!res || res.statusCode !== 200) throw new Error("Not found");
+    return Buffer.from(await new Response(res.stream).arrayBuffer());
+  }
+  return readFile(safeLocal(rel));
 }
 
 export async function deleteFamilyFiles(familyId: string): Promise<void> {
-  await rm(safe(familyId), { recursive: true, force: true });
+  if (useBlob()) {
+    let cursor: string | undefined;
+    do {
+      const page = await list({ prefix: `${familyId}/`, cursor });
+      if (page.blobs.length) await del(page.blobs.map((b) => b.url));
+      cursor = page.hasMore ? page.cursor : undefined;
+    } while (cursor);
+    return;
+  }
+  await rm(safeLocal(familyId), { recursive: true, force: true });
 }
 
 export function mimeFor(rel: string): string {
@@ -50,3 +70,6 @@ export function mimeFor(rel: string): string {
     } as Record<string, string>
   )[ext ?? ""] ?? "application/octet-stream";
 }
+
+/** Vercel Functions accept request bodies up to 4.5 MB. */
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;

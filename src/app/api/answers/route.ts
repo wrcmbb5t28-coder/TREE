@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { saveFile } from "@/lib/storage";
+import { saveFile, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { transcribe } from "@/lib/transcribe";
 import { storyFromAnswer } from "@/lib/stories";
 import { track } from "@/lib/analytics";
@@ -8,7 +8,6 @@ import { clean, toInt } from "@/lib/util";
 
 export const maxDuration = 60;
 
-const MAX_AUDIO_BYTES = 25 * 1024 * 1024; // ~25 MB ≈ 20+ minutes of opus audio
 
 /**
  * Receives a storyteller's answer (voice and/or text) for /a/<token>.
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
   let language: string | undefined;
 
   if (audio instanceof File && audio.size > 0) {
-    if (audio.size > MAX_AUDIO_BYTES) return NextResponse.json({ error: "Recording is too long" }, { status: 413 });
+    if (audio.size > MAX_UPLOAD_BYTES) return NextResponse.json({ error: "Recording is too long" }, { status: 413 });
     const buf = Buffer.from(await audio.arrayBuffer());
     const ext = (audio.name.split(".").pop() || "webm").toLowerCase();
     audioPath = await saveFile(q.familyId, buf, ext);

@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { requireFamily, canEdit, setCurrentFamily } from "@/lib/auth";
 import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
-import { saveFile, deleteFamilyFiles } from "@/lib/storage";
+import { saveFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
 
@@ -205,7 +205,7 @@ export async function uploadPhoto(form: FormData) {
   const { user, family } = await editor();
   const file = form.get("photo");
   if (!(file instanceof File) || file.size === 0) throw new Error("Choose a photo.");
-  if (file.size > 15 * 1024 * 1024) throw new Error("Photo is larger than 15 MB.");
+  if (file.size > MAX_UPLOAD_BYTES) throw new Error("Photo is larger than 4 MB. Please use a smaller photo.");
   if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
     await track("paywall_viewed", { familyId: family.id, userId: user.id, props: { trigger: "photos" } });
     redirect("/app/billing?reason=photos");

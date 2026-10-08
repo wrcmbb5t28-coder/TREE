@@ -1,14 +1,16 @@
 // Treename 2.0 data model.
-// SQLite for local development; switch provider to "postgresql" for production.
-// Enums are stored as strings so the schema works on both databases.
+// PostgreSQL (Neon via Vercel in production; any Postgres locally).
+// Enums are stored as strings to keep the schema simple to migrate.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Direct (non-pooled) connection used for schema changes. Neon on Vercel sets this automatically.
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {

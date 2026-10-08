@@ -6,6 +6,8 @@ import { fill } from "@/i18n";
 
 type Phase = "idle" | "recording" | "recorded" | "sending" | "done";
 
+const MAX_SECONDS = 15 * 60;
+
 function pickMime(): string {
   if (typeof MediaRecorder === "undefined") return "";
   for (const m of ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"]) {
@@ -39,7 +41,7 @@ export default function Recorder({ token, t, askerName }: { token: string; t: Di
       const s = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.current = s;
       const mime = pickMime();
-      const r = new MediaRecorder(s, mime ? { mimeType: mime } : undefined);
+      const r = new MediaRecorder(s, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 32000 });
       chunks.current = [];
       r.ondataavailable = (e) => { if (e.data.size) chunks.current.push(e.data); };
       r.onstop = () => {
@@ -52,7 +54,13 @@ export default function Recorder({ token, t, askerName }: { token: string; t: Di
       r.start(1000);
       rec.current = r;
       setSeconds(0);
-      tick.current = setInterval(() => setSeconds((x) => x + 1), 1000);
+      tick.current = setInterval(() => {
+        setSeconds((x) => {
+          // Keep each answer under the 4 MB upload limit: stop at 15 minutes.
+          if (x + 1 >= MAX_SECONDS) stop();
+          return x + 1;
+        });
+      }, 1000);
       setPhase("recording");
     } catch {
       setError(t.micError);
@@ -62,7 +70,7 @@ export default function Recorder({ token, t, askerName }: { token: string; t: Di
 
   function stop() {
     if (tick.current) clearInterval(tick.current);
-    rec.current?.stop();
+    if (rec.current?.state === "recording") rec.current.stop();
   }
 
   async function send() {

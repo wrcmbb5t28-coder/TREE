@@ -5,11 +5,13 @@ import it from "./it";
 import es from "./es";
 import ru from "./ru";
 import { type Lang, isLang, DEFAULT_LANG } from "./config";
+import { applyRegion } from "./region";
 
 const DICTS: Record<Lang, Dict> = { en, de, fr, it, es, ru };
 
 export function getDict(lang: string | undefined | null): Dict {
-  return DICTS[isLang(lang) ? lang : DEFAULT_LANG];
+  const l = isLang(lang) ? lang : DEFAULT_LANG;
+  return applyRegion(DICTS[l], l);
 }
 
 /** Replace {placeholders} in a string. */
