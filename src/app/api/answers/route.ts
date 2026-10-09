@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { saveFile, MAX_UPLOAD_BYTES } from "@/lib/storage";
+import { saveFile, storageConfigured, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { transcribe } from "@/lib/transcribe";
 import { storyFromAnswer } from "@/lib/stories";
 import { track } from "@/lib/analytics";
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
     if (audio.size > MAX_UPLOAD_BYTES) return NextResponse.json({ error: "Recording is too long" }, { status: 413 });
     const buf = Buffer.from(await audio.arrayBuffer());
     const ext = (audio.name.split(".").pop() || "webm").toLowerCase();
-    if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
-      console.error("[answers] BLOB_READ_WRITE_TOKEN is missing: connect a Blob store to the project and redeploy");
+    if (process.env.VERCEL && !storageConfigured()) {
+      console.error("[answers] no Blob store connected: connect one to the project and redeploy");
       return NextResponse.json({ error: "storage_not_configured" }, { status: 503 });
     }
     try {

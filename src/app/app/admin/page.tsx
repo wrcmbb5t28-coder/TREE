@@ -23,7 +23,7 @@ export default async function Admin() {
   const storage = await storageCheck();
   const keys: [string, boolean][] = [
     ["Database (DATABASE_URL)", !!process.env.DATABASE_URL],
-    ["File storage (BLOB_READ_WRITE_TOKEN)", !!process.env.BLOB_READ_WRITE_TOKEN],
+    ["File storage (BLOB_STORE_ID or BLOB_READ_WRITE_TOKEN)", !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)],
     ["AI stories (ANTHROPIC_API_KEY)", !!process.env.ANTHROPIC_API_KEY],
     ["Voice to text (TRANSCRIBE_API_KEY)", !!process.env.TRANSCRIBE_API_KEY],
     ["Email (RESEND_API_KEY)", !!process.env.RESEND_API_KEY],

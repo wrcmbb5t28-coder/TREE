@@ -35,7 +35,7 @@
 
 1. vercel.com → **Add New → Project** → импортировать репозиторий `TREE` → **Deploy**. Первый деплой пройдёт без базы — это нормально.
 2. В проекте: **Storage → Create → Neon (Postgres)**, регион **Frankfurt (eu-central-1)**, подключить к проекту. Это создаёт `DATABASE_URL` и `DATABASE_URL_UNPOOLED`.
-3. **Storage → Create → Blob**, доступ **Private**, подключить к проекту. Это создаёт `BLOB_READ_WRITE_TOKEN`.
+3. **Storage → Create → Blob**, доступ **Private**, подключить к проекту. Это создаёт `BLOB_STORE_ID` (новый способ, через OIDC) или `BLOB_READ_WRITE_TOKEN` (старый) — код понимает оба.
 4. **Settings → Environment Variables**: `ADMIN_EMAILS` (ваш e-mail). `APP_URL` нужен только когда подключите свой домен (`https://treename.ai`). Для закрытого теста без почты — `SHOW_LOGIN_LINKS=1` (убрать перед открытым запуском!).
 5. **Deployments → Redeploy.** При сборке таблицы базы создаются автоматически (`prisma db push`).
 6. Потом по мере готовности: `ANTHROPIC_API_KEY`, `TRANSCRIBE_API_KEY`, `RESEND_API_KEY` + `EMAIL_FROM`, ключи Stripe. После добавления переменных — **Redeploy**.
@@ -66,7 +66,7 @@ npm run dev
 | Переменная | Зачем |
 | --- | --- |
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Postgres (на Vercel создаются Neon автоматически) |
-| `BLOB_READ_WRITE_TOKEN` | закрытое хранилище записей и фото (Vercel Blob) |
+| `BLOB_STORE_ID` или `BLOB_READ_WRITE_TOKEN` | закрытое хранилище записей и фото (Vercel Blob) |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | истории и факты (по умолчанию `claude-sonnet-5-5`) |
 | `TRANSCRIBE_API_KEY`, `TRANSCRIBE_URL`, `TRANSCRIBE_MODEL` | расшифровка голоса |
 | `RESEND_API_KEY`, `EMAIL_FROM` | письма со ссылкой для входа и подарками |
