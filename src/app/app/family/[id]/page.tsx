@@ -1,3 +1,5 @@
+import { countryName } from "@/i18n/config";
+import CountrySelect from "@/components/CountrySelect";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -74,7 +76,7 @@ export default async function PersonPage({
         <div className="stack" style={{ gap: 6, minWidth: 0 }}>
           <p className="eyebrow">{p.isSelf ? t.you : [kin && kin.id !== "other" ? c.yourRelation[kin.id] : null, p.isLiving ? null : t.inMemory].filter(Boolean).join(" · ") || t.living}{p.hidden ? ` · ${t.hiddenBranch}` : ""}</p>
           <h1 style={{ fontSize: "clamp(2rem,4.5vw,2.9rem)" }}>{name}</h1>
-          <p className="muted">{[years, p.birthPlace && t.bornIn(p.birthPlace, p.gender)].filter(Boolean).join(" · ")}</p>
+          <p className="muted">{[years, (p.birthPlace || p.birthCountry) && t.bornIn([p.birthPlace, p.birthCountry && countryName(p.birthCountry, lang)].filter(Boolean).join(", "), p.gender)].filter(Boolean).join(" · ")}</p>
           {p.bio && <p className="lead" style={{ marginTop: 6 }}>{p.bio}</p>}
           <div className="row" style={{ marginTop: 8 }}>
             {p.isLiving && !p.isSelf && <Link className="btn btn-primary" href={`/app/ask?to=${p.id}`}>{t.ask(p.firstName)}</Link>}
@@ -119,7 +121,7 @@ export default async function PersonPage({
                 <span className="timeline-year">{e.year ?? "?"}</span>
                 <span>
                   {eventText(lang, e.description, p)}
-                  {e.place ? <span className="muted">, {e.place}</span> : null}
+                  {e.place || e.country ? <span className="muted">, {[e.place, e.country && countryName(e.country, lang)].filter(Boolean).join(", ")}</span> : null}
                   {e.source !== "user" && <span className="muted small"> · {t.fromStory}</span>}
                 </span>
                 {editable && (
@@ -138,6 +140,7 @@ export default async function PersonPage({
             <div className="field" style={{ width: 90 }}><label htmlFor="ev-year">{t.year}</label><input id="ev-year" name="year" inputMode="numeric" placeholder={t.phYear} /></div>
             <div className="field" style={{ flex: "2 1 220px" }}><label htmlFor="ev-desc">{t.whatHappened}</label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
             <div className="field" style={{ flex: "1 1 140px" }}><label htmlFor="ev-place">{t.place}</label><input id="ev-place" name="place" placeholder={t.phPlace} /></div>
+            <div className="field" style={{ flex: "1 1 160px" }}><label htmlFor="ev-country">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="ev-country" /></div>
             <button className="btn btn-ghost">{c.btn.add}</button>
           </form>
         )}
@@ -278,6 +281,7 @@ export default async function PersonPage({
               <div className="field"><label htmlFor="lastName">{t.lastName}</label><input id="lastName" name="lastName" defaultValue={p.lastName ?? ""} /></div>
               <div className="field"><label htmlFor="birthYear">{t.birthYear}</label><input id="birthYear" name="birthYear" defaultValue={p.birthYear ?? ""} inputMode="numeric" /></div>
               <div className="field"><label htmlFor="birthPlace">{t.birthPlace}</label><input id="birthPlace" name="birthPlace" defaultValue={p.birthPlace ?? ""} /></div>
+              <div className="field"><label htmlFor="birthCountry">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="birthCountry" name="birthCountry" defaultValue={p.birthCountry} /></div>
               <div className="field"><label htmlFor="deathYear">{t.deathYear}</label><input id="deathYear" name="deathYear" defaultValue={p.deathYear ?? ""} inputMode="numeric" /></div>
               <div className="stack" style={{ gap: 4, alignSelf: "end" }}>
                 <label className="row small"><input type="checkbox" name="deceased" defaultChecked={!p.isLiving} /> {t.passedAway}</label>

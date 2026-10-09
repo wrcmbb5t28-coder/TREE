@@ -20,6 +20,12 @@ async function editor() {
   return ctx;
 }
 
+/** ISO country code from a form field ("CH"), or null. */
+function countryCode(v: FormDataEntryValue | null): string | null {
+  const c = clean(v, 2).toUpperCase();
+  return /^[A-Z]{2}$/.test(c) ? c : null;
+}
+
 /** relation + gender from a form; a gendered relation (wife, father...) sets the gender. */
 function roleFields(form: FormData): { relation: string | null; gender: string | null } {
   const rel = relationById(clean(form.get("role"), 20));
@@ -84,6 +90,7 @@ export async function addPerson(form: FormData) {
       lastName: clean(form.get("lastName"), 60) || null,
       birthYear: toInt(form.get("birthYear")),
       birthPlace: clean(form.get("birthPlace"), 80) || null,
+      birthCountry: countryCode(form.get("birthCountry")),
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
       generation,
@@ -97,8 +104,8 @@ export async function addPerson(form: FormData) {
     const kids = await db.relationship.findMany({ where: { parentId: other.id } });
     for (const k of kids) await db.relationship.create({ data: { parentId: person.id, childId: k.childId } }).catch(() => {});
   }
-  if (person.birthYear || person.birthPlace) {
-    await db.lifeEvent.create({ data: { familyId: family.id, personId: person.id, year: person.birthYear, place: person.birthPlace, description: `${firstName} is born`, source: "user" } });
+  if (person.birthYear || person.birthPlace || person.birthCountry) {
+    await db.lifeEvent.create({ data: { familyId: family.id, personId: person.id, year: person.birthYear, place: person.birthPlace, country: person.birthCountry, description: `${firstName} is born`, source: "user" } });
   }
   await track("family_member_added", { familyId: family.id, userId: user.id, props: { relation: kind || "none" } });
   revalidatePath("/app/family");
@@ -108,13 +115,18 @@ export async function addPerson(form: FormData) {
 export async function updatePerson(id: string, form: FormData) {
   const { family } = await editor();
   const deathYear = toInt(form.get("deathYear"));
+  const birthYear = toInt(form.get("birthYear"));
+  const birthPlace = clean(form.get("birthPlace"), 80) || null;
+  const birthCountry = countryCode(form.get("birthCountry"));
+  const firstName = clean(form.get("firstName"), 60) || undefined;
   await db.person.updateMany({
     where: { id, familyId: family.id },
     data: {
-      firstName: clean(form.get("firstName"), 60) || undefined,
+      firstName,
       lastName: clean(form.get("lastName"), 60) || null,
-      birthYear: toInt(form.get("birthYear")),
-      birthPlace: clean(form.get("birthPlace"), 80) || null,
+      birthYear,
+      birthPlace,
+      birthCountry,
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
       hidden: form.get("hidden") === "on",
@@ -123,7 +135,16 @@ export async function updatePerson(id: string, form: FormData) {
       lifePath: clean(form.get("lifePath"), 20000) || null,
     },
   });
+  // Keep the birth event on the timeline and map in step with the profile.
+  const person = await db.person.findFirst({ where: { id, familyId: family.id } });
+  if (person) {
+    const birth = await db.lifeEvent.findFirst({ where: { familyId: family.id, personId: id, description: { endsWith: " is born" } } });
+    const data = { year: birthYear, place: birthPlace, country: birthCountry, description: `${person.firstName} is born` };
+    if (birth) await db.lifeEvent.update({ where: { id: birth.id }, data });
+    else if (birthYear || birthPlace || birthCountry) await db.lifeEvent.create({ data: { familyId: family.id, personId: id, source: "user", ...data } });
+  }
   revalidatePath("/app/family");
+  revalidatePath("/app/journey");
   redirect(`/app/family/${id}?saved=1`);
 }
 
@@ -320,7 +341,7 @@ export async function addEvent(form: FormData) {
       familyId: family.id, description,
       year: toInt(form.get("year")),
       place: clean(form.get("place"), 80) || null,
-      country: clean(form.get("country"), 2).toUpperCase() || null,
+      country: countryCode(form.get("country")),
       personId: await personInFamily(family.id, form.get("personId")),
     },
   });

@@ -5,7 +5,8 @@ import { appContext, plural } from "@/i18n/app";
 import { common, eventText } from "@/i18n/app/common";
 import { familyT } from "@/i18n/app/family";
 import PersonAvatar from "@/components/PersonAvatar";
-import { countryName, COUNTRY_CODES } from "@/i18n/config";
+import { countryName } from "@/i18n/config";
+import CountrySelect from "@/components/CountrySelect";
 import { addEvent, deleteEvent } from "../actions";
 import FamilyMap, { type MapPath, type MapPlace } from "@/components/FamilyMap";
 import { geocodeMany, placeKey } from "@/lib/geo";
@@ -161,10 +162,7 @@ export default async function JourneyPage() {
             <div className="field"><label htmlFor="place">{t.town}</label><input id="place" name="place" /></div>
             <div className="field">
               <label htmlFor="country">{t.country}</label>
-              <select id="country" name="country" defaultValue="">
-                <option value="">—</option>
-                {COUNTRY_CODES.map((cc) => <option key={cc} value={cc}>{countryName(cc, lang)}</option>)}
-              </select>
+              <CountrySelect lang={lang} id="country" />
             </div>
           </div>
           <div><button className="btn btn-primary">{c.btn.add}</button></div>

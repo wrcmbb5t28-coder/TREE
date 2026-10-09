@@ -92,6 +92,8 @@ model Person {
   lastName    String?
   birthYear   Int?
   birthPlace  String?
+  // ISO country code of the birth place (e.g. "UA", "CH")
+  birthCountry String?
   deathYear   Int?
   isLiving    Boolean        @default(true)
   // Marks the person who created the tree ("You")

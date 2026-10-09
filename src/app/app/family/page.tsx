@@ -1,3 +1,5 @@
+import CountrySelect from "@/components/CountrySelect";
+import { countryName } from "@/i18n/config";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { canEdit } from "@/lib/auth";
@@ -59,6 +61,7 @@ export default async function Family() {
           <div className="grid2">
             <div className="field"><label htmlFor="birthYear">{t.birthYear}</label><input id="birthYear" name="birthYear" inputMode="numeric" placeholder={t.egYear} /></div>
             <div className="field"><label htmlFor="birthPlace">{t.birthPlace}</label><input id="birthPlace" name="birthPlace" placeholder={t.egPlace} /></div>
+            <div className="field"><label htmlFor="birthCountry">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="birthCountry" name="birthCountry" /></div>
           </div>
           <div className="grid2">
             <div className="field"><label htmlFor="deathYear">{t.deathYearIf}</label><input id="deathYear" name="deathYear" inputMode="numeric" /></div>
@@ -77,7 +80,7 @@ export default async function Family() {
               {people.map((p) => (
                 <tr key={p.id}>
                   <td><Link href={`/app/family/${p.id}`}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}</Link>{p.isSelf ? ` (${c.you})` : ""}{p.hidden ? ` · ${t.hiddenBranch}` : ""}</td>
-                  <td>{[p.birthYear, p.birthPlace].filter(Boolean).join(", ")}</td>
+                  <td>{[p.birthYear, p.birthPlace, p.birthCountry && countryName(p.birthCountry, lang)].filter(Boolean).join(", ")}</td>
                   <td>{!p.isSelf && p.isLiving && <Link className="small" href={`/app/ask?to=${p.id}`}>{c.header.ask}</Link>}</td>
                 </tr>
               ))}
