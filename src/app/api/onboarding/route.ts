@@ -29,14 +29,15 @@ export async function POST(req: Request) {
 
   const result = await db.$transaction(async (tx) => {
     const family = await tx.family.create({ data: { name: `${name}'s family`, lang, pageSlug: familySlug(name) } });
-    const mk = (firstName: string, generation: number, extra: { isSelf?: boolean; birthPlace?: string } = {}) =>
+    const mk = (firstName: string, generation: number, extra: { isSelf?: boolean; birthPlace?: string; relation?: string; gender?: string } = {}) =>
       tx.person.create({ data: { familyId: family.id, firstName, generation, isLiving: true, ...extra } });
 
     const self = await mk(name, 0, { isSelf: true, birthPlace: clean(b.born, 80) || undefined });
     const ids: Record<string, string> = {};
+    const ROLE = { mother: ["mother", "f"], father: ["father", "m"], gm1: ["grandmother", "f"], gf1: ["grandfather", "m"], gm2: ["grandmother", "f"], gf2: ["grandfather", "m"] } as const;
     for (const [k, gen] of [["mother", -1], ["father", -1], ["gm1", -2], ["gf1", -2], ["gm2", -2], ["gf2", -2]] as const) {
       const n = clean(b[k], 60);
-      if (n) ids[k] = (await mk(n, gen)).id;
+      if (n) ids[k] = (await mk(n, gen, { relation: ROLE[k][0], gender: ROLE[k][1] })).id;
     }
     const link = (parent?: string, child?: string) =>
       parent && child ? tx.relationship.create({ data: { parentId: parent, childId: child } }) : null;

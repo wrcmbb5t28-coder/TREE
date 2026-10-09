@@ -1,3 +1,4 @@
+import { relationById } from "@/i18n/questions";
 import { db } from "./db";
 import { writeStory } from "./ai";
 import { track } from "./analytics";
@@ -19,7 +20,7 @@ export async function storyFromAnswer(answerId: string) {
     question: question.text,
     transcript: answer.transcript,
     storytellerName: [teller.firstName, teller.lastName].filter(Boolean).join(" "),
-    storytellerRelation: relationLabel(teller.generation),
+    storytellerRelation: relationById(teller.relation)?.group ? relationById(teller.relation)!.label.toLowerCase() : relationLabel(teller.generation),
     outputLang: family.lang,
     knownPeople: family.people.map((p) => [p.firstName, p.lastName].filter(Boolean).join(" ")),
   });

@@ -8,6 +8,7 @@ import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { avatarById } from "@/lib/avatars";
+import { relationById } from "@/i18n/questions";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
 
@@ -15,6 +16,13 @@ async function editor() {
   const ctx = await requireFamily();
   if (!canEdit(ctx.role)) throw new Error("You can view this family but not change it.");
   return ctx;
+}
+
+/** relation + gender from a form; a gendered relation (wife, father...) sets the gender. */
+function roleFields(form: FormData): { relation: string | null; gender: string | null } {
+  const rel = relationById(clean(form.get("role"), 20));
+  const g = clean(form.get("gender"), 1);
+  return { relation: rel?.id ?? null, gender: rel?.gender ?? (g === "f" || g === "m" ? g : null) };
 }
 
 // ---------- Questions ----------
@@ -77,6 +85,7 @@ export async function addPerson(form: FormData) {
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
       generation,
+      ...roleFields(form),
     },
   });
   if (other && kind === "parent-of") await db.relationship.create({ data: { parentId: person.id, childId: other.id } });
@@ -107,6 +116,7 @@ export async function updatePerson(id: string, form: FormData) {
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
       hidden: form.get("hidden") === "on",
+      ...(form.has("role") ? roleFields(form) : {}),
       bio: clean(form.get("bio"), 280) || null,
       lifePath: clean(form.get("lifePath"), 20000) || null,
     },

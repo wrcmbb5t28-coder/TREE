@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireFamily } from "@/lib/auth";
-import { getDict, LANGS, LANG_NAME } from "@/i18n";
+import { LANGS, LANG_NAME } from "@/i18n";
 import { askQuestion } from "../actions";
+import { questionsFor, relationById } from "@/i18n/questions";
+import { isLang } from "@/i18n/config";
+import StorytellerSelect from "@/components/StorytellerSelect";
 
 export default async function Ask({ searchParams }: { searchParams: Promise<{ to?: string }> }) {
   const { to } = await searchParams;
   const { family } = await requireFamily();
   const people = await db.person.findMany({ where: { familyId: family.id, isSelf: false, isLiving: true }, orderBy: [{ generation: "asc" }, { createdAt: "asc" }] });
-  const t = getDict(family.lang);
   const asked = new Set((await db.question.findMany({ where: { familyId: family.id }, select: { text: true } })).map((q) => q.text));
+
+  const teller = people.find((p) => p.id === to) ?? people[0];
+  const { topics, personal } = teller ? questionsFor(isLang(family.lang) ? family.lang : "en", teller) : { topics: [], personal: false };
+  const rel = teller ? relationById(teller.relation) : undefined;
 
   if (people.length === 0) {
     return (
@@ -26,20 +32,31 @@ export default async function Ask({ searchParams }: { searchParams: Promise<{ to
 
       <div className="field">
         <label htmlFor="storytellerId">Who do you want to ask?</label>
-        <select id="storytellerId" name="storytellerId" defaultValue={to ?? people[0].id}>
-          {people.map((p) => <option key={p.id} value={p.id}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}</option>)}
-        </select>
+        <StorytellerSelect
+          value={teller.id}
+          people={people.map((p) => {
+            const r = relationById(p.relation);
+            return { id: p.id, label: [p.firstName, p.lastName].filter(Boolean).join(" ") + (r && r.id !== "other" ? ` · ${r.label.toLowerCase()}` : "") };
+          })}
+        />
+        {personal ? (
+          <p className="small muted">Questions picked for your {rel?.label.toLowerCase()}. <Link href={`/app/family/${teller.id}#edit`}>Change</Link></p>
+        ) : (
+          <p className="small muted">
+            Tip: <Link href={`/app/family/${teller.id}#edit`}>say who {teller.firstName} is to you</Link> (wife, mother, grandfather…) and the questions will fit them.
+          </p>
+        )}
       </div>
 
       <fieldset className="card stack" style={{ border: "1px solid var(--line)" }}>
         <legend className="eyebrow" style={{ padding: "0 6px" }}>Pick a question</legend>
-        {Object.entries(t.library).map(([key, topic]) => (
+        {topics.map(({ key, ...topic }, ti) => (
           <div key={key} className="stack" style={{ gap: 8 }}>
             <b>{topic.name}</b>
             <div className="pick">
               {topic.q.map((q) => (
                 <label key={q} style={asked.has(q) ? { opacity: 0.55 } : undefined}>
-                  <input type="radio" name="question" value={q} defaultChecked={q === t.library.childhood.q[0]} />
+                  <input type="radio" name="question" value={q} defaultChecked={ti === 0 && q === topic.q[0]} />
                   <span>{q}{asked.has(q) ? " ✓" : ""}</span>
                 </label>
               ))}

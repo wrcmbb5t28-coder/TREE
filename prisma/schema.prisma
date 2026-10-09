@@ -98,6 +98,10 @@ model Person {
   generation  Int            @default(0)
   // Hidden branches are visible only to owners/editors
   hidden      Boolean        @default(false)
+  // Who this person is to the family owner (wife, mother, grandfather... see src/i18n/questions.ts) and gender ("f" | "m"),
+  // used to suggest questions that fit them and are grammatically right.
+  relation    String?
+  gender      String?
   // Profile: uploaded photo (storage path) or a preset avatar id (see src/lib/avatars.ts)
   photoPath   String?
   avatar      String?

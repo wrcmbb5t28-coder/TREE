@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireFamily, canEdit } from "@/lib/auth";
 import TreeView from "@/components/TreeView";
 import { addPerson } from "../actions";
+import { RELATIONS } from "@/i18n/questions";
 
 export default async function Family() {
   const { family, role } = await requireFamily();
@@ -31,7 +32,14 @@ export default async function Family() {
             <div className="field"><label htmlFor="lastName">Last name</label><input id="lastName" name="lastName" /></div>
           </div>
           <div className="field">
-            <label htmlFor="relation">How are they related?</label>
+            <label htmlFor="role">Who are they to you?</label>
+            <select id="role" name="role" defaultValue="">
+              <option value="">Not set</option>
+              {RELATIONS.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="relation">Where do they go in the tree?</label>
             <select id="relation" name="relation" defaultValue="">
               <option value="">Not sure yet</option>
               {people.map((p) => (

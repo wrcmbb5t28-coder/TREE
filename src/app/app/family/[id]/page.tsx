@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireFamily, canEdit } from "@/lib/auth";
 import { AVATARS } from "@/lib/avatars";
+import { RELATIONS, relationById } from "@/i18n/questions";
 import PersonAvatar, { PresetAvatar } from "@/components/PersonAvatar";
 import PhotoUpload from "@/components/PhotoUpload";
 import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, addEvent, deleteEvent } from "../../actions";
@@ -48,6 +49,7 @@ export default async function PersonPage({
   });
 
   const name = [p.firstName, p.lastName].filter(Boolean).join(" ");
+  const kin = relationById(p.relation);
   const years = p.birthYear || p.deathYear ? `${p.birthYear ?? "?"}${p.isLiving ? "" : ` – ${p.deathYear ?? "?"}`}` : "";
   const relatives = [
     ...p.parentLinks.map((l) => ({ id: l.id, rel: "parent", person: l.parent })),
@@ -63,7 +65,7 @@ export default async function PersonPage({
       <header className="profile-head">
         <PersonAvatar person={p} size={120} />
         <div className="stack" style={{ gap: 6, minWidth: 0 }}>
-          <p className="eyebrow">{p.isSelf ? "You" : p.isLiving ? "Living" : "In memory"}{p.hidden ? " · hidden branch" : ""}</p>
+          <p className="eyebrow">{p.isSelf ? "You" : [kin && kin.id !== "other" ? `Your ${kin.label.toLowerCase()}` : null, p.isLiving ? null : "in memory"].filter(Boolean).join(" · ") || "Living"}{p.hidden ? " · hidden branch" : ""}</p>
           <h1 style={{ fontSize: "clamp(2rem,4.5vw,2.9rem)" }}>{name}</h1>
           <p className="muted">{[years, p.birthPlace && `born in ${p.birthPlace}`].filter(Boolean).join(" · ")}</p>
           {p.bio && <p className="lead" style={{ marginTop: 6 }}>{p.bio}</p>}
@@ -227,6 +229,26 @@ export default async function PersonPage({
           </div>
 
           <form action={updatePerson.bind(null, p.id)} className="stack">
+            {!p.isSelf && (
+              <div className="grid2">
+                <div className="field">
+                  <label htmlFor="role">Who is {p.firstName} to you?</label>
+                  <select id="role" name="role" defaultValue={p.relation ?? ""}>
+                    <option value="">Not set</option>
+                    {RELATIONS.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label htmlFor="gender">Gender</label>
+                  <select id="gender" name="gender" defaultValue={p.gender ?? ""}>
+                    <option value="">Not set</option>
+                    <option value="f">Woman</option>
+                    <option value="m">Man</option>
+                  </select>
+                </div>
+              </div>
+            )}
+            {!p.isSelf && <p className="small muted" style={{ marginTop: -8 }}>Used to suggest questions that fit {p.firstName}, in the right grammatical form.</p>}
             <div className="field">
               <label htmlFor="bio">In one line</label>
               <input id="bio" name="bio" maxLength={280} defaultValue={p.bio ?? ""} placeholder="Teacher, gardener, the best storyteller at every family dinner" />
