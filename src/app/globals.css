@@ -263,12 +263,18 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
   .profile-head { flex-direction: column; align-items: center; text-align: center; }
   .profile-head .row { justify-content: center; }
 }
-.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
 .photo-tile { margin: 0; position: relative; display: flex; flex-direction: column; gap: 6px; }
 .photo-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; background: var(--tint); display: block; border: 3px solid transparent; }
 .photo-tile.is-avatar img { border-color: var(--accent); }
 .photo-badge { position: absolute; top: 8px; left: 8px; background: var(--accent); color: var(--accent-ink); font-size: .72rem; padding: .15rem .5rem; border-radius: 999px; }
-.photo-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.photo-actions details summary { list-style: none; cursor: pointer; }
-.photo-actions details[open] form { margin-top: 6px; }
+.photo-actions { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 34px; }
+.photo-actions form { margin: 0; display: flex; min-width: 0; }
+.photo-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: .25rem .75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .8rem; line-height: 1.2; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.photo-btn:hover { border-color: var(--accent); color: var(--accent); }
+.photo-icon { width: 32px; padding: 0; flex: none; list-style: none; color: var(--muted); }
+.photo-icon::-webkit-details-marker { display: none; }
+.photo-del { position: relative; flex: none; }
+.photo-confirm { position: absolute; right: 0; bottom: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 5; white-space: nowrap; }
+.photo-current { font-size: .8rem; font-weight: 600; color: var(--accent); white-space: nowrap; }
 .lang-switch { width: auto; min-height: 34px; padding: 4px 26px 4px 10px; border-radius: 999px; font-size: .82rem; background-color: var(--surface); }

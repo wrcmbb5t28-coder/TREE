@@ -161,17 +161,24 @@ export default async function PersonPage({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={`/api/files/${ph.path}`} alt={ph.caption ?? t.photoAlt(p.firstName)} loading="lazy" />
                   </a>
-                  {isAvatar && <span className="photo-badge">{t.profilePicture}</span>}
-                  {editable && (
+                  {editable ? (
                     <figcaption className="photo-actions">
-                      {!isAvatar && (
-                        <form action={makeProfilePhoto.bind(null, ph.id)}><button className="btn-link small">{t.makeProfilePicture}</button></form>
+                      {isAvatar ? (
+                        <span className="photo-current">✓ {t.profilePicture}</span>
+                      ) : (
+                        <form action={makeProfilePhoto.bind(null, ph.id)}><button className="photo-btn">{t.makeProfilePicture}</button></form>
                       )}
-                      <details>
-                        <summary className="btn-link small muted">{c.btn.delete}</summary>
-                        <form action={deletePersonPhoto.bind(null, ph.id)}><button className="btn btn-danger btn-sm">{t.deletePhoto}</button></form>
+                      <details className="photo-del">
+                        <summary className="photo-btn photo-icon" aria-label={t.deletePhoto} title={t.deletePhoto}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" /></svg>
+                        </summary>
+                        <div className="photo-confirm">
+                          <form action={deletePersonPhoto.bind(null, ph.id)}><button className="btn btn-danger btn-sm">{t.deletePhoto}</button></form>
+                        </div>
                       </details>
                     </figcaption>
+                  ) : (
+                    isAvatar && <figcaption className="photo-actions"><span className="photo-current">✓ {t.profilePicture}</span></figcaption>
                   )}
                 </figure>
               );
