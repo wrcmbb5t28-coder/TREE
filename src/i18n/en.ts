@@ -148,13 +148,13 @@ const en = {
     cta: "Send a question with Treename",
   },
   library: {
-    childhood: { name: "Childhood", q: ["Where were you born, and what was your home like?", "What games did you play as a child?", "What did your family eat on a normal day, and on holidays?"] },
-    family: { name: "Family", q: ["What were your parents like?", "What do you remember about your grandparents?", "Which family stories were told again and again?"] },
-    love: { name: "Love", q: ["How did you and Grandpa meet?", "What was your wedding day like?", "What did you love most about each other?"] },
+    childhood: { name: "Childhood", q: ["Where did you grow up, and what was your home like?", "What games did you love as a child?", "What did your family eat on a normal day, and on holidays?"] },
+    family: { name: "Family", q: ["What were your parents like?", "What do you remember about your own grandparents?", "Which family stories were told again and again?"] },
+    love: { name: "Love", q: ["How did your love story begin?", "What moment with the love of your life will you never forget?", "What do you love most about the person you chose?"] },
     work: { name: "Work", q: ["What was your first job?", "What work are you most proud of?", "How did you earn your first money?"] },
-    leaving: { name: "Leaving home", q: ["When did you first leave home, and why?", "What was it like to arrive in a new country?", "What did you miss most from home?"] },
+    leaving: { name: "Leaving home", q: ["When did you first leave home, and why?", "What was it like to start again in a new place?", "What did you miss most from home?"] },
     hard: { name: "Hard years", q: ["What was the most difficult period of your life?", "Who helped you when times were hard?", "What gave you strength?"] },
-    advice: { name: "Advice", q: ["What do you want your grandchildren to remember?", "What would you tell your younger self?", "What matters most in a family?"] },
+    advice: { name: "Advice", q: ["What do you want the next generations of our family to remember?", "What would you tell your younger self?", "What matters most in a family?"] },
   },
 };
 

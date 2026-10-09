@@ -150,13 +150,13 @@ const fr: Dict = {
     cta: "Envoyer une question avec Treename",
   },
   library: {
-    childhood: { name: "Enfance", q: ["Où êtes-vous né, et à quoi ressemblait votre maison ?", "À quoi jouiez-vous enfant ?", "Que mangeait votre famille au quotidien, et les jours de fête ?"] },
-    family: { name: "Famille", q: ["Comment étaient vos parents ?", "Quels souvenirs gardez-vous de vos grands-parents ?", "Quelles histoires de famille racontait-on encore et encore ?"] },
-    love: { name: "Amour", q: ["Comment avez-vous rencontré grand-père ?", "Comment s'est passé votre mariage ?", "Qu'aimiez-vous le plus l'un chez l'autre ?"] },
-    work: { name: "Travail", q: ["Quel a été votre premier travail ?", "De quel travail êtes-vous le plus fier ?", "Comment avez-vous gagné votre premier argent ?"] },
-    leaving: { name: "Partir", q: ["Quand avez-vous quitté la maison pour la première fois, et pourquoi ?", "Comment était l'arrivée dans un nouveau pays ?", "Qu'est-ce qui vous manquait le plus de chez vous ?"] },
-    hard: { name: "Années difficiles", q: ["Quelle a été la période la plus difficile de votre vie ?", "Qui vous a aidé dans les moments durs ?", "Qu'est-ce qui vous a donné de la force ?"] },
-    advice: { name: "Conseils", q: ["Que voulez-vous que vos petits-enfants retiennent ?", "Que diriez-vous à la personne que vous étiez jeune ?", "Qu'est-ce qui compte le plus dans une famille ?"] },
+    childhood: { name: "Enfance", q: ["Où avez-vous grandi, et à quoi ressemblait votre maison ?", "Quels étaient vos jeux préférés quand vous étiez enfant ?", "Que mangeait votre famille au quotidien, et les jours de fête ?"] },
+    family: { name: "Famille", q: ["Comment étaient vos parents ?", "Quels souvenirs gardez-vous de vos propres grands-parents ?", "Quelles histoires de famille racontait-on encore et encore ?"] },
+    love: { name: "Amour", q: ["Comment votre histoire d'amour a-t-elle commencé ?", "Quel moment avec l'amour de votre vie n'oublierez-vous jamais ?", "Qu'aimez-vous le plus chez l'amour de votre vie ?"] },
+    work: { name: "Travail", q: ["Quel a été votre premier travail ?", "De quel travail tirez-vous le plus de fierté ?", "Comment avez-vous gagné votre premier argent ?"] },
+    leaving: { name: "Partir", q: ["Quand avez-vous quitté la maison pour la première fois, et pourquoi ?", "Comment était-ce de recommencer dans un nouvel endroit ?", "Qu'est-ce qui vous manquait le plus de chez vous ?"] },
+    hard: { name: "Années difficiles", q: ["Quelle a été la période la plus difficile de votre vie ?", "Qui a été là pour vous dans les moments durs ?", "Qu'est-ce qui vous a donné de la force ?"] },
+    advice: { name: "Conseils", q: ["Que voulez-vous que les prochaines générations de la famille retiennent ?", "Quel conseil donneriez-vous à la personne que vous étiez jeune ?", "Qu'est-ce qui compte le plus dans une famille ?"] },
   },
 };
 

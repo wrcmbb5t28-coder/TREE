@@ -150,13 +150,13 @@ const de: Dict = {
     cta: "Eine Frage mit Treename senden",
   },
   library: {
-    childhood: { name: "Kindheit", q: ["Wo sind Sie geboren, und wie war Ihr Zuhause?", "Was haben Sie als Kind gespielt?", "Was hat Ihre Familie an einem normalen Tag gegessen, und was an Feiertagen?"] },
-    family: { name: "Familie", q: ["Wie waren Ihre Eltern?", "Woran erinnern Sie sich bei Ihren Großeltern?", "Welche Familiengeschichten wurden immer wieder erzählt?"] },
-    love: { name: "Liebe", q: ["Wie haben Sie und Opa sich kennengelernt?", "Wie war Ihr Hochzeitstag?", "Was haben Sie aneinander am meisten geliebt?"] },
+    childhood: { name: "Kindheit", q: ["Wo sind Sie aufgewachsen, und wie war Ihr Zuhause?", "Was haben Sie als Kind am liebsten gespielt?", "Was hat Ihre Familie an einem normalen Tag gegessen, und was an Feiertagen?"] },
+    family: { name: "Familie", q: ["Wie waren Ihre Eltern?", "Woran erinnern Sie sich bei Ihren eigenen Großeltern?", "Welche Familiengeschichten wurden immer wieder erzählt?"] },
+    love: { name: "Liebe", q: ["Wie hat Ihre Liebesgeschichte begonnen?", "Welchen Moment mit Ihrer großen Liebe werden Sie nie vergessen?", "Was hat Sie an Ihrer großen Liebe am meisten berührt?"] },
     work: { name: "Arbeit", q: ["Was war Ihre erste Arbeit?", "Auf welche Arbeit sind Sie am meisten stolz?", "Wie haben Sie Ihr erstes Geld verdient?"] },
-    leaving: { name: "Aufbruch", q: ["Wann haben Sie zum ersten Mal Ihr Zuhause verlassen, und warum?", "Wie war es, in einem neuen Land anzukommen?", "Was haben Sie von zu Hause am meisten vermisst?"] },
+    leaving: { name: "Aufbruch", q: ["Wann haben Sie zum ersten Mal Ihr Zuhause verlassen, und warum?", "Wie war es, an einem neuen Ort neu anzufangen?", "Was haben Sie von zu Hause am meisten vermisst?"] },
     hard: { name: "Schwere Jahre", q: ["Was war die schwierigste Zeit in Ihrem Leben?", "Wer hat Ihnen in schweren Zeiten geholfen?", "Was hat Ihnen Kraft gegeben?"] },
-    advice: { name: "Ratschläge", q: ["Woran sollen sich Ihre Enkel erinnern?", "Was würden Sie Ihrem jüngeren Ich sagen?", "Was ist in einer Familie am wichtigsten?"] },
+    advice: { name: "Ratschläge", q: ["Woran sollen sich die nächsten Generationen unserer Familie erinnern?", "Was würden Sie Ihrem jüngeren Ich sagen?", "Was ist in einer Familie am wichtigsten?"] },
   },
 };
 

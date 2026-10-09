@@ -150,13 +150,13 @@ const it: Dict = {
     cta: "Invia una domanda con Treename",
   },
   library: {
-    childhood: { name: "Infanzia", q: ["Dove sei nata, e com'era la tua casa?", "A cosa giocavi da bambina?", "Cosa mangiava la tua famiglia nei giorni normali, e nei giorni di festa?"] },
+    childhood: { name: "Infanzia", q: ["Dove hai passato l'infanzia, e com'era la tua casa?", "Quali erano i tuoi giochi preferiti nell'infanzia?", "Cosa mangiava la tua famiglia nei giorni normali, e nei giorni di festa?"] },
     family: { name: "Famiglia", q: ["Com'erano i tuoi genitori?", "Cosa ricordi dei tuoi nonni?", "Quali storie di famiglia si raccontavano sempre?"] },
-    love: { name: "Amore", q: ["Come vi siete conosciuti tu e il nonno?", "Com'è stato il giorno del vostro matrimonio?", "Cosa amavate di più l'uno dell'altra?"] },
-    work: { name: "Lavoro", q: ["Qual è stato il tuo primo lavoro?", "Di quale lavoro sei più orgogliosa?", "Come hai guadagnato i tuoi primi soldi?"] },
-    leaving: { name: "Partire", q: ["Quando hai lasciato casa per la prima volta, e perché?", "Com'è stato arrivare in un paese nuovo?", "Cosa ti mancava di più di casa?"] },
-    hard: { name: "Anni difficili", q: ["Qual è stato il periodo più difficile della tua vita?", "Chi ti ha aiutata nei momenti duri?", "Cosa ti ha dato forza?"] },
-    advice: { name: "Consigli", q: ["Cosa vuoi che i tuoi nipoti ricordino?", "Cosa diresti a te stessa da giovane?", "Cosa conta di più in una famiglia?"] },
+    love: { name: "Amore", q: ["Com'è iniziata la tua storia d'amore?", "Quale momento con la persona che ami non dimenticherai mai?", "Cosa ti ha conquistato della persona che ami?"] },
+    work: { name: "Lavoro", q: ["Qual è stato il tuo primo lavoro?", "Quale lavoro ti ha dato più orgoglio?", "Come hai guadagnato i tuoi primi soldi?"] },
+    leaving: { name: "Partire", q: ["Quando hai lasciato casa per la prima volta, e perché?", "Com'è stato ricominciare in un posto nuovo?", "Cosa ti mancava di più di casa?"] },
+    hard: { name: "Anni difficili", q: ["Qual è stato il periodo più difficile della tua vita?", "Chi ti è stato vicino nei momenti duri?", "Cosa ti ha dato forza?"] },
+    advice: { name: "Consigli", q: ["Cosa vuoi che ricordino le prossime generazioni della nostra famiglia?", "Che consiglio daresti alla persona che eri da giovane?", "Cosa conta di più in una famiglia?"] },
   },
 };
 

@@ -150,13 +150,13 @@ const es: Dict = {
     cta: "Enviar una pregunta con Treename",
   },
   library: {
-    childhood: { name: "Infancia", q: ["¿Dónde naciste y cómo era tu casa?", "¿A qué jugabas de niña?", "¿Qué comía tu familia un día normal, y en las fiestas?"] },
-    family: { name: "Familia", q: ["¿Cómo eran tus padres?", "¿Qué recuerdas de tus abuelos?", "¿Qué historias de familia se contaban una y otra vez?"] },
-    love: { name: "Amor", q: ["¿Cómo os conocisteis tú y el abuelo?", "¿Cómo fue el día de vuestra boda?", "¿Qué es lo que más os gustaba el uno del otro?"] },
-    work: { name: "Trabajo", q: ["¿Cuál fue tu primer trabajo?", "¿De qué trabajo estás más orgullosa?", "¿Cómo ganaste tu primer dinero?"] },
-    leaving: { name: "Partir", q: ["¿Cuándo saliste de casa por primera vez, y por qué?", "¿Cómo fue llegar a un país nuevo?", "¿Qué echabas más de menos de casa?"] },
+    childhood: { name: "Infancia", q: ["¿Dónde pasaste tu infancia y cómo era tu casa?", "¿A qué te gustaba jugar en tu infancia?", "¿Qué comía tu familia un día normal, y en las fiestas?"] },
+    family: { name: "Familia", q: ["¿Cómo eran tus padres?", "¿Qué recuerdas de tus propios abuelos?", "¿Qué historias de familia se contaban una y otra vez?"] },
+    love: { name: "Amor", q: ["¿Cómo empezó tu historia de amor?", "¿Qué momento con la persona que amas nunca olvidarás?", "¿Qué te enamoró de la persona que amas?"] },
+    work: { name: "Trabajo", q: ["¿Cuál fue tu primer trabajo?", "¿Qué trabajo te ha dado más orgullo?", "¿Cómo ganaste tu primer dinero?"] },
+    leaving: { name: "Partir", q: ["¿Cuándo saliste de casa por primera vez, y por qué?", "¿Cómo fue empezar de nuevo en otro lugar?", "¿Qué echabas más de menos de casa?"] },
     hard: { name: "Años difíciles", q: ["¿Cuál fue la época más difícil de tu vida?", "¿Quién te ayudó en los momentos duros?", "¿Qué te dio fuerzas?"] },
-    advice: { name: "Consejos", q: ["¿Qué quieres que recuerden tus nietos?", "¿Qué le dirías a tu yo más joven?", "¿Qué es lo más importante en una familia?"] },
+    advice: { name: "Consejos", q: ["¿Qué quieres que recuerden las próximas generaciones de la familia?", "¿Qué consejo le darías a tu yo más joven?", "¿Qué es lo más importante en una familia?"] },
   },
 };
 
