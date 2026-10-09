@@ -20,10 +20,13 @@ export default function FamilyMap({ places, paths, label }: { places: MapPlace[]
       const L = (await import("leaflet")).default;
       if (cancelled || !el.current) return;
       map = L.map(el.current, { scrollWheelZoom: false, worldCopyJump: true, attributionControl: true });
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      // Plain-text library credit instead of Leaflet's default prefix.
+      map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noreferrer">Leaflet</a>');
+      // OpenStreetMap standard tiles (no key). For heavy production traffic switch to a paid tile
+      // provider (e.g. MapTiler) via NEXT_PUBLIC_MAP_TILES, a URL template with {z}/{x}/{y}.
+      L.tileLayer(process.env.NEXT_PUBLIC_MAP_TILES || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
-        subdomains: "abcd",
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
       }).addTo(map);
 
       for (const p of paths) {
