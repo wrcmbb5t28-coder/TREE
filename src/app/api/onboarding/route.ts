@@ -92,6 +92,7 @@ export async function POST(req: Request) {
     email,
     draftFamilyId: result.family.id,
     next: plan ? `/app/billing?plan=${plan}` : "/app?welcome=1",
+    lang,
   });
   return NextResponse.json({ ok: true, devLink });
 }

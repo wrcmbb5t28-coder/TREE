@@ -20,7 +20,7 @@ export async function sendEmail(to: string, subject: string, html: string, text:
   return { sent: true };
 }
 
-export function emailLayout(title: string, body: string, cta?: { label: string; url: string }): string {
+export function emailLayout(title: string, body: string, cta?: { label: string; url: string }, footer = "Family history, told by your family"): string {
   return `<!doctype html><html><body style="margin:0;background:#F4F6F1;font-family:Helvetica,Arial,sans-serif;color:#1B2523">
 <div style="max-width:520px;margin:0 auto;padding:32px 20px">
 <p style="font-family:Georgia,serif;font-size:22px;margin:0 0 24px">Treename</p>
@@ -29,6 +29,6 @@ export function emailLayout(title: string, body: string, cta?: { label: string; 
 <div style="font-size:16px;line-height:1.55;color:#3c4744">${body}</div>
 ${cta ? `<p style="margin:24px 0 0"><a href="${cta.url}" style="display:inline-block;background:#1D5A4B;color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:bold">${cta.label}</a></p>` : ""}
 </div>
-<p style="font-size:12px;color:#58645F;margin-top:20px">Treename · Family history, told by your family</p>
+<p style="font-size:12px;color:#58645F;margin-top:20px">Treename · ${footer}</p>
 </div></body></html>`;
 }
