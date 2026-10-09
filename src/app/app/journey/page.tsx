@@ -7,6 +7,11 @@ import { familyT } from "@/i18n/app/family";
 import PersonAvatar from "@/components/PersonAvatar";
 import { countryName, COUNTRY_CODES } from "@/i18n/config";
 import { addEvent, deleteEvent } from "../actions";
+import FamilyMap, { type MapPath, type MapPlace } from "@/components/FamilyMap";
+import { geocodeMany, placeKey } from "@/lib/geo";
+import { avatarById } from "@/lib/avatars";
+
+const PALETTE = ["#2F6B5E", "#9C4F5A", "#4F6D8F", "#B4774A", "#7A5C8E", "#5E7A3A", "#A0663A", "#3F5E6B"];
 
 /**
  * The family's journey: where people lived, year by year, with who it was.
@@ -29,19 +34,36 @@ export default async function JourneyPage() {
   const countries = [...new Set(events.map((e) => e.country).filter(Boolean))] as string[];
   const dated = events.filter((e) => e.year);
 
-  // Places in the order the family first reached them, with the years and people.
-  const stops = new Map<string, { place: string; from: number; to: number; people: Map<string, (typeof events)[number]["person"]> }>();
-  for (const e of dated) {
-    const place = placeOf(e);
-    if (!place) continue;
-    const key = place.toLowerCase();
-    const s = stops.get(key) ?? { place, from: e.year!, to: e.year!, people: new Map() };
-    s.from = Math.min(s.from, e.year!);
-    s.to = Math.max(s.to, e.year!);
-    if (e.person) s.people.set(e.person.id, e.person);
-    stops.set(key, s);
+  // Map: places with coordinates, who lived there and when; one line per person in time order.
+  const located = dated.filter((e) => e.place || e.country);
+  const coords = await geocodeMany(located.map((e) => ({ place: e.place, country: e.country })), 6);
+  const placeMap = new Map<string, { name: string; lat: number; lng: number; from: number; to: number; people: Set<string> }>();
+  for (const e of located) {
+    const k = placeKey(e.place, e.country);
+    const at = coords.get(k);
+    if (!at) continue;
+    const p = placeMap.get(k) ?? { name: placeOf(e), ...at, from: e.year!, to: e.year!, people: new Set<string>() };
+    p.from = Math.min(p.from, e.year!);
+    p.to = Math.max(p.to, e.year!);
+    if (e.person) p.people.add(e.person.firstName);
+    placeMap.set(k, p);
   }
-  const route = [...stops.values()].sort((a, b) => a.from - b.from);
+  const mapPlaces: MapPlace[] = [...placeMap.entries()].map(([key, p]) => ({
+    key, name: p.name, lat: p.lat, lng: p.lng, years: p.from === p.to ? String(p.from) : `${p.from}–${p.to}`, people: [...p.people],
+  }));
+  const colorOf = new Map<string, string>();
+  const mapPaths: MapPath[] = [];
+  for (const person of people) {
+    const pts = located
+      .filter((e) => e.personId === person.id && coords.has(placeKey(e.place, e.country)))
+      .map((e) => coords.get(placeKey(e.place, e.country))!);
+    const dedup = pts.filter((pt, i) => i === 0 || pt.lat !== pts[i - 1].lat || pt.lng !== pts[i - 1].lng);
+    if (!pts.length) continue;
+    const color = avatarById(person.avatar)?.bg ?? PALETTE[colorOf.size % PALETTE.length];
+    colorOf.set(person.id, color);
+    mapPaths.push({ id: person.id, name: person.firstName, color, points: dedup.map((pt) => [pt.lat, pt.lng]) });
+  }
+  const missing = new Set(located.filter((e) => !coords.has(placeKey(e.place, e.country))).map(placeOf));
 
   // Timeline grouped by decade; events without a year go last.
   const groups = new Map<string, typeof events>();
@@ -61,26 +83,24 @@ export default async function JourneyPage() {
 
       {events.length === 0 && <div className="empty">{t.empty}</div>}
 
-      {route.length > 0 && (
+      {mapPlaces.length > 0 && (
         <section className="stack">
           <h2 className="section-title">{t.route}</h2>
-          <ol className="route">
-            {route.map((s) => (
-              <li key={s.place} className="route-stop">
-                <span className="route-years">{s.from === s.to ? s.from : `${s.from}–${s.to}`}</span>
-                <b className="route-place">{s.place}</b>
-                {s.people.size > 0 && (
-                  <span className="route-people">
-                    {[...s.people.values()].map((p) => p && (
-                      <Link key={p.id} href={`/app/family/${p.id}`} className="route-person" title={p.firstName}>
-                        <PersonAvatar person={p} size={22} /> {p.firstName}
-                      </Link>
-                    ))}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ol>
+          <FamilyMap places={mapPlaces} paths={mapPaths} label={t.label} />
+          {mapPaths.length > 0 && (
+            <div className="map-legend">
+              {mapPaths.map((p) => {
+                const person = people.find((x) => x.id === p.id)!;
+                return (
+                  <Link key={p.id} href={`/app/family/${p.id}`} className="map-legend-item">
+                    <span className="map-swatch" style={{ background: p.color }} />
+                    <PersonAvatar person={person} size={22} /> {p.name}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+          {missing.size > 0 && <p className="small muted">{t.notOnMap([...missing].join(", "))}</p>}
         </section>
       )}
 

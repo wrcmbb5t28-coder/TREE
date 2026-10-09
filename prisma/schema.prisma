@@ -277,3 +277,12 @@ model GiftCode {
   redeemedAt       DateTime?
   createdAt        DateTime  @default(now())
 }
+
+/// Geocoding cache: place name (+ country) -> coordinates, so each place is looked up only once.
+model Place {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  lat       Float?
+  lng       Float?
+  createdAt DateTime @default(now())
+}

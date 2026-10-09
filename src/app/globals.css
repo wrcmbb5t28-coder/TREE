@@ -322,3 +322,11 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
   .jt-what { grid-column: 2; grid-row: 2; }
   .jt-item form { grid-column: 3; grid-row: 1; }
 }
+
+/* ---------- Family map ---------- */
+.family-map { height: min(62vh, 520px); min-height: 320px; border-radius: 18px; border: 1px solid var(--line); overflow: hidden; background: var(--tint); z-index: 0; }
+.family-map .fm-label { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.12); font: 500 12.5px/1.35 var(--body); padding: 4px 8px; }
+.family-map .fm-label::before { display: none; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.map-legend-item { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink); font-size: .9rem; }
+.map-swatch { width: 18px; height: 4px; border-radius: 2px; }
