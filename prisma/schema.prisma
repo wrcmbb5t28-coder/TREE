@@ -284,5 +284,7 @@ model Place {
   key       String   @unique
   lat       Float?
   lng       Float?
+  // ISO country code of the place (e.g. "CH"), used to count the family's countries
+  country   String?
   createdAt DateTime @default(now())
 }

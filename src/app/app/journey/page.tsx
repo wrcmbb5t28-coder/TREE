@@ -31,7 +31,7 @@ export default async function JourneyPage() {
   const people = await db.person.findMany({ where: { familyId: family.id }, orderBy: { generation: "asc" } });
 
   const placeOf = (e: (typeof events)[number]) => e.place || (e.country ? countryName(e.country, lang) : "");
-  const countries = [...new Set(events.map((e) => e.country).filter(Boolean))] as string[];
+  let countries: string[] = [];
   const dated = events.filter((e) => e.year);
 
   // Map: places with coordinates, who lived there and when; one line per person in time order.
@@ -63,6 +63,7 @@ export default async function JourneyPage() {
     colorOf.set(person.id, color);
     mapPaths.push({ id: person.id, name: person.firstName, color, points: dedup.map((pt) => [pt.lat, pt.lng]) });
   }
+  countries = [...new Set([...events.map((e) => e.country).filter(Boolean), ...located.map((e) => coords.get(placeKey(e.place, e.country))?.country).filter(Boolean)])] as string[];
   const missing = new Set(located.filter((e) => !coords.has(placeKey(e.place, e.country))).map(placeOf));
 
   // Timeline grouped by decade; events without a year go last.

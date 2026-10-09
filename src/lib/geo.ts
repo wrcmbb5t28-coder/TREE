@@ -9,12 +9,13 @@ export function placeKey(place: string | null | undefined, country: string | nul
   return `${(place ?? "").trim().toLowerCase()}|${(country ?? "").trim().toUpperCase()}`;
 }
 
-export type Coords = { lat: number; lng: number };
+export type Coords = { lat: number; lng: number; country?: string | null };
 
 async function lookup(place: string, country: string | null): Promise<Coords | null> {
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("format", "json");
   url.searchParams.set("limit", "1");
+  url.searchParams.set("addressdetails", "1");
   if (place) url.searchParams.set("q", place);
   else if (country) url.searchParams.set("country", country);
   if (place && country) url.searchParams.set("countrycodes", country.toLowerCase());
@@ -23,8 +24,8 @@ async function lookup(place: string, country: string | null): Promise<Coords | n
     signal: AbortSignal.timeout(6000),
   });
   if (!res.ok) throw new Error(`geocoder ${res.status}`);
-  const j = (await res.json()) as { lat: string; lon: string }[];
-  return j[0] ? { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon) } : null;
+  const j = (await res.json()) as { lat: string; lon: string; address?: { country_code?: string } }[];
+  return j[0] ? { lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon), country: j[0].address?.country_code?.toUpperCase() ?? null } : null;
 }
 
 /** Coordinates for many places; looks up at most `budget` new ones (about 1 per second). */
@@ -34,8 +35,10 @@ export async function geocodeMany(items: { place: string | null; country: string
   const out = new Map<string, Coords>();
   const known = new Set<string>();
   for (const c of cached) {
+    // Rows found before countries were stored are looked up once more.
+    if (c.lat != null && !c.country) continue;
     known.add(c.key);
-    if (c.lat != null && c.lng != null) out.set(c.key, { lat: c.lat, lng: c.lng });
+    if (c.lat != null && c.lng != null) out.set(c.key, { lat: c.lat, lng: c.lng, country: c.country });
   }
   let n = 0;
   for (const [key, item] of keys) {
@@ -44,7 +47,8 @@ export async function geocodeMany(items: { place: string | null; country: string
     n++;
     try {
       const c = await lookup(item.place ?? "", item.country);
-      await db.place.upsert({ where: { key }, create: { key, lat: c?.lat ?? null, lng: c?.lng ?? null }, update: { lat: c?.lat ?? null, lng: c?.lng ?? null } });
+      const data = { lat: c?.lat ?? null, lng: c?.lng ?? null, country: c?.country ?? null };
+      await db.place.upsert({ where: { key }, create: { key, ...data }, update: data });
       if (c) out.set(key, c);
     } catch (e) {
       console.error("[geo]", key, e);
@@ -52,4 +56,21 @@ export async function geocodeMany(items: { place: string | null; country: string
     }
   }
   return out;
+}
+
+/**
+ * Countries where the family lived: chosen countries of life events plus the countries of
+ * their places (from the geocoding cache). Unknown places are looked up in the background.
+ */
+export async function familyCountries(familyId: string): Promise<{ codes: string[]; missing: { place: string | null; country: string | null }[] }> {
+  const events = await db.lifeEvent.findMany({ where: { familyId, OR: [{ country: { not: null } }, { place: { not: null } }] }, select: { place: true, country: true } });
+  const codes = new Set<string>();
+  for (const e of events) if (e.country) codes.add(e.country.toUpperCase());
+  const withPlace = events.filter((e) => e.place && !e.country);
+  const keys = [...new Set(withPlace.map((e) => placeKey(e.place, e.country)))];
+  const cached = keys.length ? await db.place.findMany({ where: { key: { in: keys } } }) : [];
+  for (const c of cached) if (c.country) codes.add(c.country);
+  const done = new Set(cached.filter((c) => c.country || c.lat == null).map((c) => c.key));
+  const missing = withPlace.filter((e) => !done.has(placeKey(e.place, e.country)));
+  return { codes: [...codes], missing };
 }

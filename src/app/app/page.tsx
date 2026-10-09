@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { familyCountries, geocodeMany } from "@/lib/geo";
+import { after } from "next/server";
 import { appContext, plural } from "@/i18n/app";
 import { common, chapterName } from "@/i18n/app/common";
 import { storiesT } from "@/i18n/app/stories";
@@ -16,7 +18,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
   const ts = storiesT[lang];
   const c = common[lang];
 
-  const [people, stories, waiting, suggested, countries, answered] = await Promise.all([
+  const [people, stories, waiting, suggested, countryInfo, answered] = await Promise.all([
     db.person.count({ where: { familyId: family.id } }),
     db.story.findMany({
       where: role === "owner" ? { familyId: family.id } : { familyId: family.id, OR: [{ visibility: { not: "private" } }, { authorId: user.id }] },
@@ -26,9 +28,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
     }),
     db.question.findMany({ where: { familyId: family.id, status: { not: "answered" } }, include: { storyteller: true }, orderBy: { createdAt: "desc" } }),
     db.fact.count({ where: { familyId: family.id, status: "suggested" } }),
-    db.lifeEvent.findMany({ where: { familyId: family.id, country: { not: null } }, distinct: ["country"], select: { country: true } }),
+    familyCountries(family.id),
     db.question.count({ where: { familyId: family.id, status: "answered" } }),
   ]);
+  const countries = countryInfo.codes;
+  // Places not looked up yet: find their country after the page is sent (counts next time).
+  if (countryInfo.missing.length) after(() => geocodeMany(countryInfo.missing, 5).then(() => undefined).catch(() => undefined));
   const self = await db.person.findFirst({ where: { familyId: family.id, isSelf: true } });
   const askerName = user.name || self?.firstName || t.familyFallback;
   const generations = (await db.person.findMany({ where: { familyId: family.id }, distinct: ["generation"], select: { generation: true } })).length;
