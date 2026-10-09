@@ -35,6 +35,11 @@ export default function PhotoUpload({
       if (res && res.error) throw new Error(res.error);
       router.refresh();
     } catch (err) {
+      // After a new deploy, an open page can point to an old server action: reload once.
+      if (err instanceof Error && /Server Action .* was not found/i.test(err.message)) {
+        window.location.reload();
+        return;
+      }
       setError(err instanceof Error && err.message ? err.message : "Could not upload this photo. Try another one.");
     } finally {
       setBusy(false);
