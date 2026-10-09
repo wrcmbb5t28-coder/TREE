@@ -98,7 +98,14 @@ model Person {
   generation  Int            @default(0)
   // Hidden branches are visible only to owners/editors
   hidden      Boolean        @default(false)
+  // Profile: uploaded photo (storage path) or a preset avatar id (see src/lib/avatars.ts)
+  photoPath   String?
+  avatar      String?
+  // Short "who they are" line and the longer life story written by the family
+  bio         String?
+  lifePath    String?
   createdAt   DateTime       @default(now())
+  stories     Story[]        @relation("PersonStories")
   parentLinks Relationship[] @relation("child")
   childLinks  Relationship[] @relation("parent")
   questions   Question[]     @relation("Storyteller")
@@ -170,6 +177,9 @@ model Story {
   // Sensitive stories (war, illness, adoption...) are private by default
   sensitive  Boolean  @default(false)
   chapter    String?
+  // Whose story this is (the storyteller for interviews, chosen by hand for written memories)
+  personId   String?
+  person     Person?  @relation("PersonStories", fields: [personId], references: [id], onDelete: SetNull)
   createdAt  DateTime @default(now())
   facts      Fact[]
   photos     Photo[]

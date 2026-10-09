@@ -239,3 +239,27 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
 @media print { .appbar { display: none !important; } .page { padding: 0 !important; } }
+
+/* ---------- Person profile ---------- */
+.profile-head { display: flex; gap: 24px; align-items: flex-start; }
+.section-title { font-size: 1.35rem; }
+.prose { max-width: 68ch; }
+.prose p { margin: 0 0 1em; line-height: 1.7; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 4px; border-left: 2px solid var(--line); }
+.timeline li { display: flex; gap: 14px; align-items: baseline; padding: 8px 0 8px 16px; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: -7px; top: 15px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.timeline li > span:nth-child(2) { flex: 1; }
+.timeline-year { font-family: var(--display); font-weight: 600; min-width: 3.2em; }
+.story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.story-card { display: flex; flex-direction: column; gap: 6px; color: inherit; text-decoration: none; transition: border-color .15s; }
+.story-card:hover { border-color: var(--accent); }
+.story-card h3 { font-family: var(--display); font-size: 1.15rem; margin: 0; }
+.avatar-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.avatar-pick { padding: 3px; border-radius: 50%; border: 2px solid transparent; background: none; cursor: pointer; line-height: 0; }
+.avatar-pick:hover { border-color: var(--line); }
+.avatar-pick.is-on { border-color: var(--accent); }
+.btn-link { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; color: inherit; font: inherit; }
+@media (max-width: 640px) {
+  .profile-head { flex-direction: column; align-items: center; text-align: center; }
+  .profile-head .row { justify-content: center; }
+}

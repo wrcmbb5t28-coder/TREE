@@ -40,6 +40,15 @@ export async function loadFile(rel: string): Promise<Buffer> {
   return readFile(safeLocal(rel));
 }
 
+export async function deleteFile(rel: string): Promise<void> {
+  try {
+    if (useBlob()) await del(rel);
+    else await rm(safeLocal(rel), { force: true });
+  } catch (e) {
+    console.error("[storage] delete failed", rel, e);
+  }
+}
+
 export async function deleteFamilyFiles(familyId: string): Promise<void> {
   if (useBlob()) {
     let cursor: string | undefined;

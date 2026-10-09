@@ -1,6 +1,6 @@
 import type { Person, Relationship } from "@prisma/client";
 
-export type TreeNode = { id: string; label: string; sub: string; x: number; y: number; self: boolean; living: boolean };
+export type TreeNode = { id: string; label: string; sub: string; x: number; y: number; self: boolean; living: boolean; photoPath: string | null; avatar: string | null; initials: string };
 export type TreeEdge = { from: { x: number; y: number }; to: { x: number; y: number } };
 
 const BOX_W = 150;
@@ -55,6 +55,9 @@ export function layoutTree(people: Person[], links: Relationship[]) {
         id: p.id,
         label: [p.firstName, p.lastName].filter(Boolean).join(" "),
         sub: [years, p.birthPlace].filter(Boolean).join(" · "),
+        photoPath: p.photoPath ?? null,
+        avatar: p.avatar ?? null,
+        initials: ((p.firstName?.[0] ?? "") + (p.lastName?.[0] ?? "")).toUpperCase(),
         x, y, self: p.isSelf, living: p.isLiving,
       });
     });

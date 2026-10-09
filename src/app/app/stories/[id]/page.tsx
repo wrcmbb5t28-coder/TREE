@@ -24,6 +24,8 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
   if (s.visibility === "private" && s.authorId !== user.id && role !== "owner") notFound();
   const editable = canEdit(role);
   const q = s.answer?.question;
+  const people = editable && edit ? await db.person.findMany({ where: { familyId: family.id }, orderBy: [{ generation: "asc" }, { firstName: "asc" }] }) : [];
+  const about = s.personId ? await db.person.findFirst({ where: { id: s.personId, familyId: family.id } }) : null;
 
   return (
     <article className="stack" style={{ maxWidth: 820, gap: 24 }}>
@@ -32,7 +34,8 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
         <p className="eyebrow">{s.chapter ?? "Story"}{s.sensitive ? " · sensitive, private by default" : ""}</p>
         <h1 style={{ fontSize: "clamp(2rem,4vw,2.8rem)" }}>{s.title}</h1>
         <p className="small muted">
-          {q ? <>Told by <b>{q.storyteller.firstName}</b>, asked by {q.askedBy?.name ?? "the family"}: “{q.text}”</> : <>Written by {s.author?.name ?? s.author?.email ?? "a family member"}</>}
+          {q ? <>Told by <Link href={`/app/family/${q.storyteller.id}`}><b>{q.storyteller.firstName}</b></Link>, asked by {q.askedBy?.name ?? "the family"}: “{q.text}”</> : <>Written by {s.author?.name ?? s.author?.email ?? "a family member"}</>}
+          {about && !q && <> · about <Link href={`/app/family/${about.id}`}>{about.firstName}</Link></>}
           {" · "}{s.createdAt.toLocaleDateString("en-GB")}
         </p>
       </div>
@@ -50,6 +53,13 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
           <div className="field"><label htmlFor="body">Story</label><textarea id="body" name="body" defaultValue={s.body} style={{ minHeight: 280 }} /></div>
           <div className="grid2">
             <div className="field"><label htmlFor="chapter">Chapter</label><input id="chapter" name="chapter" defaultValue={s.chapter ?? ""} /></div>
+            <div className="field">
+              <label htmlFor="personId">Whose story is this?</label>
+              <select id="personId" name="personId" defaultValue={s.personId ?? ""}>
+                <option value="">Not about one person</option>
+                {people.map((x) => <option key={x.id} value={x.id}>{[x.firstName, x.lastName].filter(Boolean).join(" ")}</option>)}
+              </select>
+            </div>
             <div className="field">
               <label htmlFor="visibility">Who can see it</label>
               <select id="visibility" name="visibility" defaultValue={s.visibility}>

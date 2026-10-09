@@ -28,6 +28,7 @@ export async function storyFromAnswer(answerId: string) {
     data: {
       familyId: family.id,
       answerId: answer.id,
+      personId: teller.id,
       title: result.title,
       body: result.body,
       bodyLang: result.aiUsed ? family.lang : answer.originalLang || question.lang,

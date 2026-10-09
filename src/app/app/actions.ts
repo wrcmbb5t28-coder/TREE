@@ -6,7 +6,8 @@ import { db } from "@/lib/db";
 import { requireFamily, canEdit, setCurrentFamily } from "@/lib/auth";
 import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
-import { saveFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
+import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
+import { avatarById } from "@/lib/avatars";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
 
@@ -106,10 +107,47 @@ export async function updatePerson(id: string, form: FormData) {
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
       hidden: form.get("hidden") === "on",
+      bio: clean(form.get("bio"), 280) || null,
+      lifePath: clean(form.get("lifePath"), 20000) || null,
     },
   });
   revalidatePath("/app/family");
-  redirect("/app/family");
+  redirect(`/app/family/${id}?saved=1`);
+}
+
+// ---------- Profile picture ----------
+
+/** Called from the PhotoUpload client component with an already-shrunk JPEG. */
+export async function setPersonPhoto(id: string, form: FormData): Promise<{ error?: string }> {
+  const { family } = await editor();
+  const person = await db.person.findFirst({ where: { id, familyId: family.id } });
+  if (!person) return { error: "Person not found." };
+  const file = form.get("photo");
+  if (!(file instanceof Blob) || file.size === 0) return { error: "Choose a photo." };
+  if (file.size > MAX_UPLOAD_BYTES) return { error: "This photo is too large. Please use a smaller one." };
+  if (!file.type.startsWith("image/")) return { error: "Use a JPG, PNG or WebP photo." };
+  try {
+    const path = await saveFile(family.id, Buffer.from(await file.arrayBuffer()), "jpg");
+    await db.person.update({ where: { id }, data: { photoPath: path } });
+    if (person.photoPath) await deleteFile(person.photoPath);
+  } catch (e) {
+    console.error("[profile photo]", e);
+    return { error: "Could not save the photo. Please try again in a minute." };
+  }
+  revalidatePath(`/app/family/${id}`);
+  revalidatePath("/app/family");
+  return {};
+}
+
+export async function setPersonAvatar(id: string, form: FormData) {
+  const { family } = await editor();
+  const preset = avatarById(clean(form.get("avatar"), 20));
+  const person = await db.person.findFirst({ where: { id, familyId: family.id } });
+  if (!person) return;
+  await db.person.update({ where: { id }, data: { avatar: preset?.id ?? null, photoPath: null } });
+  if (person.photoPath) await deleteFile(person.photoPath);
+  revalidatePath(`/app/family/${id}`);
+  redirect(`/app/family/${id}`);
 }
 
 export async function deletePerson(id: string) {
@@ -123,6 +161,14 @@ export async function deletePerson(id: string) {
 
 // ---------- Stories and facts ----------
 
+/** Only accept a person id that belongs to this family. */
+async function personInFamily(familyId: string, raw: FormDataEntryValue | null): Promise<string | null> {
+  const id = clean(raw, 40);
+  if (!id) return null;
+  const p = await db.person.findFirst({ where: { id, familyId }, select: { id: true } });
+  return p?.id ?? null;
+}
+
 export async function writeMemory(form: FormData) {
   const { user, family } = await editor();
   const body = clean(form.get("body"), 20000);
@@ -134,6 +180,7 @@ export async function writeMemory(form: FormData) {
       body, bodyLang: family.lang,
       chapter: clean(form.get("chapter"), 40) || null,
       visibility: form.get("private") === "on" ? "private" : "family",
+      personId: await personInFamily(family.id, form.get("personId")),
     },
   });
   await track("story_created", { familyId: family.id, userId: user.id, props: { source: "written" } });
@@ -150,6 +197,7 @@ export async function updateStory(id: string, form: FormData) {
       body: clean(form.get("body"), 20000) || undefined,
       chapter: clean(form.get("chapter"), 40) || null,
       visibility: ["family", "private", "public"].includes(vis) ? vis : undefined,
+      ...(form.has("personId") ? { personId: await personInFamily(family.id, form.get("personId")) } : {}),
     },
   });
   revalidatePath(`/app/stories/${id}`);
@@ -231,16 +279,23 @@ export async function addEvent(form: FormData) {
       year: toInt(form.get("year")),
       place: clean(form.get("place"), 80) || null,
       country: clean(form.get("country"), 2).toUpperCase() || null,
-      personId: clean(form.get("personId"), 40) || null,
+      personId: await personInFamily(family.id, form.get("personId")),
     },
   });
   revalidatePath("/app/journey");
+  const back = clean(form.get("back"), 80);
+  if (back.startsWith("/app/family/")) {
+    revalidatePath(back);
+    redirect(back);
+  }
 }
 
 export async function deleteEvent(id: string) {
   const { family } = await editor();
+  const ev = await db.lifeEvent.findFirst({ where: { id, familyId: family.id } });
   await db.lifeEvent.deleteMany({ where: { id, familyId: family.id } });
   revalidatePath("/app/journey");
+  if (ev?.personId) revalidatePath(`/app/family/${ev.personId}`);
 }
 
 // ---------- Family, invites, page, settings ----------
