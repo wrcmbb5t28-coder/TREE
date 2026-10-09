@@ -1,7 +1,10 @@
 import type { Family } from "@prisma/client";
 
 export const FREE_LIMITS = {
-  answeredQuestions: 3,
+  // Generous on purpose: families should get hooked before we ask for money.
+  answeredQuestions: 20,
+  // From this many recorded stories a calm card about the Family plan appears at the bottom of Home.
+  nudgeFrom: 15,
   photos: 50,
   voiceMinutes: 60,
 };

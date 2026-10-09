@@ -63,13 +63,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
         <div className="kpi"><b>{answered}</b><span>{plural(lang, answered, t.kpiAnswers)}</span></div>
       </div>
 
-      {!paid && answered >= FREE_LIMITS.answeredQuestions && (
-        <div className="notice row between">
-          <span>{t.freeLimit(FREE_LIMITS.answeredQuestions)}</span>
-          <Link className="btn btn-primary btn-sm" href="/app/billing?reason=answers">{t.seePlans}</Link>
-        </div>
-      )}
-
       {waiting.length > 0 && (
         <section className="stack">
           <h2 style={{ fontSize: "1.5rem" }}>{t.waitingTitle}</h2>
@@ -126,6 +119,16 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
           </div>
         )}
       </section>
+
+      {!paid && answered >= FREE_LIMITS.nudgeFrom && (
+        <section className="card row between">
+          <div>
+            <h3>{t.nudgeTitle}</h3>
+            <p className="muted small">{t.freeLimit(answered)}</p>
+          </div>
+          <Link className="btn btn-ghost" href="/app/billing?reason=answers">{t.seePlans}</Link>
+        </section>
+      )}
 
       <section className="card row between">
         <div>

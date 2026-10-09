@@ -88,7 +88,7 @@ const de: Dict = {
     title: "Kostenlos starten. Für immer bewahren.",
     popular: "Die meisten Familien wählen dies",
     giftTag: "Das Geschenk",
-    free: { name: "Free", price: "$0", per: "", features: ["Stammbaum ohne Personenlimit", "3 Interviewfragen", "50 Fotos, 1 Stunde Sprachaufnahmen", "Laden Sie die ganze Familie ein"], cta: "Kostenlos starten" },
+    free: { name: "Free", price: "$0", per: "", features: ["Stammbaum ohne Personenlimit", "20 aufgenommene Geschichten", "50 Fotos, 1 Stunde Sprachaufnahmen", "Laden Sie die ganze Familie ein"], cta: "Kostenlos starten" },
     family: { name: "Family", price: "$59", per: "pro Jahr, ganze Familie", features: ["Unbegrenzte Interviews und Sprachaufnahmen", "Geschichten, Kapitel und Übersetzung", "Familienreise-Karte und Familienseite", "Digitales Familienbuch"], cta: "Familien-Abo starten" },
     legacy: { name: "Legacy Gift", price: "$99", per: "einmalig", features: ["Ein Jahr Family", "52 wöchentliche Fragen für eine erzählende Person", "Ein gebundenes Farbbuch mit Sprachcodes", "Kommt als schöne Geschenkkarte"], cta: "Treename verschenken" },
   },

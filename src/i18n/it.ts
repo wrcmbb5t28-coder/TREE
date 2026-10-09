@@ -88,7 +88,7 @@ const it: Dict = {
     title: "Inizia gratis. Conservala per sempre.",
     popular: "La scelta della maggior parte delle famiglie",
     giftTag: "Il regalo",
-    free: { name: "Free", price: "$0", per: "", features: ["Albero senza limite di persone", "3 domande di intervista", "50 foto, 1 ora di voce", "Invita tutta la famiglia"], cta: "Inizia gratis" },
+    free: { name: "Free", price: "$0", per: "", features: ["Albero senza limite di persone", "20 storie registrate", "50 foto, 1 ora di voce", "Invita tutta la famiglia"], cta: "Inizia gratis" },
     family: { name: "Family", price: "$59", per: "all'anno, tutta la famiglia", features: ["Interviste e voce illimitate", "Storie, capitoli e traduzione", "Mappa del viaggio e pagina di famiglia", "Libro di famiglia digitale"], cta: "Scegli il piano famiglia" },
     legacy: { name: "Legacy Gift", price: "$99", per: "una tantum", features: ["Un anno di Family", "52 domande settimanali per un narratore", "Un libro rilegato a colori con codici vocali", "Arriva come un bel biglietto regalo"], cta: "Regala Treename" },
   },

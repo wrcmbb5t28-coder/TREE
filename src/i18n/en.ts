@@ -86,7 +86,7 @@ const en = {
     title: "Start free. Keep it forever.",
     popular: "Most families choose this",
     giftTag: "The gift",
-    free: { name: "Free", price: "$0", per: "", features: ["Family tree with no limit on people", "3 interview questions", "50 photos, 1 hour of voice", "Invite your whole family"], cta: "Start free" },
+    free: { name: "Free", price: "$0", per: "", features: ["Family tree with no limit on people", "20 recorded stories", "50 photos, 1 hour of voice", "Invite your whole family"], cta: "Start free" },
     family: { name: "Family", price: "$59", per: "per year, whole family", features: ["Unlimited interviews and voice", "Stories, chapters and translation", "Journey map and family page", "Digital family book"], cta: "Start your family plan" },
     legacy: { name: "Legacy Gift", price: "$99", per: "one time", features: ["One year of Family", "52 weekly questions for one storyteller", "One hardcover color book with voice codes", "Arrives as a beautiful card"], cta: "Give Treename" },
   },
