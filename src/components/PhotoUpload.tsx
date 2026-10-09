@@ -10,48 +10,57 @@ import { useRouter } from "next/navigation";
 export default function PhotoUpload({
   action,
   label = "Upload a photo",
-  maxSide = 1024,
+  maxSide = 1600,
+  multiple = false,
 }: {
   action: (fd: FormData) => Promise<void | { error?: string }>;
   label?: string;
   maxSide?: number;
+  multiple?: boolean;
 }) {
   const input = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const files = Array.from(e.target.files ?? []);
     e.target.value = "";
-    if (!file) return;
-    setBusy(true);
+    if (!files.length) return;
     setError("");
+    const failed: string[] = [];
     try {
-      const blob = await shrink(file, maxSide);
-      const fd = new FormData();
-      fd.append("photo", blob, "photo.jpg");
-      const res = await action(fd);
-      if (res && res.error) throw new Error(res.error);
-      router.refresh();
-    } catch (err) {
-      // After a new deploy, an open page can point to an old server action: reload once.
-      if (err instanceof Error && /Server Action .* was not found/i.test(err.message)) {
-        window.location.reload();
-        return;
+      for (let i = 0; i < files.length; i++) {
+        setBusy(files.length > 1 ? `Uploading ${i + 1} of ${files.length}…` : "Uploading…");
+        try {
+          const blob = await shrink(files[i], maxSide);
+          const fd = new FormData();
+          fd.append("photo", blob, "photo.jpg");
+          const res = await action(fd);
+          if (res && res.error) throw new Error(res.error);
+        } catch (err) {
+          // After a new deploy, an open page can point to an old server action: reload once.
+          if (err instanceof Error && /Server Action .* was not found/i.test(err.message)) {
+            window.location.reload();
+            return;
+          }
+          failed.push(err instanceof Error && err.message ? err.message : "Could not upload this photo.");
+          if (failed.length && /free plan/i.test(failed[failed.length - 1])) break;
+        }
       }
-      setError(err instanceof Error && err.message ? err.message : "Could not upload this photo. Try another one.");
+      if (failed.length) setError(failed.length === 1 ? failed[0] : `${failed.length} photos could not be uploaded. ${failed[0]}`);
+      router.refresh();
     } finally {
-      setBusy(false);
+      setBusy("");
     }
   }
 
   return (
     <div className="stack" style={{ gap: 6 }}>
-      <input ref={input} type="file" accept="image/*" hidden onChange={onPick} />
+      <input ref={input} type="file" accept="image/*" multiple={multiple} hidden onChange={onPick} />
       <div>
-        <button type="button" className="btn btn-ghost btn-sm" disabled={busy} onClick={() => input.current?.click()}>
-          {busy ? "Uploading…" : label}
+        <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => input.current?.click()}>
+          {busy || label}
         </button>
       </div>
       {error && <p className="small notice">{error}</p>}

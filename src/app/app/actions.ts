@@ -115,10 +115,10 @@ export async function updatePerson(id: string, form: FormData) {
   redirect(`/app/family/${id}?saved=1`);
 }
 
-// ---------- Profile picture ----------
+// ---------- Person photos and profile picture ----------
 
-/** Called from the PhotoUpload client component with an already-shrunk JPEG. */
-export async function setPersonPhoto(id: string, form: FormData): Promise<{ error?: string }> {
+/** Adds one photo to a person's gallery (called per file by PhotoUpload, already shrunk to JPEG). */
+export async function addPersonPhoto(id: string, form: FormData): Promise<{ error?: string }> {
   const { family } = await editor();
   const person = await db.person.findFirst({ where: { id, familyId: family.id } });
   if (!person) return { error: "Person not found." };
@@ -126,12 +126,16 @@ export async function setPersonPhoto(id: string, form: FormData): Promise<{ erro
   if (!(file instanceof Blob) || file.size === 0) return { error: "Choose a photo." };
   if (file.size > MAX_UPLOAD_BYTES) return { error: "This photo is too large. Please use a smaller one." };
   if (!file.type.startsWith("image/")) return { error: "Use a JPG, PNG or WebP photo." };
+  if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
+    return { error: `The free plan keeps up to ${FREE_LIMITS.photos} photos. The Family plan has no limit.` };
+  }
   try {
     const path = await saveFile(family.id, Buffer.from(await file.arrayBuffer()), "jpg");
-    await db.person.update({ where: { id }, data: { photoPath: path } });
-    if (person.photoPath) await deleteFile(person.photoPath);
+    await db.photo.create({ data: { familyId: family.id, personId: id, path } });
+    // The first photo becomes the profile picture unless a symbol was chosen on purpose.
+    if (!person.photoPath && !person.avatar) await db.person.update({ where: { id }, data: { photoPath: path } });
   } catch (e) {
-    console.error("[profile photo]", e);
+    console.error("[person photo]", e);
     const why = e instanceof Error ? e.message.slice(0, 160) : "";
     return { error: `Could not save the photo. Please try again in a minute.${why ? ` (${why})` : ""}` };
   }
@@ -140,15 +144,37 @@ export async function setPersonPhoto(id: string, form: FormData): Promise<{ erro
   return {};
 }
 
+export async function makeProfilePhoto(photoId: string) {
+  const { family } = await editor();
+  const photo = await db.photo.findFirst({ where: { id: photoId, familyId: family.id } });
+  if (!photo?.personId) return;
+  await db.person.update({ where: { id: photo.personId }, data: { photoPath: photo.path, avatar: null } });
+  revalidatePath(`/app/family/${photo.personId}`);
+  revalidatePath("/app/family");
+}
+
+export async function deletePersonPhoto(photoId: string) {
+  const { family } = await editor();
+  const photo = await db.photo.findFirst({ where: { id: photoId, familyId: family.id } });
+  if (!photo) return;
+  await db.photo.delete({ where: { id: photo.id } });
+  if (photo.personId) {
+    await db.person.updateMany({ where: { id: photo.personId, photoPath: photo.path }, data: { photoPath: null } });
+    revalidatePath(`/app/family/${photo.personId}`);
+  }
+  const stillUsed = await db.person.count({ where: { familyId: family.id, photoPath: photo.path } });
+  if (!stillUsed) await deleteFile(photo.path);
+  revalidatePath("/app/family");
+}
+
+/** Preset symbol (or initials when empty). Photos stay in the gallery. */
 export async function setPersonAvatar(id: string, form: FormData) {
   const { family } = await editor();
   const preset = avatarById(clean(form.get("avatar"), 20));
-  const person = await db.person.findFirst({ where: { id, familyId: family.id } });
-  if (!person) return;
-  await db.person.update({ where: { id }, data: { avatar: preset?.id ?? null, photoPath: null } });
-  if (person.photoPath) await deleteFile(person.photoPath);
+  await db.person.updateMany({ where: { id, familyId: family.id }, data: { avatar: preset?.id ?? null, photoPath: null } });
   revalidatePath(`/app/family/${id}`);
-  redirect(`/app/family/${id}`);
+  revalidatePath("/app/family");
+  redirect(`/app/family/${id}#edit`);
 }
 
 export async function deletePerson(id: string) {

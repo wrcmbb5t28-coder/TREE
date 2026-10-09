@@ -5,7 +5,7 @@ import { requireFamily, canEdit } from "@/lib/auth";
 import { AVATARS } from "@/lib/avatars";
 import PersonAvatar, { PresetAvatar } from "@/components/PersonAvatar";
 import PhotoUpload from "@/components/PhotoUpload";
-import { updatePerson, deletePerson, setPersonPhoto, setPersonAvatar, addEvent, deleteEvent } from "../../actions";
+import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, addEvent, deleteEvent } from "../../actions";
 
 export default async function PersonPage({
   params,
@@ -25,9 +25,16 @@ export default async function PersonPage({
       parentLinks: { include: { parent: true } },
       childLinks: { include: { child: true } },
       events: { orderBy: [{ year: "asc" }, { createdAt: "asc" }] },
+      photos: { orderBy: { createdAt: "desc" } },
     },
   });
   if (!p || (p.hidden && !editable)) notFound();
+
+  // Profile pictures uploaded before galleries existed: add them to the gallery once.
+  if (p.photoPath && !p.photos.some((ph) => ph.path === p.photoPath)) {
+    const ph = await db.photo.create({ data: { familyId: family.id, personId: p.id, path: p.photoPath } });
+    p.photos.unshift(ph);
+  }
 
   // Their stories: linked directly, or told by them in an interview (older stories have no direct link).
   const stories = await db.story.findMany({
@@ -127,6 +134,43 @@ export default async function PersonPage({
         )}
       </section>
 
+      {/* ---------- Photos ---------- */}
+      <section id="photos" className="stack">
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <h2 className="section-title">Photos{p.photos.length ? ` · ${p.photos.length}` : ""}</h2>
+          {editable && <PhotoUpload action={addPersonPhoto.bind(null, p.id)} label="Add photos" multiple />}
+        </div>
+        {p.photos.length === 0 ? (
+          <p className="muted small">No photos yet.{editable ? " Add a few, then choose one as the profile picture." : ""}</p>
+        ) : (
+          <div className="photo-grid">
+            {p.photos.map((ph) => {
+              const isAvatar = ph.path === p.photoPath;
+              return (
+                <figure key={ph.id} className={`photo-tile${isAvatar ? " is-avatar" : ""}`}>
+                  <a href={`/api/files/${ph.path}`} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/api/files/${ph.path}`} alt={ph.caption ?? `Photo of ${p.firstName}`} loading="lazy" />
+                  </a>
+                  {isAvatar && <span className="photo-badge">Profile picture</span>}
+                  {editable && (
+                    <figcaption className="photo-actions">
+                      {!isAvatar && (
+                        <form action={makeProfilePhoto.bind(null, ph.id)}><button className="btn-link small">Make profile picture</button></form>
+                      )}
+                      <details>
+                        <summary className="btn-link small muted">Delete</summary>
+                        <form action={deletePersonPhoto.bind(null, ph.id)}><button className="btn btn-danger btn-sm">Delete photo</button></form>
+                      </details>
+                    </figcaption>
+                  )}
+                </figure>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* ---------- Stories ---------- */}
       <section className="stack">
         <h2 className="section-title">Stories{stories.length ? ` · ${stories.length}` : ""}</h2>
@@ -158,7 +202,11 @@ export default async function PersonPage({
             <h3 className="small" style={{ fontWeight: 600 }}>Picture</h3>
             <div className="row" style={{ gap: 16 }}>
               <PersonAvatar person={p} size={72} />
-              <PhotoUpload action={setPersonPhoto.bind(null, p.id)} label={p.photoPath ? "Replace photo" : "Upload a photo"} />
+              <p className="small muted" style={{ margin: 0, flex: "1 1 220px" }}>
+                {p.photos.length
+                  ? <>Pick a photo in <a href="#photos">Photos</a> with “Make profile picture”, or choose a symbol.</>
+                  : <>Add photos in <a href="#photos">Photos</a> and pick one, or choose a symbol.</>}
+              </p>
             </div>
             <form action={setPersonAvatar.bind(null, p.id)} className="stack" style={{ gap: 8 }}>
               <p className="small muted">Or choose a symbol:</p>
@@ -174,7 +222,7 @@ export default async function PersonPage({
                   <PersonAvatar person={{ firstName: p.firstName, lastName: p.lastName }} size={44} />
                 </button>
               </div>
-              {p.photoPath && <p className="small muted">Choosing a symbol removes the uploaded photo.</p>}
+              {p.photoPath && <p className="small muted">Choosing a symbol keeps all photos in the gallery.</p>}
             </form>
           </div>
 

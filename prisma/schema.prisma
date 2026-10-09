@@ -106,6 +106,7 @@ model Person {
   lifePath    String?
   createdAt   DateTime       @default(now())
   stories     Story[]        @relation("PersonStories")
+  photos      Photo[]        @relation("PersonPhotos")
   parentLinks Relationship[] @relation("child")
   childLinks  Relationship[] @relation("parent")
   questions   Question[]     @relation("Storyteller")
@@ -227,6 +228,9 @@ model Photo {
   family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
   storyId   String?
   story     Story?   @relation(fields: [storyId], references: [id], onDelete: SetNull)
+  // Photo of a person (their gallery); one of them can be the profile picture (Person.photoPath)
+  personId  String?
+  person    Person?  @relation("PersonPhotos", fields: [personId], references: [id], onDelete: SetNull)
   path      String
   caption   String?
   year      Int?
