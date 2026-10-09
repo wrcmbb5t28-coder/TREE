@@ -11,6 +11,7 @@ import { addEvent, deleteEvent } from "../actions";
 import FamilyMap, { type MapPath, type MapPlace } from "@/components/FamilyMap";
 import { geocodeMany, placeKey } from "@/lib/geo";
 import { avatarById } from "@/lib/avatars";
+import { distinctNames } from "@/lib/names";
 
 const PALETTE = ["#2F6B5E", "#9C4F5A", "#4F6D8F", "#B4774A", "#7A5C8E", "#5E7A3A", "#A0663A", "#3F5E6B"];
 
@@ -31,6 +32,8 @@ export default async function JourneyPage() {
   });
   const people = await db.person.findMany({ where: { familyId: family.id }, orderBy: { generation: "asc" } });
 
+  const nameOf = distinctNames(people);
+  const nm = (p: { id: string; firstName: string }) => nameOf.get(p.id) ?? p.firstName;
   const placeOf = (e: (typeof events)[number]) => e.place || (e.country ? countryName(e.country, lang) : "");
   let countries: string[] = [];
   const dated = events.filter((e) => e.year);
@@ -46,7 +49,7 @@ export default async function JourneyPage() {
     const p = placeMap.get(k) ?? { name: placeOf(e), ...at, from: e.year!, to: e.year!, people: new Set<string>() };
     p.from = Math.min(p.from, e.year!);
     p.to = Math.max(p.to, e.year!);
-    if (e.person) p.people.add(e.person.firstName);
+    if (e.person) p.people.add(nm(e.person));
     placeMap.set(k, p);
   }
   const mapPlaces: MapPlace[] = [...placeMap.entries()].map(([key, p]) => ({
@@ -62,7 +65,7 @@ export default async function JourneyPage() {
     if (!pts.length) continue;
     const color = avatarById(person.avatar)?.bg ?? PALETTE[colorOf.size % PALETTE.length];
     colorOf.set(person.id, color);
-    mapPaths.push({ id: person.id, name: person.firstName, color, points: dedup.map((pt) => [pt.lat, pt.lng]) });
+    mapPaths.push({ id: person.id, name: nm(person), color, points: dedup.map((pt) => [pt.lat, pt.lng]) });
   }
   countries = [...new Set([...events.map((e) => e.country).filter(Boolean), ...located.map((e) => coords.get(placeKey(e.place, e.country))?.country).filter(Boolean)])] as string[];
   const missing = new Set(located.filter((e) => !coords.has(placeKey(e.place, e.country))).map(placeOf));
@@ -135,7 +138,7 @@ export default async function JourneyPage() {
                         {where && <p className="ct-where">{where}</p>}
                         {e.person ? (
                           <Link href={`/app/family/${e.person.id}`} className="route-person ct-who">
-                            <PersonAvatar person={e.person} size={24} /> {e.person.firstName}
+                            <PersonAvatar person={e.person} size={24} /> {nm(e.person)}
                           </Link>
                         ) : (
                           <span className="muted small">{t.wholeFamily}</span>

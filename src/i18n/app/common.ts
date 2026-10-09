@@ -11,12 +11,12 @@ const en = {
   /** Who someone is to you. Keys match RELATIONS in src/i18n/questions.ts. */
   relations: {
     wife: "Wife", husband: "Husband", mother: "Mother", father: "Father", grandmother: "Grandmother", grandfather: "Grandfather",
-    sister: "Sister", brother: "Brother", daughter: "Daughter", son: "Son", aunt: "Aunt", uncle: "Uncle", other: "Other relative or friend",
+    sister: "Sister", brother: "Brother", daughter: "Daughter", son: "Son", aunt: "Aunt", uncle: "Uncle", sisterInLaw: "Sister-in-law", brotherInLaw: "Brother-in-law", motherInLaw: "Mother-in-law", fatherInLaw: "Father-in-law", niece: "Niece", nephew: "Nephew", cousinF: "Cousin (female)", cousinM: "Cousin (male)", other: "Other relative or friend",
   },
   /** "Your son", "Your grandmother"... */
   yourRelation: {
     wife: "Your wife", husband: "Your husband", mother: "Your mother", father: "Your father", grandmother: "Your grandmother", grandfather: "Your grandfather",
-    sister: "Your sister", brother: "Your brother", daughter: "Your daughter", son: "Your son", aunt: "Your aunt", uncle: "Your uncle", other: "Relative or friend",
+    sister: "Your sister", brother: "Your brother", daughter: "Your daughter", son: "Your son", aunt: "Your aunt", uncle: "Your uncle", sisterInLaw: "Your sister-in-law", brotherInLaw: "Your brother-in-law", motherInLaw: "Your mother-in-law", fatherInLaw: "Your father-in-law", niece: "Your niece", nephew: "Your nephew", cousinF: "Your cousin", cousinM: "Your cousin", other: "Relative or friend",
   },
   /** Chapters are stored in English; these are the display names. */
   chapters: {
@@ -41,11 +41,11 @@ const ru: CommonT = {
   you: "вы",
   relations: {
     wife: "Жена", husband: "Муж", mother: "Мама", father: "Папа", grandmother: "Бабушка", grandfather: "Дедушка",
-    sister: "Сестра", brother: "Брат", daughter: "Дочь", son: "Сын", aunt: "Тётя", uncle: "Дядя", other: "Другой родственник или друг",
+    sister: "Сестра", brother: "Брат", daughter: "Дочь", son: "Сын", aunt: "Тётя", uncle: "Дядя", sisterInLaw: "Сестра мужа или жены", brotherInLaw: "Брат мужа или жены", motherInLaw: "Мама мужа или жены", fatherInLaw: "Папа мужа или жены", niece: "Племянница", nephew: "Племянник", cousinF: "Двоюродная сестра", cousinM: "Двоюродный брат", other: "Другой родственник или друг",
   },
   yourRelation: {
     wife: "Ваша жена", husband: "Ваш муж", mother: "Ваша мама", father: "Ваш папа", grandmother: "Ваша бабушка", grandfather: "Ваш дедушка",
-    sister: "Ваша сестра", brother: "Ваш брат", daughter: "Ваша дочь", son: "Ваш сын", aunt: "Ваша тётя", uncle: "Ваш дядя", other: "Родственник или друг",
+    sister: "Ваша сестра", brother: "Ваш брат", daughter: "Ваша дочь", son: "Ваш сын", aunt: "Ваша тётя", uncle: "Ваш дядя", sisterInLaw: "Сестра мужа или жены", brotherInLaw: "Брат мужа или жены", motherInLaw: "Мама мужа или жены", fatherInLaw: "Папа мужа или жены", niece: "Ваша племянница", nephew: "Ваш племянник", cousinF: "Ваша двоюродная сестра", cousinM: "Ваш двоюродный брат", other: "Родственник или друг",
   },
   chapters: {
     Origins: "Корни", Childhood: "Детство", Love: "Любовь", Work: "Работа", "Leaving home": "Переезд", "Hard years": "Трудные годы",
@@ -67,11 +67,11 @@ const de: CommonT = {
   you: "Sie",
   relations: {
     wife: "Ehefrau", husband: "Ehemann", mother: "Mutter", father: "Vater", grandmother: "Großmutter", grandfather: "Großvater",
-    sister: "Schwester", brother: "Bruder", daughter: "Tochter", son: "Sohn", aunt: "Tante", uncle: "Onkel", other: "Andere Verwandte oder Freunde",
+    sister: "Schwester", brother: "Bruder", daughter: "Tochter", son: "Sohn", aunt: "Tante", uncle: "Onkel", sisterInLaw: "Schwägerin", brotherInLaw: "Schwager", motherInLaw: "Schwiegermutter", fatherInLaw: "Schwiegervater", niece: "Nichte", nephew: "Neffe", cousinF: "Cousine", cousinM: "Cousin", other: "Andere Verwandte oder Freunde",
   },
   yourRelation: {
     wife: "Ihre Frau", husband: "Ihr Mann", mother: "Ihre Mutter", father: "Ihr Vater", grandmother: "Ihre Großmutter", grandfather: "Ihr Großvater",
-    sister: "Ihre Schwester", brother: "Ihr Bruder", daughter: "Ihre Tochter", son: "Ihr Sohn", aunt: "Ihre Tante", uncle: "Ihr Onkel", other: "Verwandte oder Freunde",
+    sister: "Ihre Schwester", brother: "Ihr Bruder", daughter: "Ihre Tochter", son: "Ihr Sohn", aunt: "Ihre Tante", uncle: "Ihr Onkel", sisterInLaw: "Ihre Schwägerin", brotherInLaw: "Ihr Schwager", motherInLaw: "Ihre Schwiegermutter", fatherInLaw: "Ihr Schwiegervater", niece: "Ihre Nichte", nephew: "Ihr Neffe", cousinF: "Ihre Cousine", cousinM: "Ihr Cousin", other: "Verwandte oder Freunde",
   },
   chapters: {
     Origins: "Herkunft", Childhood: "Kindheit", Love: "Liebe", Work: "Arbeit", "Leaving home": "Aufbruch", "Hard years": "Schwere Jahre",
@@ -93,11 +93,11 @@ const fr: CommonT = {
   you: "vous",
   relations: {
     wife: "Épouse", husband: "Mari", mother: "Mère", father: "Père", grandmother: "Grand-mère", grandfather: "Grand-père",
-    sister: "Sœur", brother: "Frère", daughter: "Fille", son: "Fils", aunt: "Tante", uncle: "Oncle", other: "Autre proche ou ami",
+    sister: "Sœur", brother: "Frère", daughter: "Fille", son: "Fils", aunt: "Tante", uncle: "Oncle", sisterInLaw: "Belle-sœur", brotherInLaw: "Beau-frère", motherInLaw: "Belle-mère", fatherInLaw: "Beau-père", niece: "Nièce", nephew: "Neveu", cousinF: "Cousine", cousinM: "Cousin", other: "Autre proche ou ami",
   },
   yourRelation: {
     wife: "Votre épouse", husband: "Votre mari", mother: "Votre mère", father: "Votre père", grandmother: "Votre grand-mère", grandfather: "Votre grand-père",
-    sister: "Votre sœur", brother: "Votre frère", daughter: "Votre fille", son: "Votre fils", aunt: "Votre tante", uncle: "Votre oncle", other: "Proche ou ami",
+    sister: "Votre sœur", brother: "Votre frère", daughter: "Votre fille", son: "Votre fils", aunt: "Votre tante", uncle: "Votre oncle", sisterInLaw: "Votre belle-sœur", brotherInLaw: "Votre beau-frère", motherInLaw: "Votre belle-mère", fatherInLaw: "Votre beau-père", niece: "Votre nièce", nephew: "Votre neveu", cousinF: "Votre cousine", cousinM: "Votre cousin", other: "Proche ou ami",
   },
   chapters: {
     Origins: "Origines", Childhood: "Enfance", Love: "Amour", Work: "Travail", "Leaving home": "Partir", "Hard years": "Années difficiles",
@@ -119,11 +119,11 @@ const it: CommonT = {
   you: "tu",
   relations: {
     wife: "Moglie", husband: "Marito", mother: "Madre", father: "Padre", grandmother: "Nonna", grandfather: "Nonno",
-    sister: "Sorella", brother: "Fratello", daughter: "Figlia", son: "Figlio", aunt: "Zia", uncle: "Zio", other: "Altro parente o amico",
+    sister: "Sorella", brother: "Fratello", daughter: "Figlia", son: "Figlio", aunt: "Zia", uncle: "Zio", sisterInLaw: "Cognata", brotherInLaw: "Cognato", motherInLaw: "Suocera", fatherInLaw: "Suocero", niece: "Nipote (lei)", nephew: "Nipote (lui)", cousinF: "Cugina", cousinM: "Cugino", other: "Altro parente o amico",
   },
   yourRelation: {
     wife: "Tua moglie", husband: "Tuo marito", mother: "Tua madre", father: "Tuo padre", grandmother: "Tua nonna", grandfather: "Tuo nonno",
-    sister: "Tua sorella", brother: "Tuo fratello", daughter: "Tua figlia", son: "Tuo figlio", aunt: "Tua zia", uncle: "Tuo zio", other: "Parente o amico",
+    sister: "Tua sorella", brother: "Tuo fratello", daughter: "Tua figlia", son: "Tuo figlio", aunt: "Tua zia", uncle: "Tuo zio", sisterInLaw: "Tua cognata", brotherInLaw: "Tuo cognato", motherInLaw: "Tua suocera", fatherInLaw: "Tuo suocero", niece: "Tua nipote", nephew: "Tuo nipote", cousinF: "Tua cugina", cousinM: "Tuo cugino", other: "Parente o amico",
   },
   chapters: {
     Origins: "Origini", Childhood: "Infanzia", Love: "Amore", Work: "Lavoro", "Leaving home": "Partire", "Hard years": "Anni difficili",
@@ -145,11 +145,11 @@ const es: CommonT = {
   you: "tú",
   relations: {
     wife: "Esposa", husband: "Esposo", mother: "Madre", father: "Padre", grandmother: "Abuela", grandfather: "Abuelo",
-    sister: "Hermana", brother: "Hermano", daughter: "Hija", son: "Hijo", aunt: "Tía", uncle: "Tío", other: "Otro familiar o amigo",
+    sister: "Hermana", brother: "Hermano", daughter: "Hija", son: "Hijo", aunt: "Tía", uncle: "Tío", sisterInLaw: "Cuñada", brotherInLaw: "Cuñado", motherInLaw: "Suegra", fatherInLaw: "Suegro", niece: "Sobrina", nephew: "Sobrino", cousinF: "Prima", cousinM: "Primo", other: "Otro familiar o amigo",
   },
   yourRelation: {
     wife: "Tu esposa", husband: "Tu esposo", mother: "Tu madre", father: "Tu padre", grandmother: "Tu abuela", grandfather: "Tu abuelo",
-    sister: "Tu hermana", brother: "Tu hermano", daughter: "Tu hija", son: "Tu hijo", aunt: "Tu tía", uncle: "Tu tío", other: "Familiar o amigo",
+    sister: "Tu hermana", brother: "Tu hermano", daughter: "Tu hija", son: "Tu hijo", aunt: "Tu tía", uncle: "Tu tío", sisterInLaw: "Tu cuñada", brotherInLaw: "Tu cuñado", motherInLaw: "Tu suegra", fatherInLaw: "Tu suegro", niece: "Tu sobrina", nephew: "Tu sobrino", cousinF: "Tu prima", cousinM: "Tu primo", other: "Familiar o amigo",
   },
   chapters: {
     Origins: "Orígenes", Childhood: "Infancia", Love: "Amor", Work: "Trabajo", "Leaving home": "Partir", "Hard years": "Años difíciles",

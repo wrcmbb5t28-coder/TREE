@@ -131,6 +131,7 @@ export type StoriesT = typeof en;
 const RU_WITH: Record<string, string> = {
   wife: "женой", husband: "мужем", mother: "мамой", father: "папой", grandmother: "бабушкой", grandfather: "дедушкой",
   sister: "сестрой", brother: "братом", daughter: "дочерью", son: "сыном", aunt: "тётей", uncle: "дядей",
+  niece: "племянницей", nephew: "племянником", cousinF: "двоюродной сестрой", cousinM: "двоюродным братом",
 };
 
 const ru: StoriesT = {

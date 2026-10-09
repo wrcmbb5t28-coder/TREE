@@ -29,6 +29,14 @@ export const RELATIONS = [
   { id: "son", label: "Son", group: "child", gender: "m" },
   { id: "aunt", label: "Aunt", group: "elder", gender: "f" },
   { id: "uncle", label: "Uncle", group: "elder", gender: "m" },
+  { id: "sisterInLaw", label: "Sister-in-law", group: null, gender: "f" },
+  { id: "brotherInLaw", label: "Brother-in-law", group: null, gender: "m" },
+  { id: "motherInLaw", label: "Mother-in-law", group: "elder", gender: "f" },
+  { id: "fatherInLaw", label: "Father-in-law", group: "elder", gender: "m" },
+  { id: "niece", label: "Niece", group: null, gender: "f" },
+  { id: "nephew", label: "Nephew", group: null, gender: "m" },
+  { id: "cousinF", label: "Cousin (female)", group: null, gender: "f" },
+  { id: "cousinM", label: "Cousin (male)", group: null, gender: "m" },
   { id: "other", label: "Other relative or friend", group: null, gender: null },
 ] as const satisfies readonly { id: string; label: string; group: Group | null; gender: Gender | null }[];
 
