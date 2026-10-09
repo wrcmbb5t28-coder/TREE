@@ -3,23 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const ITEMS = [
-  { href: "/app", label: "Home" },
-  { href: "/app/stories", label: "Stories" },
-  { href: "/app/family", label: "Family" },
-  { href: "/app/journey", label: "Journey" },
-  { href: "/app/keep", label: "Keep" },
-  { href: "/app/invite", label: "Invite" },
-  { href: "/app/settings", label: "Settings" },
-];
+const HREFS = ["/app", "/app/stories", "/app/family", "/app/journey", "/app/keep", "/app/invite", "/app/settings"] as const;
+const KEYS = ["home", "stories", "family", "journey", "keep", "invite", "settings"] as const;
 
-export default function AppNav() {
+export default function AppNav({ labels }: { labels: Record<(typeof KEYS)[number], string> }) {
   const path = usePathname();
   return (
     <nav className="appnav" aria-label="App">
-      {ITEMS.map((i) => {
-        const on = i.href === "/app" ? path === "/app" : path.startsWith(i.href);
-        return <Link key={i.href} href={i.href} aria-current={on ? "page" : undefined}>{i.label}</Link>;
+      {HREFS.map((href, i) => {
+        const on = href === "/app" ? path === "/app" : path.startsWith(href);
+        return <Link key={href} href={href} aria-current={on ? "page" : undefined}>{labels[KEYS[i]]}</Link>;
       })}
     </nav>
   );

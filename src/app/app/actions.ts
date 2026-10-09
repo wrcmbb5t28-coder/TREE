@@ -377,8 +377,20 @@ export async function updateSettings(form: FormData) {
 export async function updateProfile(form: FormData) {
   const { user } = await requireFamily();
   const lang = clean(form.get("lang"), 2);
-  await db.user.update({ where: { id: user.id }, data: { name: clean(form.get("name"), 60) || null, lang: isLang(lang) ? lang : user.lang } });
+  await db.user.update({
+    where: { id: user.id },
+    data: { name: clean(form.get("name"), 60) || null, ...(isLang(lang) ? { lang, uiLang: lang } : {}) },
+  });
+  revalidatePath("/app", "layout");
   redirect("/app/settings?saved=1");
+}
+
+/** Language switcher in the app header. */
+export async function setUiLang(lang: string) {
+  const { user } = await requireFamily();
+  if (!isLang(lang)) return;
+  await db.user.update({ where: { id: user.id }, data: { uiLang: lang, lang } });
+  revalidatePath("/app", "layout");
 }
 
 export async function deleteFamily(form: FormData) {

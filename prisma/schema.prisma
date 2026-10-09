@@ -18,6 +18,8 @@ model User {
   email       String       @unique
   name        String?
   lang        String       @default("en")
+  // Language of the app interface, chosen by the person; null = use the family's language
+  uiLang      String?
   createdAt   DateTime     @default(now())
   sessions    Session[]
   memberships Membership[]

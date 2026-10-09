@@ -271,3 +271,4 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
 .photo-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .photo-actions details summary { list-style: none; cursor: pointer; }
 .photo-actions details[open] form { margin-top: 6px; }
+.lang-switch { width: auto; min-height: 34px; padding: 4px 26px 4px 10px; border-radius: 999px; font-size: .82rem; background-color: var(--surface); }
