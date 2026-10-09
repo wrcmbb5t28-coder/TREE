@@ -204,11 +204,12 @@ export default async function PersonPage({
             <h3 className="small" style={{ fontWeight: 600 }}>Picture</h3>
             <div className="row" style={{ gap: 16 }}>
               <PersonAvatar person={p} size={72} />
-              <p className="small muted" style={{ margin: 0, flex: "1 1 220px" }}>
-                {p.photos.length
-                  ? <>Pick a photo in <a href="#photos">Photos</a> with “Make profile picture”, or choose a symbol.</>
-                  : <>Add photos in <a href="#photos">Photos</a> and pick one, or choose a symbol.</>}
-              </p>
+              <div className="stack" style={{ gap: 6, flex: "1 1 220px" }}>
+                <PhotoUpload action={addPersonPhoto.bind(null, p.id)} label="Upload a profile photo" fields={{ makeAvatar: "1" }} />
+                {p.photos.length > 0 && (
+                  <p className="small muted" style={{ margin: 0 }}>Or pick one of the {p.photos.length} photos in <a href="#photos">Photos</a> with “Make profile picture”.</p>
+                )}
+              </div>
             </div>
             <form action={setPersonAvatar.bind(null, p.id)} className="stack" style={{ gap: 8 }}>
               <p className="small muted">Or choose a symbol:</p>

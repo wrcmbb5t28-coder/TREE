@@ -142,8 +142,10 @@ export async function addPersonPhoto(id: string, form: FormData): Promise<{ erro
   try {
     const path = await saveFile(family.id, Buffer.from(await file.arrayBuffer()), "jpg");
     await db.photo.create({ data: { familyId: family.id, personId: id, path } });
-    // The first photo becomes the profile picture unless a symbol was chosen on purpose.
-    if (!person.photoPath && !person.avatar) await db.person.update({ where: { id }, data: { photoPath: path } });
+    // Uploaded from the "Picture" block, or the first photo while no symbol was chosen: it becomes the profile picture.
+    if (form.get("makeAvatar") === "1" || (!person.photoPath && !person.avatar)) {
+      await db.person.update({ where: { id }, data: { photoPath: path, avatar: null } });
+    }
   } catch (e) {
     console.error("[person photo]", e);
     const why = e instanceof Error ? e.message.slice(0, 160) : "";

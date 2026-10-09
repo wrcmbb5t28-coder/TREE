@@ -12,11 +12,14 @@ export default function PhotoUpload({
   label = "Upload a photo",
   maxSide = 1600,
   multiple = false,
+  fields,
 }: {
   action: (fd: FormData) => Promise<void | { error?: string }>;
   label?: string;
   maxSide?: number;
   multiple?: boolean;
+  /** Extra form fields sent with every photo. */
+  fields?: Record<string, string>;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState("");
@@ -36,6 +39,7 @@ export default function PhotoUpload({
           const blob = await shrink(files[i], maxSide);
           const fd = new FormData();
           fd.append("photo", blob, "photo.jpg");
+          for (const [k, v] of Object.entries(fields ?? {})) fd.append(k, v);
           const res = await action(fd);
           if (res && res.error) throw new Error(res.error);
         } catch (err) {
