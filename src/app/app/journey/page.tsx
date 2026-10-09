@@ -109,38 +109,44 @@ export default async function JourneyPage() {
       {events.length > 0 && (
         <section className="stack">
           <h2 className="section-title">{t.timeline}</h2>
-          {[...groups.entries()].map(([decade, list]) => (
-            <div key={decade} className="stack" style={{ gap: 6 }}>
-              <h3 className="decade">{decade}</h3>
-              <ol className="jt">
-                {list.map((e) => (
-                  <li key={e.id} className="jt-item">
-                    <span className="jt-year">{e.year ?? "—"}</span>
-                    <span className="jt-who">
-                      {e.person ? (
-                        <Link href={`/app/family/${e.person.id}`} className="route-person">
-                          <PersonAvatar person={e.person} size={28} /> <b>{e.person.firstName}</b>
-                        </Link>
-                      ) : (
-                        <span className="muted small">{t.wholeFamily}</span>
-                      )}
-                    </span>
-                    <span className="jt-what">
-                      {eventText(lang, e.description, e.person)}
-                      {placeOf(e) && <span className="muted"> · {[e.place, e.country && countryName(e.country, lang)].filter(Boolean).join(", ")}</span>}
-                    </span>
-                    {editable && (
-                      <form action={deleteEvent.bind(null, e.id)}>
-                        <button className="photo-btn photo-icon" aria-label={t.removeEvent} title={t.removeEvent}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-                        </button>
-                      </form>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
+          <ol className="ct">
+            {(() => {
+              let i = 0;
+              return [...groups.entries()].flatMap(([decade, list]) => [
+                <li key={`d-${decade}`} className="ct-decade"><span>{decade}</span></li>,
+                ...list.map((e) => {
+                  const side = i++ % 2 === 0 ? "ct-left" : "ct-right";
+                  const where = [e.place, e.country && countryName(e.country, lang)].filter(Boolean).join(", ");
+                  return (
+                    <li key={e.id} className={`ct-item ${side}`}>
+                      <span className="ct-dot" aria-hidden="true" />
+                      <div className="ct-card">
+                        <div className="ct-top">
+                          <span className="ct-year">{e.year ?? "—"}</span>
+                          {editable && (
+                            <form action={deleteEvent.bind(null, e.id)}>
+                              <button className="ct-del" aria-label={t.removeEvent} title={t.removeEvent}>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                              </button>
+                            </form>
+                          )}
+                        </div>
+                        <p className="ct-what">{eventText(lang, e.description, e.person)}</p>
+                        {where && <p className="ct-where">{where}</p>}
+                        {e.person ? (
+                          <Link href={`/app/family/${e.person.id}`} className="route-person ct-who">
+                            <PersonAvatar person={e.person} size={24} /> {e.person.firstName}
+                          </Link>
+                        ) : (
+                          <span className="muted small">{t.wholeFamily}</span>
+                        )}
+                      </div>
+                    </li>
+                  );
+                }),
+              ]);
+            })()}
+          </ol>
         </section>
       )}
 

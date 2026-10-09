@@ -330,3 +330,38 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
 .map-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .map-legend-item { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink); font-size: .9rem; }
 .map-swatch { width: 18px; height: 4px; border-radius: 2px; }
+
+/* ---------- Centre-line timeline (Journey) ---------- */
+.ct { list-style: none; margin: 0; padding: 8px 0; position: relative; }
+.ct::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--line); }
+.ct-decade { position: relative; text-align: center; margin: 18px 0 8px; }
+.ct-decade:first-child { margin-top: 0; }
+.ct-decade span { display: inline-block; position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .9rem; font-family: var(--display); color: var(--accent); font-size: 1.05rem; }
+.ct-item { position: relative; width: 50%; padding: 6px 34px; display: flex; }
+.ct-left { justify-content: flex-end; }
+.ct-item + .ct-item { margin-top: -52px; }
+.ct-right { margin-left: 50%; justify-content: flex-start; }
+.ct-dot { position: absolute; top: 22px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--paper); box-sizing: content-box; }
+.ct-left .ct-dot { right: -8px; }
+.ct-right .ct-dot { left: -8px; }
+.ct-item::after { content: ""; position: absolute; top: 28px; width: 26px; height: 2px; background: var(--line); }
+.ct-left::after { right: 8px; }
+.ct-right::after { left: 8px; }
+.ct-card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px 12px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 4px; }
+.ct-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ct-top form { margin: 0; }
+.ct-year { font-family: var(--display); font-weight: 600; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.ct-del { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
+.ct-del:hover { border-color: var(--line); color: var(--danger); }
+.ct-what { margin: 0; }
+.ct-where { margin: 0; color: var(--muted); font-size: .92rem; }
+.ct-who { margin-top: 4px; }
+@media (max-width: 680px) {
+  .ct::before { left: 9px; }
+  .ct-decade { text-align: left; padding-left: 0; }
+  .ct-item, .ct-right { width: 100%; margin-left: 0; padding: 6px 0 6px 30px; justify-content: flex-start; }
+  .ct-item + .ct-item { margin-top: 0; }
+  .ct-left .ct-dot, .ct-right .ct-dot { left: 2px; right: auto; }
+  .ct-item::after { display: none; }
+  .ct-card { max-width: none; }
+}
