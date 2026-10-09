@@ -1,6 +1,8 @@
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
-import { requireFamily } from "@/lib/auth";
+import { appContext, plural } from "@/i18n/app";
+import { chapterName } from "@/i18n/app/common";
+import { more } from "@/i18n/app/more";
 import { appUrl } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import TreeView from "@/components/TreeView";
@@ -13,7 +15,8 @@ const ORDER = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard yea
  * "Save as PDF" in the browser produces the PDF; the same layout is the base for the printed hardcover.
  */
 export default async function Book() {
-  const { user, family } = await requireFamily();
+  const { user, family, lang } = await appContext();
+  const t = more[lang].book;
   const stories = await db.story.findMany({
     where: { familyId: family.id, visibility: { not: "private" } },
     include: { answer: { include: { question: { include: { storyteller: true } } } }, photos: true },
@@ -41,24 +44,24 @@ export default async function Book() {
   return (
     <div className="book-page" style={{ borderRadius: 12 }}>
       <div className="no-print row between" style={{ padding: 16 }}>
-        <span className="small muted">{stories.length} stories · {sorted.length} chapters</span>
-        <PrintButton />
+        <span className="small muted">{plural(lang, stories.length, t.stories)} · {plural(lang, sorted.length, t.chapters)}</span>
+        <PrintButton label={t.print} />
       </div>
       <div className="book-sheet">
         <section style={{ minHeight: "60vh", display: "grid", alignContent: "center", gap: 16 }}>
-          <p className="eyebrow">Family book</p>
+          <p className="eyebrow">{t.eyebrow}</p>
           <h1>{family.name}</h1>
           <p style={{ fontSize: "1.2rem", color: "#58645F" }}>{span}</p>
         </section>
 
         <section className="book-chapter">
-          <h2>Our family</h2>
+          <h2>{t.ourFamily}</h2>
           <TreeView people={people} links={links} />
         </section>
 
         {sorted.map((c) => (
           <section key={c} className="book-chapter">
-            <h2>{c}</h2>
+            <h2>{chapterName(lang, c)}</h2>
             {chapters.get(c)!.map((s) => (
               <div key={s.id} className="book-story">
                 <h3>{s.title}</h3>
@@ -71,14 +74,14 @@ export default async function Book() {
                   <div className="row book-qr">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={qr.get(s.id)} alt="" width={64} height={64} />
-                    <span>Scan to hear {s.answer!.question.storyteller.firstName} tell this story</span>
+                    <span>{t.scan(s.answer!.question.storyteller.firstName)}</span>
                   </div>
                 )}
               </div>
             ))}
           </section>
         ))}
-        {stories.length === 0 && <p className="muted">The book fills up as your family records stories.</p>}
+        {stories.length === 0 && <p className="muted">{t.empty}</p>}
       </div>
     </div>
   );

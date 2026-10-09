@@ -4,8 +4,10 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getUser, setCurrentFamily } from "@/lib/auth";
 import { track } from "@/lib/analytics";
+import { authT } from "@/i18n/app/auth";
+import { isLang } from "@/i18n/config";
 
-export const metadata: Metadata = { title: "Join your family | Treename", robots: { index: false } };
+export const metadata: Metadata = { title: "Treename", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 async function accept(token: string) {
@@ -33,17 +35,18 @@ export default async function Join({ params }: { params: Promise<{ token: string
   const user = await getUser();
   const people = await db.person.count({ where: { familyId: inv.familyId } });
   const stories = await db.story.count({ where: { familyId: inv.familyId } });
+  const t = authT[isLang(inv.family.lang) ? inv.family.lang : "en"].join;
 
   return (
     <main className="answer-page">
       <div className="answer-card card-elev stack">
         <p className="eyebrow">Treename</p>
-        <h1 style={{ fontSize: "2.2rem" }}>You’re invited to {inv.family.name}</h1>
-        <p className="muted">{people} people and {stories} stories so far. Add what only you remember.</p>
+        <h1 style={{ fontSize: "2.2rem" }}>{t.invited(inv.family.name)}</h1>
+        <p className="muted">{t.stats(people, stories)}</p>
         {user ? (
-          <form action={accept.bind(null, token)}><button className="btn btn-primary">Join the family</button></form>
+          <form action={accept.bind(null, token)}><button className="btn btn-primary">{t.accept}</button></form>
         ) : (
-          <Link className="btn btn-primary" href={`/login?invite=${token}`}>Join with your email</Link>
+          <Link className="btn btn-primary" href={`/login?invite=${token}`}>{t.withEmail}</Link>
         )}
       </div>
     </main>

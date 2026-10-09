@@ -11,6 +11,8 @@ import { avatarById } from "@/lib/avatars";
 import { relationById } from "@/i18n/questions";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
+import { uiLang } from "@/i18n/app";
+import { familyT } from "@/i18n/app/family";
 
 async function editor() {
   const ctx = await requireFamily();
@@ -128,16 +130,17 @@ export async function updatePerson(id: string, form: FormData) {
 // ---------- Person photos and profile picture ----------
 
 /** Adds one photo to a person's gallery (called per file by PhotoUpload, already shrunk to JPEG). */
-export async function addPersonPhoto(id: string, form: FormData): Promise<{ error?: string }> {
-  const { family } = await editor();
+export async function addPersonPhoto(id: string, form: FormData): Promise<{ error?: string; limit?: boolean }> {
+  const { user, family } = await editor();
+  const msg = familyT[uiLang(user, family)].uploadErr;
   const person = await db.person.findFirst({ where: { id, familyId: family.id } });
-  if (!person) return { error: "Person not found." };
+  if (!person) return { error: msg.notFound };
   const file = form.get("photo");
-  if (!(file instanceof Blob) || file.size === 0) return { error: "Choose a photo." };
-  if (file.size > MAX_UPLOAD_BYTES) return { error: "This photo is too large. Please use a smaller one." };
-  if (!file.type.startsWith("image/")) return { error: "Use a JPG, PNG or WebP photo." };
+  if (!(file instanceof Blob) || file.size === 0) return { error: msg.choose };
+  if (file.size > MAX_UPLOAD_BYTES) return { error: msg.tooLarge };
+  if (!file.type.startsWith("image/")) return { error: msg.format };
   if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
-    return { error: `The free plan keeps up to ${FREE_LIMITS.photos} photos. The Family plan has no limit.` };
+    return { error: msg.freeLimit(FREE_LIMITS.photos), limit: true };
   }
   try {
     const path = await saveFile(family.id, Buffer.from(await file.arrayBuffer()), "jpg");
@@ -149,7 +152,7 @@ export async function addPersonPhoto(id: string, form: FormData): Promise<{ erro
   } catch (e) {
     console.error("[person photo]", e);
     const why = e instanceof Error ? e.message.slice(0, 160) : "";
-    return { error: `Could not save the photo. Please try again in a minute.${why ? ` (${why})` : ""}` };
+    return { error: `${msg.saveFailed}${why ? ` (${why})` : ""}` };
   }
   revalidatePath(`/app/family/${id}`);
   revalidatePath("/app/family");

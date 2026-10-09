@@ -18,7 +18,12 @@ export function middleware(req: NextRequest) {
   const lang = (LANGS as readonly string[]).includes(first) ? first : "en";
   const headers = new Headers(req.headers);
   headers.set("x-tn-lang", lang);
-  return NextResponse.next({ request: { headers } });
+  const res = NextResponse.next({ request: { headers } });
+  // Remember the site language, so sign-in and invite pages (no language in the URL) speak it too.
+  if ((LANGS as readonly string[]).includes(first) && req.cookies.get("tn_lang")?.value !== first) {
+    res.cookies.set("tn_lang", first, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  }
+  return res;
 }
 
 export const config = {

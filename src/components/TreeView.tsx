@@ -4,12 +4,12 @@ import { avatarById } from "@/lib/avatars";
 
 const AV = 34; // avatar size inside a box
 
-export default function TreeView({ people, links }: { people: Person[]; links: Relationship[] }) {
+export default function TreeView({ people, links, label = "Family tree" }: { people: Person[]; links: Relationship[]; label?: string }) {
   const { nodes, edges, width, height, boxW } = layoutTree(people, links);
   const trim = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
   return (
     <div className="tree-wrap">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Family tree" style={{ minWidth: Math.min(width, 560), maxWidth: Math.max(width, 560), margin: "0 auto" }}>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} style={{ minWidth: Math.min(width, 560), maxWidth: Math.max(width, 560), margin: "0 auto" }}>
         {edges.map((e, i) => (
           <path key={i} d={`M${e.from.x} ${e.from.y + 24} V${(e.from.y + e.to.y) / 2} H${e.to.x} V${e.to.y - 24}`} fill="none" stroke="var(--line)" strokeWidth={1.5} />
         ))}

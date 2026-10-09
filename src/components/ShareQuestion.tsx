@@ -3,7 +3,11 @@
 import { useState } from "react";
 
 /** WhatsApp / copy-link buttons for a question that waits for an answer. */
-export default function ShareQuestion({ url, message, familyId, together }: { url: string; message: string; familyId: string; together?: boolean }) {
+export type ShareLabels = { whatsapp: string; copy: string; copied: string; together: string; copyPrompt: string };
+
+const EN_LABELS: ShareLabels = { whatsapp: "Send on WhatsApp", copy: "Copy link", copied: "Copied", together: "Record together now", copyPrompt: "Copy this link" };
+
+export default function ShareQuestion({ url, message, familyId, together, labels = EN_LABELS }: { url: string; message: string; familyId: string; together?: boolean; labels?: ShareLabels }) {
   const [copied, setCopied] = useState(false);
   const text = `${message} ${url}`;
   const ping = (channel: string) =>
@@ -16,15 +20,15 @@ export default function ShareQuestion({ url, message, familyId, together }: { ur
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt("Copy this link", url);
+      window.prompt(labels.copyPrompt, url);
     }
   }
 
   return (
     <div className="row">
-      <a className="btn btn-primary btn-sm" href={`https://wa.me/?text=${encodeURIComponent(text)}`} target="_blank" rel="noopener noreferrer" onClick={() => ping("whatsapp")}>Send on WhatsApp</a>
-      <button className="btn btn-ghost btn-sm" onClick={copy}>{copied ? "Copied" : "Copy link"}</button>
-      {together && <a className="btn btn-ghost btn-sm" href={url} target="_blank" rel="noopener noreferrer" onClick={() => ping("together")}>Record together now</a>}
+      <a className="btn btn-primary btn-sm" href={`https://wa.me/?text=${encodeURIComponent(text)}`} target="_blank" rel="noopener noreferrer" onClick={() => ping("whatsapp")}>{labels.whatsapp}</a>
+      <button className="btn btn-ghost btn-sm" onClick={copy}>{copied ? labels.copied : labels.copy}</button>
+      {together && <a className="btn btn-ghost btn-sm" href={url} target="_blank" rel="noopener noreferrer" onClick={() => ping("together")}>{labels.together}</a>}
     </div>
   );
 }
