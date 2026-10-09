@@ -132,7 +132,8 @@ export async function setPersonPhoto(id: string, form: FormData): Promise<{ erro
     if (person.photoPath) await deleteFile(person.photoPath);
   } catch (e) {
     console.error("[profile photo]", e);
-    return { error: "Could not save the photo. Please try again in a minute." };
+    const why = e instanceof Error ? e.message.slice(0, 160) : "";
+    return { error: `Could not save the photo. Please try again in a minute.${why ? ` (${why})` : ""}` };
   }
   revalidatePath(`/app/family/${id}`);
   revalidatePath("/app/family");

@@ -82,3 +82,28 @@ export function mimeFor(rel: string): string {
 
 /** Vercel Functions accept request bodies up to 4.5 MB. */
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
+/** Health check for the founder page: can we write, read and delete a file right now? */
+export async function storageCheck(): Promise<{ driver: string; store: string; ok: boolean; detail: string }> {
+  const tokenValue = process.env.BLOB_READ_WRITE_TOKEN ?? "";
+  // Token format: vercel_blob_rw_<storeId>_<secret>
+  const store = tokenValue ? tokenValue.split("_")[3] ?? "?" : "";
+  const driver = useBlob() ? "Vercel Blob (private)" : process.env.VERCEL ? "none: BLOB_READ_WRITE_TOKEN is missing" : "local folder";
+  const rel = `_healthcheck/${Date.now()}.txt`;
+  try {
+    if (useBlob()) {
+      await put(rel, "ok", { access: "private", contentType: "text/plain", addRandomSuffix: false });
+      const res = await get(rel, { access: "private" });
+      if (!res || res.statusCode !== 200) throw new Error("written, but could not read it back");
+      await del(rel);
+    } else {
+      const abs = safeLocal(rel);
+      await mkdir(path.dirname(abs), { recursive: true });
+      await writeFile(abs, "ok");
+      await rm(abs, { force: true });
+    }
+    return { driver, store, ok: true, detail: "write, read and delete work" };
+  } catch (e) {
+    return { driver, store, ok: false, detail: e instanceof Error ? `${e.name}: ${e.message}` : String(e) };
+  }
+}
