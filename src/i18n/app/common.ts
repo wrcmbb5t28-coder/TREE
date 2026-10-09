@@ -2,8 +2,8 @@
 import type { Lang } from "../config";
 
 const en = {
-  nav: { home: "Home", stories: "Stories", family: "Family", journey: "Journey", keep: "Keep", invite: "Invite", settings: "Settings" },
-  header: { upgrade: "Upgrade", ask: "Ask a question", language: "Language" },
+  nav: { home: "Home", stories: "Stories", family: "Family", journey: "Journey", keep: "Book & archive", invite: "Invite", settings: "Settings" },
+  header: { upgrade: "Upgrade", ask: "Ask a question", language: "Language", menu: "Menu" },
   plans: { free: "Free", family: "Family", legacy: "Legacy Gift", founding: "Founding Family" },
   btn: { save: "Save", cancel: "Cancel", remove: "Remove", delete: "Delete", add: "Add", back: "Back", edit: "Edit" },
   saved: "Saved.",
@@ -33,8 +33,8 @@ const en = {
 export type CommonT = typeof en;
 
 const ru: CommonT = {
-  nav: { home: "Главная", stories: "Истории", family: "Семья", journey: "Путь семьи", keep: "Сохранить", invite: "Пригласить", settings: "Настройки" },
-  header: { upgrade: "Улучшить", ask: "Задать вопрос", language: "Язык" },
+  nav: { home: "Главная", stories: "Истории", family: "Семья", journey: "Путь семьи", keep: "Книга и архив", invite: "Пригласить", settings: "Настройки" },
+  header: { upgrade: "Улучшить", ask: "Задать вопрос", language: "Язык", menu: "Меню" },
   plans: { free: "Бесплатный", family: "Семейный", legacy: "Подарок наследия", founding: "Семья-основатель" },
   btn: { save: "Сохранить", cancel: "Отмена", remove: "Убрать", delete: "Удалить", add: "Добавить", back: "Назад", edit: "Изменить" },
   saved: "Сохранено.",
@@ -59,8 +59,8 @@ const ru: CommonT = {
 };
 
 const de: CommonT = {
-  nav: { home: "Start", stories: "Geschichten", family: "Familie", journey: "Familienweg", keep: "Bewahren", invite: "Einladen", settings: "Einstellungen" },
-  header: { upgrade: "Upgrade", ask: "Frage stellen", language: "Sprache" },
+  nav: { home: "Start", stories: "Geschichten", family: "Familie", journey: "Familienweg", keep: "Buch & Archiv", invite: "Einladen", settings: "Einstellungen" },
+  header: { upgrade: "Upgrade", ask: "Frage stellen", language: "Sprache", menu: "Menü" },
   plans: { free: "Kostenlos", family: "Familie", legacy: "Vermächtnis-Geschenk", founding: "Gründerfamilie" },
   btn: { save: "Speichern", cancel: "Abbrechen", remove: "Entfernen", delete: "Löschen", add: "Hinzufügen", back: "Zurück", edit: "Bearbeiten" },
   saved: "Gespeichert.",
@@ -85,8 +85,8 @@ const de: CommonT = {
 };
 
 const fr: CommonT = {
-  nav: { home: "Accueil", stories: "Histoires", family: "Famille", journey: "Parcours", keep: "Conserver", invite: "Inviter", settings: "Réglages" },
-  header: { upgrade: "Passer à l’offre", ask: "Poser une question", language: "Langue" },
+  nav: { home: "Accueil", stories: "Histoires", family: "Famille", journey: "Parcours", keep: "Livre et archives", invite: "Inviter", settings: "Réglages" },
+  header: { upgrade: "Passer à l’offre", ask: "Poser une question", language: "Langue", menu: "Menu" },
   plans: { free: "Gratuit", family: "Famille", legacy: "Cadeau Héritage", founding: "Famille fondatrice" },
   btn: { save: "Enregistrer", cancel: "Annuler", remove: "Retirer", delete: "Supprimer", add: "Ajouter", back: "Retour", edit: "Modifier" },
   saved: "Enregistré.",
@@ -111,8 +111,8 @@ const fr: CommonT = {
 };
 
 const it: CommonT = {
-  nav: { home: "Home", stories: "Storie", family: "Famiglia", journey: "Percorso", keep: "Conserva", invite: "Invita", settings: "Impostazioni" },
-  header: { upgrade: "Passa al piano", ask: "Fai una domanda", language: "Lingua" },
+  nav: { home: "Home", stories: "Storie", family: "Famiglia", journey: "Percorso", keep: "Libro e archivio", invite: "Invita", settings: "Impostazioni" },
+  header: { upgrade: "Passa al piano", ask: "Fai una domanda", language: "Lingua", menu: "Menu" },
   plans: { free: "Gratis", family: "Famiglia", legacy: "Regalo Eredità", founding: "Famiglia fondatrice" },
   btn: { save: "Salva", cancel: "Annulla", remove: "Rimuovi", delete: "Elimina", add: "Aggiungi", back: "Indietro", edit: "Modifica" },
   saved: "Salvato.",
@@ -137,8 +137,8 @@ const it: CommonT = {
 };
 
 const es: CommonT = {
-  nav: { home: "Inicio", stories: "Historias", family: "Familia", journey: "Recorrido", keep: "Guardar", invite: "Invitar", settings: "Ajustes" },
-  header: { upgrade: "Mejorar plan", ask: "Hacer una pregunta", language: "Idioma" },
+  nav: { home: "Inicio", stories: "Historias", family: "Familia", journey: "Recorrido", keep: "Libro y archivo", invite: "Invitar", settings: "Ajustes" },
+  header: { upgrade: "Mejorar plan", ask: "Hacer una pregunta", language: "Idioma", menu: "Menú" },
   plans: { free: "Gratis", family: "Familia", legacy: "Regalo Legado", founding: "Familia fundadora" },
   btn: { save: "Guardar", cancel: "Cancelar", remove: "Quitar", delete: "Eliminar", add: "Añadir", back: "Volver", edit: "Editar" },
   saved: "Guardado.",

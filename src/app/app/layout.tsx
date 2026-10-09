@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AppNav from "@/components/AppNav";
 import LangSwitch from "@/components/LangSwitch";
+import AppMenu from "@/components/AppMenu";
 import { isPaid } from "@/lib/plans";
 import { appContext } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
@@ -20,11 +21,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="wrap">
           <Link className="logo" href="/app"><b style={{ fontSize: "1.35rem" }}>Treename</b></Link>
           <AppNav labels={c.nav} />
-          <div className="row">
-            <span className="small muted">{family.name}</span>
-            {!paid && <Link className="tag" href="/app/billing">{c.plans.free} · {c.header.upgrade}</Link>}
-            <LangSwitch value={lang} label={c.header.language} action={setUiLang} />
+          <div className="appbar-right">
             <Link className="btn btn-primary btn-sm" href="/app/ask">{c.header.ask}</Link>
+            <AppMenu
+              label={c.header.menu}
+              familyName={family.name}
+              links={[
+                { href: "/app/keep", label: c.nav.keep },
+                { href: "/app/settings", label: c.nav.settings },
+                ...(!paid ? [{ href: "/app/billing", label: `${c.plans.free} · ${c.header.upgrade}`, accent: true }] : []),
+              ]}
+            >
+              <label className="appmenu-lang">
+                <span>{c.header.language}</span>
+                <LangSwitch value={lang} label={c.header.language} action={setUiLang} />
+              </label>
+            </AppMenu>
           </div>
         </div>
       </header>
