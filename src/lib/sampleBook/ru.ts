@@ -23,7 +23,7 @@ const ru: SampleBookText = {
   family: {
     caption: "Ивановы, Петербург, 1912",
     year: 1912, scene: "house",
-    prompt: "Studio portrait of a Russian working family in St Petersburg, 1912: a moustached father in a dark jacket and peaked cap standing, a mother in a long skirt and blouse seated, two boys in belted shirts and a little girl with a bow in front of a painted backdrop with a column and a curtain. Cardboard cabinet-card look.",
+    prompt: "Portrait of a Russian working family in St Petersburg, 1912: a moustached father in a dark jacket and peaked cap standing, a mother in a long skirt and blouse seated, two boys in belted shirts and a little girl with a bow.",
   },
   mapTitle: "Путь семьи",
   mapNote: "Из тверской деревни — на завод в Петербург, в войну — на Урал, потом в Москву. Сто семьдесят пять лет и почти три тысячи километров.",
@@ -93,7 +93,7 @@ const ru: SampleBookText = {
   endTitle: "Эта книга — пример",
   endText: "Ивановы придуманы, а книга настоящая: так Treename собирает истории, которые ваши родные рассказывают голосом, древо, карту и фотографии. Вашу книгу мы соберём из ваших историй.",
   colophon: "Семейная книга Ивановых · собрана в Treename · 2026",
-  photoNote: "Семья и фотографии в этом примере созданы для демонстрации.",
+  photoNote: "Семья и рисунки в этом примере придуманы для демонстрации.",
   ui: {
     facts: ["поколений", "человек в древе", "городов и сёл", "историй"],
     back: "← На главную", start: "Начать свою книгу", prev: "Назад", next: "Дальше", open: "Открыть книгу",

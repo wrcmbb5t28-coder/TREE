@@ -9,7 +9,7 @@ import type { CrestConfig } from "@/lib/crest";
 export type SampleStory = {
   scene: Scene;
   year: number; // when the picture was taken
-  prompt: string; // English description of a period photograph for the image generator
+  prompt: string; // English description of the scene for the image generator (drawn as an illustration)
   chapter: string;
   title: string;
   who: string; // "Степан Иванов, 1851–1919"
@@ -34,7 +34,7 @@ export type SampleBookText = {
   treeNote: string;
   line: { h: Person; w: Person }[]; // oldest first, one couple per generation
   children: Person[];
-  family: { caption: string; prompt: string; scene: Scene; year: number }; // the old family photograph
+  family: { caption: string; prompt: string; scene: Scene; year: number }; // the drawn family portrait
   mapTitle: string;
   mapNote: string;
   stops: { name: string; label: string; lon: number; lat: number; year: number }[];
@@ -44,18 +44,19 @@ export type SampleBookText = {
   endTitle: string;
   endText: string;
   colophon: string;
-  photoNote: string; // small print: the pictures are generated, the family is made up
+  photoNote: string; // small print: the family and the drawings are made up
   ui: { facts: string[]; back: string; start: string; prev: string; next: string; open: string; page: string; of: string; hint: string; chapter: string; listen: string; eyebrow: string; lead: string; cta: string };
 };
 
-/** Shared look for the image generator: a believable photograph of its time, never text or a watermark. */
-export function photoStyle(year: number): string {
-  const era =
-    year < 1900 ? "a 19th-century albumen print, sepia, soft focus at the edges"
-    : year < 1945 ? "an old black-and-white photograph, slight sepia tone"
-    : year < 1965 ? "a black-and-white snapshot from that decade"
-    : year < 1990 ? "a faded colour snapshot with the typical film colours of that decade"
-    : year < 2010 ? "a slightly washed-out colour photo from a compact camera"
-    : "a natural, candid modern family photo";
-  return `Photorealistic ${era}, taken around ${year}. Authentic period clothing, objects and architecture, natural light, film grain, documentary feel. No text, no captions, no watermark, no frame or border.`;
+/**
+ * Shared look for the image generator: a realistic, finely drawn book illustration of its time —
+ * always clearly a drawing, never a photograph, never text or a watermark.
+ */
+export function drawingStyle(year: number): string {
+  const palette =
+    year < 1900 ? "sepia ink and soft brown washes, like an engraving coloured by hand"
+    : year < 1945 ? "graphite pencil with muted grey-brown watercolour washes"
+    : year < 1975 ? "pencil and gentle watercolour in faded mid-century colours"
+    : "pencil and warm, soft watercolour colours";
+  return `A realistic, finely detailed book illustration drawn by hand in ${palette}, set around ${year}. Accurate period clothing, objects and architecture, natural light, visible paper texture and pencil lines. Clearly a drawing in the tradition of classic illustrated books, not a photograph. No text, no captions, no signature, no frame or border.`;
 }

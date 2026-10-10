@@ -1,9 +1,9 @@
 import { LANGS, type Lang } from "@/i18n/config";
-import { sampleBook, photoStyle } from "./sampleBook";
+import { sampleBook, drawingStyle } from "./sampleBook";
 import { listFiles, saveFileAt } from "./storage";
 
 /**
- * Pictures for the sample books: photorealistic "old photographs" made once with an image
+ * Pictures for the sample books: realistic hand-drawn-looking illustrations made once with an image
  * model (OpenAI Images, OPENAI_API_KEY) and stored with the other files. Until a picture exists,
  * the book shows its drawn version, so the sample works without any key.
  */
@@ -16,9 +16,9 @@ export const sampleUrl = (lang: Lang, slot: string, v?: string) => `/api/sample-
 export function sampleSlots(lang: Lang): Slot[] {
   const b = sampleBook(lang);
   return [
-    { slot: "family", title: b.family.caption, prompt: `${b.family.prompt} ${photoStyle(b.family.year)}` },
-    ...b.stories.map((s, i) => ({ slot: `s${i}`, title: s.title, prompt: `${s.prompt} ${photoStyle(s.year)} People are ordinary, not famous, and not looking at the camera unless it is a portrait.` })),
-    { slot: "recipe", title: b.recipe.title, prompt: `${b.recipe.prompt} ${photoStyle(2026)} Food photography, appetising but homely.` },
+    { slot: "family", title: b.family.caption, prompt: `${b.family.prompt} ${drawingStyle(b.family.year)}` },
+    ...b.stories.map((s, i) => ({ slot: `s${i}`, title: s.title, prompt: `${s.prompt} ${drawingStyle(s.year)} The people are ordinary, made-up people.` })),
+    { slot: "recipe", title: b.recipe.title, prompt: `${b.recipe.prompt} ${drawingStyle(2026)} A still life of the dish, appetising but homely.` },
   ];
 }
 

@@ -23,7 +23,7 @@ const fr: SampleBookText = {
   family: {
     caption: "Les Martin, Douarnenez, 1908",
     year: 1908, scene: "pier",
-    prompt: "Formal outdoor portrait of a Breton fishing family in Douarnenez, 1908: a weathered fisherman with a beard and a sailor's cap, his wife in a traditional white Breton lace coiffe and black dress, a young man and two girls also in coiffes, fishing boats with sails in the harbour behind.",
+    prompt: "Portrait of a Breton fishing family in Douarnenez, 1908: a weathered fisherman with a beard and a sailor's cap, his wife in a traditional white Breton lace coiffe and black dress, a young man and two girls also in coiffes, fishing boats with sails in the harbour behind.",
   },
   mapTitle: "Le chemin de la famille",
   mapNote: "Du port de Douarnenez aux tranchées de Verdun, des usines de Billancourt à Lyon, puis retour vers l'Atlantique, à Nantes.",
@@ -93,7 +93,7 @@ const fr: SampleBookText = {
   endTitle: "Ce livre est un exemple",
   endText: "Les Martin sont inventés, mais le livre est bien réel : c'est ainsi que Treename rassemble les histoires que votre famille raconte de vive voix, avec l'arbre, la carte et les photos. Le vôtre sera fait de vos propres histoires.",
   colophon: "Le livre de la famille Martin · réalisé avec Treename · 2026",
-  photoNote: "La famille et les photos de cet exemple ont été créées pour la démonstration.",
+  photoNote: "La famille et les dessins de cet exemple ont été imaginés pour la démonstration.",
   ui: {
     facts: ["générations", "personnes dans l’arbre", "villes", "histoires"],
     back: "← Accueil", start: "Commencer mon livre", prev: "Précédent", next: "Suivant", open: "Ouvrir le livre",

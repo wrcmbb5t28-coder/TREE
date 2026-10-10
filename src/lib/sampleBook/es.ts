@@ -23,7 +23,7 @@ const es: SampleBookText = {
   family: {
     caption: "Familia García, Martos, 1915",
     year: 1915, scene: "house",
-    prompt: "Formal outdoor portrait of an Andalusian rural family in Jaén province in 1915: a father in a short jacket and a wide-brimmed hat, a mother in a black dress and shawl, four children, a whitewashed wall with a wooden door and a pot of geraniums behind.",
+    prompt: "Portrait of an Andalusian rural family in Jaén province in 1915: a father in a short jacket and a wide-brimmed hat, a mother in a black dress and shawl, four children, a whitewashed wall with a wooden door and a pot of geraniums behind.",
   },
   mapTitle: "El camino de la familia",
   mapNote: "De los olivares de Jaén a Barcelona en el tren de los emigrantes, y después a Madrid y Valencia: ciento setenta años de ida y vuelta.",
@@ -92,7 +92,7 @@ const es: SampleBookText = {
   endTitle: "Este libro es un ejemplo",
   endText: "Los García son inventados, pero el libro es real: así reúne Treename las historias que tu familia cuenta de viva voz, con el árbol, el mapa y las fotos. El tuyo se hará con vuestras propias historias.",
   colophon: "El libro de la familia García · hecho con Treename · 2026",
-  photoNote: "La familia y las fotos de este ejemplo se han creado para la demostración.",
+  photoNote: "La familia y los dibujos de este ejemplo se han inventado para la demostración.",
   ui: {
     facts: ["generaciones", "personas en el árbol", "ciudades", "historias"],
     back: "← Inicio", start: "Empezar mi libro", prev: "Atrás", next: "Siguiente", open: "Abrir el libro",

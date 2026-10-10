@@ -23,7 +23,7 @@ const de: SampleBookText = {
   family: {
     caption: "Familie Schneider, Gelsenkirchen, 1911",
     year: 1911, scene: "house",
-    prompt: "Formal studio portrait of a German miner's family in the Ruhr, 1911: a father with a big moustache in a dark suit, a mother in a high-collared black dress seated, two boys in sailor suits and a girl with a large hair bow, a painted backdrop with a balustrade and a palm. Cabinet-card look.",
+    prompt: "Formal portrait of a German miner's family in the Ruhr, 1911: a father with a big moustache in a dark suit, a mother in a high-collared black dress seated, two boys in sailor suits and a girl with a large hair bow, a palm in a pot behind.",
   },
   mapTitle: "Der Weg der Familie",
   mapNote: "Vom Dorf im Westerwald unter Tage ins Ruhrgebiet, über die Mauer hinweg nach Leipzig und Berlin – und am Ende nach Hamburg.",
@@ -93,7 +93,7 @@ const de: SampleBookText = {
   endTitle: "Dieses Buch ist ein Beispiel",
   endText: "Die Schneiders sind erfunden, das Buch ist echt: So stellt Treename die Geschichten zusammen, die Ihre Familie mit ihrer Stimme erzählt – mit Stammbaum, Karte und Fotos. Ihres entsteht aus Ihren eigenen Geschichten.",
   colophon: "Das Familienbuch der Schneiders · gemacht mit Treename · 2026",
-  photoNote: "Familie und Fotos in diesem Beispiel wurden zur Veranschaulichung erstellt.",
+  photoNote: "Familie und Zeichnungen in diesem Beispiel sind zur Veranschaulichung erfunden.",
   ui: {
     facts: ["Generationen", "Menschen im Stammbaum", "Orte", "Geschichten"],
     back: "← Startseite", start: "Eigenes Buch beginnen", prev: "Zurück", next: "Weiter", open: "Buch öffnen",

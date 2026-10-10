@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type LangRow = { lang: string; family: string; slots: { slot: string; title: string; has: boolean }[] };
 
-/** Admin: make the photographs of the sample books, one picture per request (each takes 20–60 s). */
+/** Admin: make the illustrations of the sample books, one picture per request (each takes 20–60 s). */
 export default function SampleImagesPanel({ rows, hasKey }: { rows: LangRow[]; hasKey: boolean }) {
   const [state, setState] = useState(rows);
   const [busy, setBusy] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function SampleImagesPanel({ rows, hasKey }: { rows: LangRow[]; h
 
   return (
     <div className="stack" style={{ gap: 14 }}>
-      {!hasKey && <p className="notice small">Add OPENAI_API_KEY in Vercel → Settings → Environment Variables, then redeploy. Until then the sample books show drawings.</p>}
+      {!hasKey && <p className="notice small">Add OPENAI_API_KEY in Vercel → Settings → Environment Variables, then redeploy. Until then the sample books show the simple vector drawings.</p>}
       {state.map((r) => {
         const n = r.slots.filter((s) => s.has).length;
         return (

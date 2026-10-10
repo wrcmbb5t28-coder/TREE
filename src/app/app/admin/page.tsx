@@ -34,7 +34,7 @@ export default async function Admin() {
     ["File storage (BLOB_STORE_ID or BLOB_READ_WRITE_TOKEN)", !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)],
     ["AI stories (ANTHROPIC_API_KEY)", !!process.env.ANTHROPIC_API_KEY],
     ["Voice to text (TRANSCRIBE_API_KEY)", !!process.env.TRANSCRIBE_API_KEY],
-    ["Sample book photographs (OPENAI_API_KEY)", !!imageKey()],
+    ["Sample book illustrations (OPENAI_API_KEY)", !!imageKey()],
     ["Email (RESEND_API_KEY)", !!process.env.RESEND_API_KEY],
     ["Payments (STRIPE_SECRET_KEY)", !!process.env.STRIPE_SECRET_KEY],
     ["Sign-in links on screen (SHOW_LOGIN_LINKS) — remove before launch", process.env.SHOW_LOGIN_LINKS === "1"],
@@ -96,7 +96,7 @@ export default async function Admin() {
         ))}
       </section>
       <section className="card stack">
-        <h2 style={{ fontSize: "1.3rem" }}>Sample book photographs</h2>
+        <h2 style={{ fontSize: "1.3rem" }}>Sample book illustrations</h2>
         <p className="small muted">Each language has its own made-up family. Pictures are made once (about 10 per language) and stored with the other files.</p>
         <SampleImagesPanel rows={sampleRows} hasKey={!!imageKey()} />
       </section>

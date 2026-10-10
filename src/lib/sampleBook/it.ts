@@ -23,7 +23,7 @@ const it: SampleBookText = {
   family: {
     caption: "Famiglia Esposito, Sorrento, 1913",
     year: 1913, scene: "house",
-    prompt: "Formal outdoor portrait of a southern Italian peasant family near Sorrento in 1913: a moustached father in a waistcoat and hat, a mother in a dark dress and shawl, three children barefoot and in their Sunday best, lemon trees on a terrace and a stone wall behind.",
+    prompt: "Portrait of a southern Italian peasant family near Sorrento in 1913: a moustached father in a waistcoat and hat, a mother in a dark dress and shawl, three children barefoot and in their Sunday best, lemon trees on a terrace and a stone wall behind.",
   },
   mapTitle: "Il cammino della famiglia",
   mapNote: "Dai limoneti di Sorrento a New York e ritorno, da Napoli a Torino con il Treno del Sole, e infine a Milano.",
@@ -93,7 +93,7 @@ const it: SampleBookText = {
   endTitle: "Questo libro è un esempio",
   endText: "Gli Esposito sono inventati, ma il libro è vero: è così che Treename raccoglie le storie che la vostra famiglia racconta a voce, con l'albero, la mappa e le fotografie. Il vostro nascerà dalle vostre storie.",
   colophon: "Il libro della famiglia Esposito · realizzato con Treename · 2026",
-  photoNote: "La famiglia e le fotografie di questo esempio sono state create a scopo dimostrativo.",
+  photoNote: "La famiglia e i disegni di questo esempio sono stati inventati a scopo dimostrativo.",
   ui: {
     facts: ["generazioni", "persone nell’albero", "città", "storie"],
     back: "← Home", start: "Inizia il tuo libro", prev: "Indietro", next: "Avanti", open: "Apri il libro",

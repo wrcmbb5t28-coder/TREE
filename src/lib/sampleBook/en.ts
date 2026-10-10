@@ -23,7 +23,7 @@ const en: SampleBookText = {
   family: {
     caption: "The Joneses, Treorchy, 1910",
     year: 1910, scene: "house",
-    prompt: "Formal studio portrait of a Welsh mining family in 1910: a moustached father in his Sunday suit and flat cap, a mother in a high-collared dark dress, a teenage son, two daughters in white pinafores, a painted backdrop and a fern on a stand. Cabinet-card look.",
+    prompt: "Formal portrait of a Welsh mining family in 1910: a moustached father in his Sunday suit and flat cap, a mother in a high-collared dark dress, a teenage son, two daughters in white pinafores, a fern on a stand behind.",
   },
   mapTitle: "The family's road",
   mapNote: "From a pit village in the Rhondda to the Cardiff docks, a classroom in Swansea, London and Manchester — never further than a few hours from home, and a whole world away.",
@@ -93,7 +93,7 @@ const en: SampleBookText = {
   endTitle: "This book is a sample",
   endText: "The Joneses are made up, but the book is real: this is how Treename puts together the stories your family tells by voice, with the tree, the map and the photographs. Yours will be made from your own stories.",
   colophon: "The Jones family book · made with Treename · 2026",
-  photoNote: "The family and the photographs in this sample were created for demonstration.",
+  photoNote: "The family and the drawings in this sample were made up for demonstration.",
   ui: {
     facts: ["generations", "people in the tree", "towns", "stories"],
     back: "← Home", start: "Start your own book", prev: "Back", next: "Next", open: "Open the book",
