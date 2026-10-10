@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import StoryArt from "@/components/StoryArt";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDict, isLang, LANGS, HREFLANG } from "@/i18n";
@@ -156,16 +157,7 @@ export default async function Home({ params }: Props) {
                 </div>
                 <div className="h-page">
                   <div className="h-photo" aria-hidden="true">
-                    <svg viewBox="0 0 120 90" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-                      <defs><linearGradient id="sep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d9c6a4" /><stop offset="1" stopColor="#b79c74" /></linearGradient></defs>
-                      <rect width="120" height="90" fill="url(#sep)" />
-                      <path d="M0 62 H120 V90 H0 Z" fill="#9c8260" opacity=".55" />
-                      <path d="M0 60 L120 60" stroke="#7d6648" strokeWidth="1.5" />
-                      {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M${6 + i * 13} 60 v-8`} stroke="#7d6648" strokeWidth="1.2" />)}
-                      <circle cx="46" cy="36" r="6" fill="#6f5638" /><rect x="40" y="42" width="12" height="20" rx="5" fill="#5f4a31" />
-                      <circle cx="64" cy="35" r="6.5" fill="#5a442d" /><rect x="57" y="41" width="14" height="21" rx="5" fill="#4d3a27" />
-                      <circle cx="98" cy="16" r="7" fill="#efe2c8" />
-                    </svg>
+                    <StoryArt seed="home-pier" scene="pier" idSuffix="home" />
                   </div>
                   <div className="h-qr">
                     <svg width="46" height="46" viewBox="0 0 7 7" aria-hidden="true" shapeRendering="crispEdges">

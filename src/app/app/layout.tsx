@@ -8,6 +8,7 @@ import { appContext } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
 import { setUiLang } from "./actions";
 import { crestsT } from "@/i18n/app/crests";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const metadata: Metadata = { title: "Treename", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -45,6 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 <span>{c.header.language}</span>
                 <LangSwitch value={lang} label={c.header.language} action={setUiLang} />
               </label>
+              <ThemeToggle lang={lang} className="appmenu-theme" />
             </AppMenu>
           </div>
         </div>

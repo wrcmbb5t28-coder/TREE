@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StoryPhoto } from "@/components/StoryArt";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { canEdit } from "@/lib/auth";
@@ -48,6 +49,10 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
           {" · "}{fmtDate(s.createdAt, lang)}
         </p>
       </div>
+
+      {s.photos.length === 0 && (
+        <div className="story-hero-art"><StoryPhoto seed={s.id} text={`${s.title} ${s.body}`} tilt={-1.5} idSuffix="h" /></div>
+      )}
 
       {s.answer?.audioPath && (
         <div className="player" style={{ display: "block" }}>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import StoryArt from "@/components/StoryArt";
 import { db } from "@/lib/db";
 import { familyCountries, geocodeMany } from "@/lib/geo";
 import { after } from "next/server";
@@ -122,6 +123,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
           <div className="grid-cards">
             {stories.map((s) => (
               <Link key={s.id} href={`/app/stories/${s.id}`} className="card feed-item" style={{ textDecoration: "none" }}>
+                <div className="card-art" aria-hidden="true"><StoryArt seed={s.id} text={`${s.title} ${s.body}`} idSuffix="c" /></div>
                 <span className="small muted">
                   {s.answer ? `${s.answer.question.storyteller.firstName} · ${t.voice(fmtDuration(s.answer.durationS))}` : ts.stories.written}
                   {s.chapter ? ` · ${chapterName(lang, s.chapter)}` : ""}

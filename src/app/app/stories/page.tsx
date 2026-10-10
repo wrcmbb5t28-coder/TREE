@@ -1,4 +1,5 @@
 import Link from "next/link";
+import StoryArt from "@/components/StoryArt";
 import { db } from "@/lib/db";
 import { appContext, fmtDate, plural } from "@/i18n/app";
 import { chapterName } from "@/i18n/app/common";
@@ -35,6 +36,7 @@ export default async function Stories() {
           <div className="grid-cards">
             {list.map((s) => (
               <Link key={s.id} href={`/app/stories/${s.id}`} className="card feed-item" style={{ textDecoration: "none" }}>
+                <div className="card-art" aria-hidden="true"><StoryArt seed={s.id} text={`${s.title} ${s.body}`} idSuffix="c" /></div>
                 <span className="small muted">
                   {s.answer ? s.answer.question.storyteller.firstName : t.written} · {fmtDate(s.createdAt, lang)}
                   {s.visibility === "private" ? ` · ${t.private}` : s.visibility === "public" ? ` · ${t.public}` : ""}

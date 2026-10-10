@@ -1,4 +1,5 @@
 import { crestForPerson } from "@/lib/lines";
+import StoryArt from "@/components/StoryArt";
 import CrestSvg from "@/components/CrestSvg";
 import { countryName } from "@/i18n/config";
 import CountrySelect from "@/components/CountrySelect";
@@ -212,6 +213,7 @@ export default async function PersonPage({
           <div className="story-grid">
             {stories.map((s) => (
               <Link key={s.id} href={`/app/stories/${s.id}`} className="card story-card">
+                <div className="card-art" aria-hidden="true"><StoryArt seed={s.id} text={`${s.title} ${s.body}`} idSuffix="c" /></div>
                 <p className="eyebrow">{chapterName(lang, s.chapter)}{s.answer?.audioPath ? ` · ${t.voice}` : ""}{s.visibility === "private" ? ` · ${t.private}` : ""}</p>
                 <h3>{s.title}</h3>
                 <p className="small muted">{excerpt(s.body)}</p>
