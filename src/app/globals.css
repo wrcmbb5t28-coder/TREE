@@ -560,3 +560,43 @@ a.chip:hover { background: #E2E9DA; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
+
+/* Journey: "where we come from" */
+.jr-summary { font-family: var(--display); font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 1.35; max-width: 40em; }
+.jr-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 640px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 6px; }
+.jr-stats > div { padding: 14px 10px; text-align: center; }
+.jr-stats > div + div { border-left: 1px solid var(--line); }
+.jr-stats b { display: block; font-size: 2rem; font-weight: 500; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums lining-nums; }
+.jr-stats span { display: block; margin-top: 6px; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.jr-places-wrap { overflow-x: auto; padding: 6px 0 4px; }
+.jr-places { list-style: none; margin: 0; padding: 26px 0 0; display: grid; gap: 8px; position: relative; min-width: min-content; }
+.jr-places::before { content: ""; position: absolute; left: 4%; right: 4%; top: 39px; border-top: 3px dotted #C9B48F; }
+.jr-places li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; position: relative; min-width: 0; }
+.jr-pin { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); border: 3px solid var(--paper); box-shadow: 0 0 0 1.5px var(--accent); margin-bottom: 6px; }
+.jr-places li:first-child .jr-pin { background: var(--warm); box-shadow: 0 0 0 1.5px var(--warm); }
+.jr-places b { font-family: var(--display); font-size: 1.15rem; line-height: 1.15; overflow-wrap: anywhere; }
+.jr-who { font-size: .85rem; color: var(--muted); line-height: 1.35; }
+.jr-roads { list-style: none; margin: 6px 0 0; padding: 0; display: grid; }
+.jr-roads li { display: flex; align-items: center; gap: 18px; padding: 14px 0; border-bottom: 1px dotted #C9B894; flex-wrap: wrap; }
+.jr-person { display: flex; align-items: center; gap: 12px; width: 200px; flex: none; text-decoration: none; color: inherit; }
+.jr-person b { display: block; font-family: var(--display); font-size: 1.2rem; line-height: 1.1; }
+.jr-person small { color: var(--muted); font-size: .8rem; }
+.jr-stops { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.jr-step { display: inline-flex; align-items: center; gap: 8px; }
+.jr-stop { display: inline-flex; align-items: baseline; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: .95rem; }
+.jr-stop b { font-weight: 600; }
+.jr-stop span { color: var(--muted); font-size: .85rem; font-style: italic; }
+.jr-unknown { border-style: dashed; background: transparent; color: var(--muted); }
+.jr-arrow { color: #A2793C; }
+.jr-gaps { background: #F4E59C; padding: 24px 26px 22px; border-radius: 4px; box-shadow: 0 10px 22px rgba(60,40,20,.18); max-width: 820px; position: relative; }
+.jr-gaps::before { content: ""; position: absolute; top: -10px; left: 50%; width: 90px; height: 22px; margin-left: -45px; background: rgba(236,222,180,.85); transform: rotate(-2deg); }
+.jr-gaps h2 { font-size: 1.6rem; }
+.jr-gaps > p { margin: 6px 0 14px; color: #4A4136; }
+.jr-gaps ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.jr-gaps li { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.jr-gaps li > span { display: grid; gap: 2px; min-width: 0; }
+.jr-gaps small { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: #6B5D4B; }
+.jr-gaps q { font-family: var(--display); font-style: italic; font-size: 1.25rem; line-height: 1.3; }
+.jr-all > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 8px 0; list-style-position: inside; }
+.jr-all[open] > summary { margin-bottom: 14px; }
+@media (max-width: 640px) { .jr-person { width: 100%; } }

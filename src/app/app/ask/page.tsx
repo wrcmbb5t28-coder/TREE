@@ -9,8 +9,8 @@ import { questionsFor, relationById } from "@/i18n/questions";
 import { isLang } from "@/i18n/config";
 import StorytellerSelect from "@/components/StorytellerSelect";
 
-export default async function Ask({ searchParams }: { searchParams: Promise<{ to?: string }> }) {
-  const { to } = await searchParams;
+export default async function Ask({ searchParams }: { searchParams: Promise<{ to?: string; q?: string }> }) {
+  const { to, q: preset } = await searchParams;
   const { family, lang } = await appContext();
   const t = storiesT[lang].ask;
   const c = common[lang];
@@ -70,7 +70,7 @@ export default async function Ask({ searchParams }: { searchParams: Promise<{ to
         ))}
         <div className="field">
           <label htmlFor="custom">{t.custom}</label>
-          <input id="custom" name="custom" placeholder={t.customPh} />
+          <input id="custom" name="custom" placeholder={t.customPh} defaultValue={preset?.slice(0, 300)} />
         </div>
       </fieldset>
 

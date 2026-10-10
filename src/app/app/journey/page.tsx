@@ -10,6 +10,7 @@ import CountrySelect from "@/components/CountrySelect";
 import { addEvent, deleteEvent } from "../actions";
 import FamilyMap, { type MapPath, type MapPlace } from "@/components/FamilyMap";
 import { geocodeMany, placeKey } from "@/lib/geo";
+import { after } from "next/server";
 import { avatarById } from "@/lib/avatars";
 import { distinctNames } from "@/lib/names";
 
@@ -40,7 +41,7 @@ export default async function JourneyPage() {
 
   // Map: places with coordinates, who lived there and when; one line per person in time order.
   const located = dated.filter((e) => e.place || e.country);
-  const coords = await geocodeMany(located.map((e) => ({ place: e.place, country: e.country })), 6);
+  const coords = await geocodeMany(located.map((e) => ({ place: e.place, country: e.country })), 2);
   const placeMap = new Map<string, { name: string; lat: number; lng: number; from: number; to: number; people: Set<string> }>();
   for (const e of located) {
     const k = placeKey(e.place, e.country);
@@ -78,40 +79,155 @@ export default async function JourneyPage() {
     groups.get(k)!.push(e);
   }
 
+
+  // ---------- "Where we come from": roads, places west to east, the summary, gaps ----------
+  type Stop = { key: string; name: string; year: number | null };
+  const roads = people.map((person) => {
+    const stops: Stop[] = [];
+    const push = (place: string | null, country: string | null, year: number | null) => {
+      const name = place || (country ? countryName(country, lang) : "");
+      if (!name) return;
+      const key = placeKey(place, country);
+      if (stops.length && stops[stops.length - 1].key === key) return;
+      stops.push({ key, name, year });
+    };
+    const own = events.filter((e) => e.personId === person.id && (e.place || e.country));
+    const born = own.find((e) => /is born$/.test(e.description));
+    if (person.birthPlace || person.birthCountry) push(person.birthPlace, person.birthCountry, person.birthYear);
+    else if (born) push(born.place, born.country, born.year);
+    for (const e of own.filter((e) => e !== born).sort((a, b) => (a.year ?? 9999) - (b.year ?? 9999))) push(e.place, e.country, e.year);
+    return { person, stops };
+  }).filter((r) => r.stops.length > 0);
+
+  const roadPlaces = roads.flatMap((r) => r.stops.map((st) => {
+    const ev = events.find((e) => placeKey(e.place, e.country) === st.key);
+    return ev ? { place: ev.place, country: ev.country } : { place: r.person.birthPlace, country: r.person.birthCountry };
+  }));
+  // Cached places only (no waiting); new ones are looked up after the page is sent and show next time.
+  const allCoords = await geocodeMany(roadPlaces, 0);
+  if (roadPlaces.some((x) => !allCoords.has(placeKey(x.place, x.country)))) after(() => geocodeMany([...roadPlaces, ...located.map((e) => ({ place: e.place, country: e.country }))], 15).then(() => undefined).catch(() => undefined));
+  const placeAgg = new Map<string, { name: string; lng: number | null; lat: number | null; who: Map<string, number | null> }>();
+  for (const r of roads) for (const st of r.stops) {
+    const at = allCoords.get(st.key) ?? coords.get(st.key);
+    const a = placeAgg.get(st.key) ?? { name: st.name, lng: at?.lng ?? null, lat: at?.lat ?? null, who: new Map() };
+    if (!a.who.has(nm(r.person))) a.who.set(nm(r.person), st.year);
+    placeAgg.set(st.key, a);
+  }
+  const placeList = [...placeAgg.values()].sort((a, b) => (a.lng ?? 999) - (b.lng ?? 999));
+  const placeCountries = new Set([...placeAgg.keys()].map((k) => (allCoords.get(k) ?? coords.get(k))?.country).filter(Boolean));
+  for (const cc of countries) placeCountries.add(cc);
+  const allStops = roads.flatMap((r) => r.stops.filter((st) => st.year)).sort((a, b) => a.year! - b.year!);
+  const first = allStops[0], last = allStops[allStops.length - 1];
+  const km = (a?: { lat: number | null; lng: number | null }, b?: { lat: number | null; lng: number | null }) => {
+    if (!a || !b || a.lat == null || b.lat == null || a.lng == null || b.lng == null) return null;
+    const R = 6371, rad = Math.PI / 180;
+    const d = Math.acos(Math.min(1, Math.sin(a.lat * rad) * Math.sin(b.lat * rad) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.cos((b.lng - a.lng) * rad))) * R;
+    return d > 30 ? Math.round(d / 100) * 100 : null;
+  };
+  const summary = first && last && first.key !== last.key
+    ? t.summary(first.name, last.name, km(placeAgg.get(first.key), placeAgg.get(last.key)), Math.max(1, new Date().getFullYear() - first.year!))
+    : null;
+
+  // Questions from the gaps: one place only → "and then?"; a move → "why?". Living people first.
+  const gaps: { q: string; personId: string | null; name: string }[] = [];
+  for (const r of [...roads].sort((a, b) => Number(b.person.isLiving && !b.person.isSelf) - Number(a.person.isLiving && !a.person.isSelf))) {
+    const askable = r.person.isLiving && !r.person.isSelf;
+    if (r.stops.length === 1 && !r.person.isSelf) gaps.push({ q: t.qAfter(r.stops[0].name), personId: askable ? r.person.id : null, name: nm(r.person) });
+    else if (r.stops.length > 1 && askable) gaps.push({ q: t.qMove(r.stops[0].name, r.stops[1].name), personId: r.person.id, name: nm(r.person) });
+    if (gaps.length >= 4) break;
+  }
+  const word = (n: number, pf: Parameters<typeof plural>[2]) => plural(lang, n, pf).replace(String(n), "").trim();
+
   return (
-    <div className="stack" style={{ gap: 28, maxWidth: 900 }}>
-      <div className="stack" style={{ gap: 8 }}>
-        <p className="eyebrow">{plural(lang, countries.length, t.countries)} · {plural(lang, dated.length, t.moments)}</p>
-        <h1>{t.title}</h1>
-        <p className="muted" style={{ maxWidth: "62ch" }}>{t.intro}</p>
+    <div className="stack" style={{ gap: 30, maxWidth: 980 }}>
+      <div className="stack" style={{ gap: 10 }}>
+        <p className="eyebrow">{t.title}</p>
+        <h1>{t.head}</h1>
+        {summary && <p className="jr-summary">{summary}</p>}
+        {roads.length > 0 && (
+          <div className="jr-stats">
+            <div><b>{placeAgg.size}</b><span>{word(placeAgg.size, t.placesN)}</span></div>
+            <div><b>{placeCountries.size}</b><span>{word(placeCountries.size, t.countries)}</span></div>
+            {first?.year && <div><b>{first.year}</b><span>{t.since}</span></div>}
+          </div>
+        )}
       </div>
 
-      {events.length === 0 && <div className="empty">{t.empty}</div>}
+      {roads.length === 0 && <div className="empty">{t.noPlaces}</div>}
+
+      {placeList.length > 0 && (
+        <section className="stack" style={{ gap: 8 }}>
+          <h2 className="section-title">{t.places}</h2>
+          <p className="muted small">{t.placesSub}</p>
+          <div className="jr-places-wrap">
+            <ol className="jr-places" style={{ gridTemplateColumns: `repeat(${placeList.length}, minmax(120px, 1fr))` }}>
+              {placeList.map((pl, i) => (
+                <li key={pl.name + i}>
+                  <span className="jr-pin" aria-hidden="true" />
+                  <b>{pl.name}</b>
+                  <span className="jr-who">{[...pl.who.entries()].map(([n, y]) => (y ? `${n} · ${y}` : n)).join(", ")}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {roads.length > 0 && (
+        <section className="stack" style={{ gap: 8 }}>
+          <h2 className="section-title">{t.roads}</h2>
+          <p className="muted small">{t.roadsSub}</p>
+          <ul className="jr-roads">
+            {roads.map(({ person, stops }) => (
+              <li key={person.id}>
+                <Link href={`/app/family/${person.id}`} className="jr-person">
+                  <PersonAvatar person={person} size={46} />
+                  <span><b>{nm(person)}</b>{person.birthYear ? <small>{person.birthYear}{person.deathYear ? `–${person.deathYear}` : ""}</small> : null}</span>
+                </Link>
+                <div className="jr-stops">
+                  {stops.map((st, i) => (
+                    <span key={st.key + i} className="jr-step">
+                      {i > 0 && <span className="jr-arrow" aria-hidden="true">→</span>}
+                      <span className="jr-stop"><b>{st.name}</b>{st.year ? <span>{st.year}</span> : null}</span>
+                    </span>
+                  ))}
+                  {stops.length === 1 && (
+                    <span className="jr-step"><span className="jr-arrow" aria-hidden="true">→</span><span className="jr-stop jr-unknown"><b>?</b><span>{t.later}</span></span></span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+          {editable && <a href="#add" className="small" style={{ justifySelf: "start" }}>+ {t.addMove}</a>}
+        </section>
+      )}
+
+      {gaps.length > 0 && (
+        <section className="jr-gaps">
+          <h2>{t.gaps}</h2>
+          <p className="small">{t.gapsSub}</p>
+          <ul>
+            {gaps.map((g) => (
+              <li key={g.q}>
+                <span><small>{g.name}</small><q>{g.q}</q></span>
+                <Link className="btn btn-primary btn-sm" href={`/app/ask?${g.personId ? `to=${g.personId}&` : ""}q=${encodeURIComponent(g.q)}`}>{g.personId ? t.ask : t.askFamily}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {mapPlaces.length > 0 && (
-        <section className="stack">
-          <h2 className="section-title">{t.route}</h2>
+        <section className="stack" id="map">
+          <h2 className="section-title">{t.onMap}</h2>
           <FamilyMap places={mapPlaces} paths={mapPaths} label={t.label} />
-          {mapPaths.length > 0 && (
-            <div className="map-legend">
-              {mapPaths.map((p) => {
-                const person = people.find((x) => x.id === p.id)!;
-                return (
-                  <Link key={p.id} href={`/app/family/${p.id}`} className="map-legend-item">
-                    <span className="map-swatch" style={{ background: p.color }} />
-                    <PersonAvatar person={person} size={22} /> {p.name}
-                  </Link>
-                );
-              })}
-            </div>
-          )}
           {missing.size > 0 && <p className="small muted">{t.notOnMap([...missing].join(", "))}</p>}
         </section>
       )}
 
       {events.length > 0 && (
-        <section className="stack">
-          <h2 className="section-title">{t.timeline}</h2>
+        <details className="jr-all">
+          <summary>{t.allEvents(events.length)}</summary>
           <ol className="ct">
             {(() => {
               let i = 0;
@@ -150,11 +266,11 @@ export default async function JourneyPage() {
               ]);
             })()}
           </ol>
-        </section>
+        </details>
       )}
 
       {editable && (
-        <form action={addEvent} className="card stack" style={{ maxWidth: 760 }}>
+        <form id="add" action={addEvent} className="card stack" style={{ maxWidth: 760 }}>
           <h2 style={{ fontSize: "1.3rem" }}>{t.addMoment}</h2>
           <div className="grid2">
             <div className="field">
