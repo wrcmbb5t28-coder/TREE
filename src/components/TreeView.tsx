@@ -3,6 +3,7 @@ import { layoutTree, type TreeNode } from "@/lib/tree";
 import { avatarById } from "@/lib/avatars";
 import { lineName, surnameKey } from "@/lib/crest";
 import TreeAutoScroll from "./TreeAutoScroll";
+import Face from "./Face";
 
 /**
  * The family tree as an illustration: round portrait medallions with names underneath,
@@ -202,10 +203,9 @@ function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
         <g transform={`translate(${cx - 15} ${cy - 15}) scale(1.25)`}><path d={preset.d} fill="none" stroke="#fff" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" /></g>
       </>
     ) : (
-      <>
-        <circle cx={cx} cy={cy} r={R} fill={n.self ? "var(--accent)" : "#F3EEE4"} />
-        <text x={cx} y={cy + 7} textAnchor="middle" fontSize={21} fontWeight={500} fill={n.self ? "#fff" : INK} fontFamily="var(--display, Georgia, serif)">{n.initials || "?"}</text>
-      </>
+      <g transform={`translate(${cx - R} ${cy - R}) scale(${(2 * R) / 100})`} style={n.living ? undefined : { filter: "sepia(.35) saturate(.85)" }}>
+        <Face p={{ id: n.id, firstName: n.first, lastName: n.last, gender: n.gender, relation: n.relation, birthYear: n.birthYear, deathYear: n.deathYear }} clipId={`fc-${n.id}`} />
+      </g>
     );
   }
   return (

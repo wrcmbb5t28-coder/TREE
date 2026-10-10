@@ -37,7 +37,7 @@ const SAMPLE_CRESTS: CrestConfig[] = [
   { shape: "french", division: "plain", field: "vert", field2: "or", ordinary: "bordure", ordinaryColor: "or", charges: ["wheat", "wheat", "sun"], chargeColor: "or", motto: "" },
   { shape: "heater", division: "pale", field: "gules", field2: "or", ordinary: "none", ordinaryColor: "argent", charges: ["book", "feather"], chargeColor: "argent", motto: "" },
 ];
-const SAMPLE_AVATARS = ["anchor", "flower", "wheat", "sun", "tree", "book", null, "star"];
+const SAMPLE_GENDERS = ["m", "f", "m", "f", "m", "f", "m", "f"];
 
 export default async function Home({ params }: Props) {
   const { lang } = await params;
@@ -52,7 +52,7 @@ export default async function Home({ params }: Props) {
   const people = sp.map((p, i) => ({
     id: `s${i}`, firstName: p.first, lastName: p.last, birthYear: p.born, birthPlace: p.place, generation: gens[i],
     isSelf: i === 6, isLiving: i > 1, deathYear: i === 0 ? 2011 : i === 1 ? 2023 : null,
-    createdAt: new Date(2020, 0, i + 1), photoPath: null, avatar: SAMPLE_AVATARS[i],
+    createdAt: new Date(2020, 0, i + 1), photoPath: null, avatar: null, gender: SAMPLE_GENDERS[i], relation: null,
   })) as never[];
   const L = (p: number, c: number) => ({ id: `${p}-${c}`, parentId: `s${p}`, childId: `s${c}` });
   const links = [L(0, 4), L(1, 4), L(2, 5), L(3, 5), L(4, 6), L(5, 6), L(4, 7), L(5, 7)] as never[];

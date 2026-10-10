@@ -249,7 +249,7 @@ export default async function PersonPage({
                 ))}
                 <button name="avatar" value="" title={t.initials} aria-label={t.initials}
                   className={`avatar-pick${!p.photoPath && !p.avatar ? " is-on" : ""}`}>
-                  <PersonAvatar person={{ firstName: p.firstName, lastName: p.lastName }} size={44} />
+                  <PersonAvatar person={{ ...p, photoPath: null, avatar: null }} size={44} />
                 </button>
               </div>
               {p.photoPath && <p className="small muted">{t.symbolKeepsPhotos}</p>}

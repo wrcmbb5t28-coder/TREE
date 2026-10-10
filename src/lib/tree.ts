@@ -11,6 +11,7 @@ import type { Person, Relationship } from "@prisma/client";
 export type TreeNode = {
   id: string; first: string; last: string; sub: string; x: number; y: number;
   self: boolean; living: boolean; photoPath: string | null; avatar: string | null; initials: string;
+  gender: string | null; relation: string | null; birthYear: number | null; deathYear: number | null;
 };
 export type Couple = { a: { x: number; y: number }; b: { x: number; y: number } };
 export type Family = { from: { x: number; y: number }; busY: number; children: { x: number; y: number }[] };
@@ -145,6 +146,7 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
       ...pos.get(p.id)!,
       self: p.isSelf, living: p.isLiving, photoPath: p.photoPath ?? null, avatar: p.avatar ?? null,
       initials: ((p.firstName?.[0] ?? "") + (p.lastName?.[0] ?? "")).toUpperCase(),
+      gender: p.gender ?? null, relation: p.relation ?? null, birthYear: p.birthYear ?? null, deathYear: p.deathYear ?? null,
     };
   });
 

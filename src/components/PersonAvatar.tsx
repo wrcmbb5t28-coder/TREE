@@ -1,8 +1,12 @@
 import { avatarById, type AvatarPreset } from "@/lib/avatars";
+import { FaceSvg } from "./Face";
 
-type P = { firstName: string; lastName?: string | null; photoPath?: string | null; avatar?: string | null };
+type P = {
+  id?: string; firstName: string; lastName?: string | null; photoPath?: string | null; avatar?: string | null;
+  gender?: string | null; relation?: string | null; birthYear?: number | null; deathYear?: number | null;
+};
 
-/** Round picture of a person: their photo, else the chosen preset, else initials. */
+/** Round picture of a person: their photo, else the chosen symbol, else a drawn face that fits their age and gender. */
 export default function PersonAvatar({ person, size = 48 }: { person: P; size?: number }) {
   const style = { width: size, height: size, borderRadius: "50%", flex: "none" } as const;
   if (person.photoPath) {
@@ -11,12 +15,7 @@ export default function PersonAvatar({ person, size = 48 }: { person: P; size?: 
   }
   const preset = avatarById(person.avatar);
   if (preset) return <PresetAvatar preset={preset} size={size} />;
-  const initials = ((person.firstName?.[0] ?? "") + (person.lastName?.[0] ?? "")).toUpperCase() || "?";
-  return (
-    <span aria-hidden style={{ ...style, display: "inline-grid", placeItems: "center", background: "var(--tint)", color: "var(--accent)", fontFamily: "var(--display)", fontWeight: 600, fontSize: size * 0.38 }}>
-      {initials}
-    </span>
-  );
+  return <FaceSvg p={person} size={size} />;
 }
 
 export function PresetAvatar({ preset, size = 48 }: { preset: AvatarPreset; size?: number }) {
