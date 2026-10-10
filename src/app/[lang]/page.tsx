@@ -85,6 +85,7 @@ export default async function Home({ params }: Props) {
         <SiteNav lang={lang} t={t} />
         <header className="h-hero">
           <div>
+            <p className="h-slogan h-reveal">{t.hero.slogan}</p>
             <h1 className="h-reveal">{t.hero.title}</h1>
             <p className="lead h-reveal d1">{t.hero.sub}</p>
             <div className="row h-reveal d2">

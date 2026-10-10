@@ -208,3 +208,4 @@
 [data-theme="book"] .demo-banner-in { max-width: 1120px; margin: 4px auto 10px; padding: 10px 16px; background: #F6E7B8; color: #3B2A1A; border-radius: 2px; box-shadow: 0 6px 14px rgba(0,0,0,.25); transform: rotate(-.3deg); }
 [data-theme="book"] .demo-banner p { font-family: var(--body, Lora, serif); }
 [data-theme="book"] .demo-banner-hl .demo-banner-in { background: #F3D58A; }
+[data-theme="book"] .h-slogan { font-family: var(--hand); font-style: normal; font-weight: 700; font-size: clamp(1.6rem, 2.8vw, 2.1rem); line-height: 1.15; color: #8A2E26; transform: rotate(-1.2deg); transform-origin: left; }

@@ -8,6 +8,7 @@ const es: Dict = {
   },
   nav: { tagline: "La historia familiar, contada por tu familia", login: "Entrar", start: "Empieza gratis" },
   hero: {
+    slogan: "El mejor momento fue ayer. El siguiente es ahora.",
     title: "Pregúntales ahora, mientras todavía pueden contártelo",
     sub: "Envía a tu abuela una pregunta por WhatsApp. Ella responde con su voz, con sus palabras y en su idioma. Treename guarda la grabación y pone por escrito lo que cuenta. Respuesta a respuesta, la historia de tu familia va tomando forma: un árbol, un mapa y un libro.",
     cta: "Haz la primera pregunta",
@@ -99,8 +100,8 @@ const es: Dict = {
     legacy: { name: "Regalo", price: "$99", per: "pago único", features: ["Un año del plan Familia", "52 preguntas semanales para un narrador", "Un libro a color de tapa dura con códigos de voz", "Llega como una tarjeta bonita"], cta: "Regalar Treename" },
   },
   final: {
-    title: "Lo más difícil es la primera pregunta",
-    body: "Te ayudamos con ella. Son dos minutos, y la respuesta se queda con tu familia para siempre.",
+    title: "Sobre todo, no lo dejes para después",
+    body: "Pregunta a tu familia mientras viven. Te ayudamos con la primera pregunta: son dos minutos, y la respuesta se queda con tu familia para siempre.",
     cta: "Haz la primera pregunta",
   },
   footer: { privacy: "Privacidad", questions: "Preguntas para hacer a los abuelos", place: "Treename · Zug, Suiza" },

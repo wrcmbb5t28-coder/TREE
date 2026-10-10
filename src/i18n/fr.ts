@@ -8,6 +8,7 @@ const fr: Dict = {
   },
   nav: { tagline: "L'histoire de famille, racontée par votre famille", login: "Se connecter", start: "Commencer gratuitement" },
   hero: {
+    slogan: "Le meilleur moment, c’était hier. Le suivant, c’est maintenant.",
     title: "Posez-leur vos questions maintenant, tant qu’ils sont là pour y répondre",
     sub: "Envoyez une question à votre grand-mère sur WhatsApp. Elle répond par un message vocal, avec ses mots et dans sa langue. Treename garde l’enregistrement et met son récit par écrit. Réponse après réponse, l’histoire de votre famille prend forme : un arbre, une carte et un livre.",
     cta: "Poser la première question",
@@ -99,8 +100,8 @@ const fr: Dict = {
     legacy: { name: "Cadeau", price: "$99", per: "paiement unique", features: ["Un an d’offre Famille", "52 questions hebdomadaires pour un conteur", "Un livre relié en couleur avec codes vocaux", "Livré sous forme de jolie carte"], cta: "Offrir Treename" },
   },
   final: {
-    title: "Le plus difficile, c’est la première question",
-    body: "Nous vous aidons à la trouver. Cela prend deux minutes, et la réponse reste dans votre famille pour de bon.",
+    title: "Surtout, ne remettez pas à plus tard",
+    body: "Interrogez vos proches tant qu’ils sont en vie. Nous vous aidons pour la première question : cela prend deux minutes, et la réponse reste dans votre famille pour de bon.",
     cta: "Poser la première question",
   },
   footer: { privacy: "Confidentialité", questions: "Questions à poser à ses grands-parents", place: "Treename · Zoug, Suisse" },

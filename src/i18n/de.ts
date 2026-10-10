@@ -8,6 +8,7 @@ const de: Dict = {
   },
   nav: { tagline: "Familiengeschichte, erzählt von Ihrer Familie", login: "Anmelden", start: "Kostenlos starten" },
   hero: {
+    slogan: "Der beste Zeitpunkt war gestern. Der nächstbeste ist jetzt.",
     title: "Fragen Sie jetzt, solange sie es Ihnen noch erzählen können",
     sub: "Schicken Sie Ihrer Oma eine Frage per WhatsApp. Sie antwortet mit einer Sprachnachricht, in ihren eigenen Worten und in ihrer Sprache. Treename bewahrt die Aufnahme und schreibt ihre Geschichte auf. Antwort für Antwort entsteht so Ihre Familiengeschichte: ein Stammbaum, eine Karte und ein Buch.",
     cta: "Die erste Frage stellen",
@@ -99,8 +100,8 @@ const de: Dict = {
     legacy: { name: "Geschenk", price: "$99", per: "einmalig", features: ["Ein Jahr im Abo „Familie“", "52 wöchentliche Fragen für eine erzählende Person", "Ein gebundenes Farbbuch mit Sprachcodes", "Kommt als schöne Geschenkkarte"], cta: "Treename verschenken" },
   },
   final: {
-    title: "Am schwersten ist die erste Frage",
-    body: "Dabei helfen wir Ihnen. Es dauert zwei Minuten, und die Antwort bleibt für immer in Ihrer Familie.",
+    title: "Vor allem: Schieben Sie es nicht auf",
+    body: "Fragen Sie Ihre Angehörigen, solange sie leben. Bei der ersten Frage helfen wir Ihnen: Es dauert zwei Minuten, und die Antwort bleibt für immer in Ihrer Familie.",
     cta: "Die erste Frage stellen",
   },
   footer: { privacy: "Datenschutz", questions: "Fragen an die Großeltern", place: "Treename · Zug, Schweiz" },

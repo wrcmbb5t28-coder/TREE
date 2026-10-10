@@ -6,6 +6,7 @@ const en = {
   },
   nav: { tagline: "Family history, told by your family", login: "Sign in", start: "Start free" },
   hero: {
+    slogan: "The best time was yesterday. The next best is now.",
     title: "Ask them now, while they’re still here to tell it",
     sub: "Send your grandmother a question on WhatsApp. She answers by voice, in her own words and her own language. Treename keeps the recording, writes down her story, and answer by answer your family history takes shape: a tree, a map and a book.",
     cta: "Ask the first question",
@@ -97,8 +98,8 @@ const en = {
     legacy: { name: "Legacy Gift", price: "$99", per: "one time", features: ["One year of Family", "52 weekly questions for one storyteller", "One hardcover color book with voice codes", "Arrives as a beautiful card"], cta: "Give Treename" },
   },
   final: {
-    title: "The hardest part is the first question",
-    body: "We’ll help you with it. It takes two minutes, and the answer stays with your family for good.",
+    title: "Above all, don’t put it off",
+    body: "Ask your family while they’re still alive. We’ll help with the first question: it takes two minutes, and the answer stays with your family for good.",
     cta: "Ask the first question",
   },
   footer: { privacy: "Privacy", questions: "Questions to ask your grandparents", place: "Treename · Zug, Switzerland" },
