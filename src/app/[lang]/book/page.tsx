@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { isLang, LANGS, HREFLANG } from "@/i18n";
 import type { Lang } from "@/i18n/config";
 import BookReader from "@/components/BookReader";
-import StoryArt, { type Scene } from "@/components/StoryArt";
+import BookArt, { type BookScene } from "@/components/BookArt";
 import CrestSvg from "@/components/CrestSvg";
 import { FaceSvg } from "@/components/Face";
-import { sampleBook, type SampleBookText, type Person } from "@/lib/sampleBook";
+import { sampleBook, storyArt, type SampleBookText, type Person } from "@/lib/sampleBook";
 import { existingSamples, sampleUrl } from "@/lib/sampleImages";
 
 export const dynamicParams = false;
@@ -41,14 +41,14 @@ function face(p: Person, gender: "m" | "f", lang: Lang) {
 }
 
 /** A photograph: the generated picture when there is one, otherwise the drawing. */
-function Photo({ has, lang, slot, scene, seed, caption, tilt, v, wide }: { has: boolean; lang: Lang; slot: string; scene: Scene; seed: string; caption: string; tilt: number; v: string; wide?: boolean }) {
+function Photo({ has, lang, slot, art, year, seed, caption, tilt, v, wide }: { has: boolean; lang: Lang; slot: string; art: BookScene; year: number; seed: string; caption: string; tilt: number; v: string; wide?: boolean }) {
   return (
     <figure className={`sb-photo${wide ? " sb-photo-wide" : ""}`} style={{ transform: `rotate(${tilt}deg)` }}>
       <span className="tape tape-l" aria-hidden="true" /><span className="tape tape-r" aria-hidden="true" />
       {has
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src={sampleUrl(lang, slot, v)} alt={caption} loading="lazy" width={1536} height={1024} className="sb-img" />
-        : <StoryArt seed={seed} scene={scene} idSuffix={`${slot}${lang}`} title={caption} />}
+        : <BookArt seed={`${seed}-${slot}`} scene={art} year={year} title={caption} />}
       <figcaption>{caption}</figcaption>
     </figure>
   );
@@ -184,7 +184,7 @@ export default async function SampleBook({ params }: Props) {
     </article>,
 
     <article key="family" className="sb-p sb-familypage">
-      <Photo has={has.has("family")} lang={lang} slot="family" scene={b.family.scene} seed={`fam-${lang}`} caption={b.family.caption} tilt={-1.2} v={v} wide />
+      <Photo has={has.has("family")} lang={lang} slot="family" art="portrait" year={b.family.year} seed={`fam-${lang}`} caption={b.family.caption} tilt={-1.2} v={v} wide />
       <p className="sb-small">{b.photoNote}</p>
       <Folio n={4} />
     </article>,
@@ -206,7 +206,7 @@ export default async function SampleBook({ params }: Props) {
     ...b.stories.flatMap((s, i) => [
       <article key={`s${i}l`} className="sb-p sb-left">
         <p className="sb-chapter">{ui.chapter} {ROMAN[i]} · {s.chapter}</p>
-        <Photo has={has.has(`s${i}`)} lang={lang} slot={`s${i}`} scene={s.scene} seed={`sb-${lang}-${i}`} caption={s.caption} tilt={i % 2 ? 1.4 : -1.6} v={v} />
+        <Photo has={has.has(`s${i}`)} lang={lang} slot={`s${i}`} art={storyArt(lang, i)} year={s.year} seed={`sb-${lang}-${i}`} caption={s.caption} tilt={i % 2 ? 1.4 : -1.6} v={v} />
         {s.quote ? <blockquote className="sb-quote">{Q[lang][0]}{s.quote}{Q[lang][1]}</blockquote> : <p className="sb-orn" aria-hidden="true">❦</p>}
         <Folio n={storyPage(i)} />
       </article>,
@@ -223,7 +223,7 @@ export default async function SampleBook({ params }: Props) {
       <p className="sb-chapter">{b.recipe.chapter}</p>
       <h3 className="sb-title sb-center">{b.recipe.title}</h3>
       <p className="sb-who sb-center">{b.recipe.who}</p>
-      <Photo has={has.has("recipe")} lang={lang} slot="recipe" scene="house" seed={`rc-${lang}`} caption={b.recipe.title} tilt={1.2} v={v} />
+      <Photo has={has.has("recipe")} lang={lang} slot="recipe" art="dish" year={2026} seed={`rc-${lang}`} caption={b.recipe.title} tilt={1.2} v={v} />
       <Folio n={recipePage} />
     </article>,
     <article key="r2" className="sb-p sb-right">
