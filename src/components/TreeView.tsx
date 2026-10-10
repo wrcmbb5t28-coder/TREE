@@ -144,7 +144,7 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
 
         {/* Ink lines between generations */}
         <g aria-hidden="true">
-          {lines.map((l, i) => <path key={`l${i}`} d={l.d} fill="none" stroke={INK} strokeWidth={1.7} strokeLinecap="round" />)}
+          {lines.map((l, i) => <path key={`l${i}`} d={l.d} fill="none" stroke={INK} strokeWidth={1.7} strokeLinecap="round" vectorEffect="non-scaling-stroke" />)}
           {lines.flatMap((l) => l.leaves).map((q, i) => (
             <path key={`f${i}`} d="M0 0 C3 -4.2 9 -4.2 12 0 C9 4.2 3 4.2 0 0 Z M0 0 L10 0" fill="#9DBA88" stroke={INK} strokeWidth={0.9}
               transform={`translate(${q.x} ${q.y}) rotate(${q.r})`} />
@@ -156,7 +156,7 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
           const y = med(c.a.y), x1 = c.a.x + R + 6, x2 = c.b.x - R - 6, mid = (x1 + x2) / 2;
           return (
             <g key={`c${i}`} aria-hidden="true">
-              <path d={`M${x1} ${y} Q${mid} ${y + 7} ${x2} ${y}`} fill="none" stroke={INK} strokeWidth={1.5} />
+              <path d={`M${x1} ${y} Q${mid} ${y + 7} ${x2} ${y}`} fill="none" stroke={INK} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
               <circle cx={mid - 3} cy={y + 3.5} r={4.2} fill="#FFFDF8" stroke={GOLD} strokeWidth={1.8} />
               <circle cx={mid + 3} cy={y + 3.5} r={4.2} fill="none" stroke={GOLD} strokeWidth={1.8} />
             </g>
