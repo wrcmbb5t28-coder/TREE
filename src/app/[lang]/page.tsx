@@ -9,6 +9,7 @@ import TreeView from "@/components/TreeView";
 import CrestSvg from "@/components/CrestSvg";
 import type { CrestConfig } from "@/lib/crest";
 import { appUrl } from "@/lib/util";
+import { sampleBook } from "@/lib/sampleBook";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -46,6 +47,7 @@ export default async function Home({ params }: Props) {
   const t = getDict(lang);
   const h = t.home;
   const start = `/${lang}/start`;
+  const sb = sampleBook(lang);
 
   // The example family, drawn by the real tree component.
   const sp = h.sample.people;
@@ -149,8 +151,11 @@ export default async function Home({ params }: Props) {
             </div>
 
             <div className="h-row">
-              <div className="h-row-text"><h3>{h.show.book.t}</h3><p>{h.show.book.d}</p></div>
-              <div className="h-book" aria-label={h.show.book.t}>
+              <div className="h-row-text">
+                <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
+                <p><Link className="btn btn-primary" href={`/${lang}/book`}>{sb.ui.cta}</Link></p>
+              </div>
+              <Link href={`/${lang}/book`} className="h-book h-book-link" aria-label={sb.ui.cta}>
                 <div className="h-page">
                   <span className="chap">{h.bookChapter}</span>
                   <h4>{h.bookTitle}</h4>
@@ -167,7 +172,7 @@ export default async function Home({ params }: Props) {
                     <span>{h.bookScan}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
 
             <div className="h-row flip">
@@ -218,6 +223,7 @@ export default async function Home({ params }: Props) {
                   <h3>{p.name}</h3>
                   <div className="amt">{p.price} {p.per && <small>{p.per}</small>}</div>
                   <ul>{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
+                  {k === "legacy" && <Link className="small" href={`/${lang}/book`}>{sb.ui.cta} →</Link>}
                   <Link className={`btn ${k === "family" ? "btn-primary" : "btn-ghost"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
                 </article>
               );

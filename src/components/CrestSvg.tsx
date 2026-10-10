@@ -39,7 +39,7 @@ export default function CrestSvg({ c, size = 120, title, idSuffix = "" }: { c: C
       {hasMotto && (
         <g>
           <path d="M4 128 Q8 122 14 126 L86 126 Q92 122 96 128 L92 140 Q88 146 84 142 L16 142 Q12 146 8 140 Z" fill="#F3F1EA" stroke="#2B2F2C" strokeWidth={1.4} />
-          <text x="50" y="137.5" textAnchor="middle" fontSize={c.motto.length > 24 ? 6 : 7.5} fontFamily="Georgia, 'Spectral', serif" fontStyle="italic" fill="#2B2F2C">
+          <text x="50" y="137.5" textAnchor="middle" fontSize={Math.min(7.5, 150 / Math.max(1, c.motto.length))} fontFamily="Georgia, 'Spectral', serif" fontStyle="italic" fill="#2B2F2C">
             {c.motto.slice(0, 40)}
           </text>
         </g>
