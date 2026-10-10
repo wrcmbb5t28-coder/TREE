@@ -58,9 +58,45 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
     units.push(u); unitOf.set(p.id, u);
   }
 
-  // 2. Rows by generation.
+  // 2. Rows by generation, in a starting order that keeps a long family tree upright:
+  // walking up from the youngest generation, in every couple the partner with the longer line of
+  // ancestors goes left in one generation and right in the next, so the main line zigzags around the
+  // middle instead of drifting to one side, and each married-in family branches off on alternate sides.
   const gens = [...new Set(units.map((u) => u.gen))].sort((a, b) => a - b);
-  const rows = gens.map((g) => units.filter((u) => u.gen === g));
+  const depthMemo = new Map<string, number>();
+  const depth = (m: string, seen = new Set<string>()): number => {
+    if (depthMemo.has(m)) return depthMemo.get(m)!;
+    if (seen.has(m)) return 0;
+    seen.add(m);
+    const ps = parentsOf.get(m) ?? [];
+    const d = ps.length ? 1 + Math.max(...ps.map((p) => depth(p, seen))) : 0;
+    depthMemo.set(m, d);
+    return d;
+  };
+  const visitOrder = new Map<Unit, number>();
+  let counter = 0;
+  const visit = (u: Unit, flip: boolean) => {
+    if (visitOrder.has(u)) return;
+    visitOrder.set(u, counter++);
+    let ms = u.members;
+    if (ms.length === 2) {
+      const [a, b] = ms;
+      const main = depth(a) >= depth(b) ? a : b, other = main === a ? b : a;
+      ms = flip ? [other, main] : [main, other];
+      u.members = ms;
+    }
+    for (const m of ms) {
+      const pu = [...new Set((parentsOf.get(m) ?? []).map((p) => unitOf.get(p)!))];
+      const isMain = ms.length === 2 && depth(m) >= depth(ms.find((x) => x !== m)!);
+      for (const x of pu) visit(x, isMain ? !flip : flip);
+    }
+  };
+  const selfP = people.find((p) => p.isSelf);
+  const lowest = (m: string): string => { const cs = childrenOf.get(m) ?? []; return cs.length ? lowest(cs[0]) : m; };
+  const starts = [...units].sort((a, b) => b.gen - a.gen);
+  if (selfP) visit(unitOf.get(lowest(selfP.id))!, false);
+  for (const u of starts) visit(u, false);
+  const rows = gens.map((g) => units.filter((u) => u.gen === g).sort((a, b) => visitOrder.get(a)! - visitOrder.get(b)!));
   const idx = new Map<Unit, number>();
   const reindex = () => rows.forEach((r) => r.forEach((u, i) => idx.set(u, i)));
   reindex();
@@ -80,6 +116,39 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
       rows[r].sort((a, b) => key.get(a)! - key.get(b)!); reindex();
     }
   }
+  // 3b. Untangle: swap neighbours in a row while that reduces crossing lines between generations.
+  const rowOf = new Map<Unit, number>();
+  rows.forEach((r, i) => r.forEach((u) => rowOf.set(u, i)));
+  const edgesTo = (r: number) => {
+    const out: [number, number][] = [];
+    for (const c of rows[r] ?? []) for (const p of parentUnits(c)) if (rowOf.get(p) === r - 1) out.push([idx.get(p)!, idx.get(c)!]);
+    return out;
+  };
+  const crossings = (r: number) => {
+    if (r <= 0 || r >= rows.length) return 0;
+    const e = edgesTo(r);
+    let n = 0;
+    for (let i = 0; i < e.length; i++) for (let j = i + 1; j < e.length; j++) if ((e[i][0] - e[j][0]) * (e[i][1] - e[j][1]) < 0) n++;
+    return n;
+  };
+  for (let pass = 0; pass < 12; pass++) {
+    let improved = false;
+    for (let r = 0; r < rows.length; r++) {
+      for (let i = 0; i + 1 < rows[r].length; i++) {
+        const before = crossings(r) + crossings(r + 1);
+        [rows[r][i], rows[r][i + 1]] = [rows[r][i + 1], rows[r][i]];
+        idx.set(rows[r][i], i); idx.set(rows[r][i + 1], i + 1);
+        const after = crossings(r) + crossings(r + 1);
+        if (after < before) { improved = true; continue; }
+        // a sideways step through a tangle often opens the way to the next real improvement
+        if (after === before && before > 0 && pass < 6 && (pass + i + r) % 2 === 0) continue;
+        [rows[r][i], rows[r][i + 1]] = [rows[r][i + 1], rows[r][i]];
+        idx.set(rows[r][i], i); idx.set(rows[r][i + 1], i + 1);
+      }
+    }
+    if (!improved) break;
+  }
+
   // Inside a couple: the partner whose parents stand further left goes left; "You" first on ties.
   for (const u of units) {
     if (u.members.length !== 2) continue;
