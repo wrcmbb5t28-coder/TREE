@@ -392,7 +392,7 @@ export async function uploadPhoto(form: FormData) {
 
 export async function addEvent(form: FormData) {
   const { family } = await editor();
-  const description = clean(form.get("description"), 200);
+  const description = clean(form.get("description"), 1000);
   if (!description) throw new Error("Describe what happened.");
   await db.lifeEvent.create({
     data: {
@@ -420,7 +420,7 @@ export async function updateEvent(id: string, form: FormData) {
   const year = toInt(form.get("year"));
   const place = clean(form.get("place"), 80) || null;
   const country = countryCode(form.get("country"));
-  const description = birth ? ev.description : clean(form.get("description"), 200) || ev.description;
+  const description = birth ? ev.description : clean(form.get("description"), 1000) || ev.description;
   await db.lifeEvent.update({ where: { id }, data: { year, place, country, description } });
   if (birth && ev.personId) {
     await db.person.updateMany({ where: { id: ev.personId, familyId: family.id }, data: { birthYear: year, birthPlace: place, birthCountry: country } });

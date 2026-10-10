@@ -26,7 +26,7 @@ export default function VoiceFill({ lang, labels }: { lang: string; labels: { sp
     const form = btn.current?.closest("form");
     if (!form) return;
     const set = (name: string, v: string, onlyEmpty = false) => {
-      const el = form.querySelector<HTMLInputElement>(`input[name="${name}"]`);
+      const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`);
       if (el && (!onlyEmpty || !el.value.trim())) el.value = v;
     };
     let what = text.trim();
@@ -36,7 +36,11 @@ export default function VoiceFill({ lang, labels }: { lang: string; labels: { sp
       // "в 1995 году," / "in 1995," at the start is said for the date, not the event
       what = what.replace(new RegExp(`^(в|во|in|im|en|nel|el)?\\s*${year[1]}\\s*(году|г\\.?|года)?[,\\s]*`, "i"), "");
     }
-    if (what) set("description", what.charAt(0).toUpperCase() + what.slice(1));
+    if (what) {
+      const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement>('[name="description"]');
+      const cap = what.charAt(0).toUpperCase() + what.slice(1);
+      if (el) { el.value = el.value.trim() ? `${el.value.trim()} ${what}` : cap; el.focus(); }
+    }
   }
 
   function toggle() {

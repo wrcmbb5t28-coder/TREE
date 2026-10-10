@@ -143,7 +143,7 @@ export default async function PersonPage({
                 {editable && (
                   <span className="ev-actions">
                     <EventEdit e={e} lang={lang} back={`/app/family/${p.id}`}
-                      l={{ edit: c.btn.edit, save: c.btn.save, year: t.year, what: t.whatHappened, place: t.place, country: familyT[lang].journey.country, whatShown: t.birthAuto }} />
+                      l={{ edit: c.btn.edit, save: c.btn.save, year: t.year, what: t.whatHappened, place: t.place, country: familyT[lang].journey.country, whatShown: t.birthAuto, speak: t.speak, listening: t.listening }} />
                     <form action={deleteEvent.bind(null, e.id)}>
                       <button className="btn-link small muted" aria-label={t.removeEvent}>{c.btn.remove}</button>
                     </form>
@@ -154,14 +154,17 @@ export default async function PersonPage({
           </ol>
         )}
         {editable && (
-          <form action={addEvent} className="event-form">
+          <form action={addEvent} className="event-form ev-new">
             <input type="hidden" name="personId" value={p.id} />
             <input type="hidden" name="back" value={`/app/family/${p.id}`} />
+            <div className="field ev-what">
+              <div className="voice-label"><label htmlFor="ev-desc">{t.whatHappened}</label><VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></div>
+              <textarea id="ev-desc" name="description" required rows={3} placeholder={t.phWhat} />
+            </div>
             <div className="field"><label htmlFor="ev-year">{t.year}</label><input id="ev-year" name="year" inputMode="numeric" placeholder={t.phYear} /></div>
-            <div className="field"><label htmlFor="ev-desc" className="voice-label">{t.whatHappened}<VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
             <div className="field"><label htmlFor="ev-place">{t.place}</label><input id="ev-place" name="place" placeholder={t.phPlace} /></div>
             <div className="field"><label htmlFor="ev-country">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="ev-country" /></div>
-            <button className="btn btn-ghost">{c.btn.add}</button>
+            <button className="btn btn-primary">{c.btn.add}</button>
           </form>
         )}
       </section>

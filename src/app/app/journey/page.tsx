@@ -333,7 +333,7 @@ export default async function JourneyPage() {
                         {where && <p className="ct-where">{where}</p>}
                         {editable && (
                           <EventEdit e={e} lang={lang} back="/app/journey"
-                            l={{ edit: common[lang].btn.edit, save: common[lang].btn.save, year: familyT[lang].person.year, what: familyT[lang].person.whatHappened, place: familyT[lang].person.place, country: t.country, whatShown: familyT[lang].person.birthAuto }} />
+                            l={{ edit: common[lang].btn.edit, save: common[lang].btn.save, year: familyT[lang].person.year, what: familyT[lang].person.whatHappened, place: familyT[lang].person.place, country: t.country, whatShown: familyT[lang].person.birthAuto, speak: familyT[lang].person.speak, listening: familyT[lang].person.listening }} />
                         )}
                         {e.person ? (
                           <Link href={`/app/family/${e.person.id}`} className="route-person ct-who">
@@ -365,7 +365,10 @@ export default async function JourneyPage() {
             </div>
             <div className="field"><label htmlFor="year">{t.year}</label><input id="year" name="year" inputMode="numeric" placeholder="1989" /></div>
           </div>
-          <div className="field"><label htmlFor="description" className="voice-label">{t.whatHappened}<VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></label><input id="description" name="description" required placeholder={t.phWhat} /></div>
+          <div className="field ev-what">
+            <div className="voice-label"><label htmlFor="description">{t.whatHappened}</label><VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></div>
+            <textarea id="description" name="description" required rows={3} placeholder={t.phWhat} />
+          </div>
           <div className="grid2">
             <div className="field"><label htmlFor="place">{t.town}</label><input id="place" name="place" /></div>
             <div className="field">
