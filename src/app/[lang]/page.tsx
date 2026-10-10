@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { getDict, isLang, LANGS, HREFLANG } from "@/i18n";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import HeroDemo from "@/components/HeroDemo";
-import Journey from "@/components/JourneyDemo";
+import TreeView from "@/components/TreeView";
+import CrestSvg from "@/components/CrestSvg";
+import type { CrestConfig } from "@/lib/crest";
 import { appUrl } from "@/lib/util";
 
 export const dynamicParams = false;
@@ -24,23 +26,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/${lang}`,
       languages: Object.fromEntries([...LANGS.map((l) => [HREFLANG[l], `/${l}`]), ["x-default", "/en"]]),
     },
-    openGraph: {
-      title: t.meta.title,
-      description: t.meta.description,
-      url: `/${lang}`,
-      siteName: "Treename",
-      locale: lang,
-      type: "website",
-    },
+    openGraph: { title: t.meta.title, description: t.meta.description, url: `/${lang}`, siteName: "Treename", locale: lang, type: "website" },
     twitter: { card: "summary_large_image", title: t.meta.title, description: t.meta.description },
   };
 }
+
+/** Example crests for the three sample family lines. */
+const SAMPLE_CRESTS: CrestConfig[] = [
+  { shape: "heater", division: "fess", field: "azure", field2: "argent", charge: "anchor", chargeColor: "or", motto: "" },
+  { shape: "french", division: "plain", field: "vert", field2: "or", charge: "wheat", chargeColor: "or", motto: "" },
+  { shape: "heater", division: "bend", field: "gules", field2: "or", charge: "book", chargeColor: "argent", motto: "" },
+];
+const SAMPLE_AVATARS = ["anchor", "flower", "wheat", "sun", "tree", "book", null, "star"];
 
 export default async function Home({ params }: Props) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const t = getDict(lang);
+  const h = t.home;
   const start = `/${lang}/start`;
+
+  // The example family, drawn by the real tree component.
+  const sp = h.sample.people;
+  const gens = [-2, -2, -2, -2, -1, -1, 0, 0];
+  const people = sp.map((p, i) => ({
+    id: `s${i}`, firstName: p.first, lastName: p.last, birthYear: p.born, birthPlace: p.place, generation: gens[i],
+    isSelf: i === 6, isLiving: i > 1, deathYear: i === 0 ? 2011 : i === 1 ? 2023 : null,
+    createdAt: new Date(2020, 0, i + 1), photoPath: null, avatar: SAMPLE_AVATARS[i],
+  })) as never[];
+  const L = (p: number, c: number) => ({ id: `${p}-${c}`, parentId: `s${p}`, childId: `s${c}` });
+  const links = [L(0, 4), L(1, 4), L(2, 5), L(3, 5), L(4, 6), L(5, 6), L(4, 7), L(5, 7)] as never[];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -57,147 +72,146 @@ export default async function Home({ params }: Props) {
     ],
   };
 
+  // Map sketch: route points placed on a gentle arc.
+  const route = h.sample.route;
+  const who = [[3], [2, 5], [0, 1, 4], [6, 7], [6]].map((ix) => ix.map((k) => sp[k].first).join(", "));
+  const pts = route.map((r, i) => ({ ...r, x: 70 + i * ((560 - 140) / Math.max(1, route.length - 1)), y: 210 - Math.sin((i / Math.max(1, route.length - 1)) * Math.PI) * 120 + (i % 2) * 18 }));
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="wrap">
         <SiteNav lang={lang} t={t} />
-        <header className="hero">
+        <header className="h-hero">
           <div>
-            <h1>{t.hero.title}</h1>
-            <p className="lead">{t.hero.sub}</p>
-            <div className="row">
+            <h1 className="h-reveal">{t.hero.title}</h1>
+            <p className="lead h-reveal d1">{t.hero.sub}</p>
+            <div className="row h-reveal d2">
               <Link className="btn btn-primary" href={start}>{t.hero.cta}</Link>
-              <a className="btn btn-ghost" href="#example">{t.hero.cta2}</a>
+              <a className="btn btn-ghost" href="#show">{t.hero.cta2}</a>
             </div>
-            <div className="trust">{t.hero.trust.map((x) => <span key={x}>{x}</span>)}</div>
+            <div className="trust h-reveal d3">{t.hero.trust.map((x) => <span key={x}>{x}</span>)}</div>
           </div>
-          <HeroDemo d={t.demo} />
+          <div className="h-reveal d2"><HeroDemo d={t.demo} /></div>
         </header>
       </div>
 
-      <section className="sec band">
-        <div className="wrap two">
-          <div>
-            <p className="eyebrow">{t.problem.eyebrow}</p>
-            <h2>{t.problem.title}</h2>
-            <p className="lead" style={{ marginTop: "1rem" }}>{t.problem.body}</p>
-          </div>
-          <blockquote>
-            {t.problem.quote}
-            <footer>{t.problem.quoteBy}</footer>
-          </blockquote>
-        </div>
-      </section>
-
-      <section className="sec">
+      {/* How it works: three steps */}
+      <section className="h-sec band">
         <div className="wrap">
-          <p className="eyebrow">{t.how.eyebrow}</p>
-          <h2>{t.how.title}</h2>
-          <ol className="steps">
-            {t.how.steps.map((s) => (
-              <li key={s.t}><h3>{s.t}</h3><p>{s.d}</p></li>
+          <p className="eyebrow">{h.stepsEyebrow}</p>
+          <h2>{h.stepsTitle}</h2>
+          <ol className="h-steps">
+            {h.steps.map((s, i) => (
+              <li key={s.t}>
+                <span className="h-num">{i + 1}</span>
+                <div className="stack" style={{ gap: 6 }}>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </div>
+              </li>
             ))}
           </ol>
+          <p className="h-after">{h.stepsAfter}</p>
         </div>
       </section>
 
-      <section className="sec band">
-        <div className="wrap two" style={{ alignItems: "center" }}>
-          <div>
-            <p className="eyebrow">{t.ask.eyebrow}</p>
-            <h2>{t.ask.title}</h2>
-            <p className="lead" style={{ margin: "1rem 0 1.6rem" }}>{t.ask.body}</p>
-            <Link className="btn btn-primary" href={start}>{t.ask.cta}</Link>
-          </div>
-          <div className="card-elev stack">
-            <div className="msg" style={{ justifySelf: "end", maxWidth: "88%" }}>
-              <small>Luca → Nonna Maria</small>{t.demo.question}
-            </div>
-            <div className="player" style={{ margin: 0, maxWidth: "88%" }}>
-              <span className="play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z" fill="currentColor" /></svg></span>
-              <div className="wave" aria-hidden="true">{Array.from({ length: 34 }, (_, i) => <i key={i} className="on" style={{ height: `${30 + ((i * 37) % 60)}%` }} />)}</div>
-              <span className="dur">1:24</span>
-            </div>
-            <div className="card" style={{ padding: 16 }}>
-              <span className="eyebrow">{t.ask.added}</span>
-              <p className="story-body" style={{ fontSize: "1.05rem", marginTop: 6 }}>{t.demo.answer}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="sec">
-        <div className="wrap two" style={{ alignItems: "center" }}>
-          <div>
-            <p className="eyebrow">{t.story.eyebrow}</p>
-            <h2>{t.story.title}</h2>
-            <p className="lead" style={{ marginTop: "1rem" }}>{t.story.body}</p>
-          </div>
-          <div className="card stack">
-            <span className="eyebrow" style={{ color: "var(--warm)" }}>Chapter 3 · Leaving home</span>
-            <p className="story-body">In 1962 Giuseppe takes the night train north to work in Zürich. Maria follows a year later.</p>
-            <div className="row small muted">
-              <span className="tag">Interview · Maria</span><span className="tag">Letter · March 1962</span><span className="tag">Photo · station</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="sec band">
+      {/* What you'll have: real components with one example family */}
+      <section className="h-sec" id="show">
         <div className="wrap">
-          <p className="eyebrow">{t.journey.eyebrow}</p>
-          <h2>{t.journey.title}</h2>
-          <p className="lead" style={{ marginTop: "1rem" }}>{t.journey.body}</p>
-          <div className="tree-wrap" style={{ marginTop: 32 }}><Journey label={t.journey.title} /></div>
-        </div>
-      </section>
+          <p className="eyebrow">{h.showEyebrow}</p>
+          <h2>{h.showTitle}</h2>
+          <p className="h-sub">{h.showSub}</p>
 
-      <section className="sec">
-        <div className="wrap">
-          <p className="eyebrow">{t.keep.eyebrow}</p>
-          <h2>{t.keep.title}</h2>
-          <div className="cards3">
-            <article className="card">
-              <div className="vis"><div className="book"><b style={{ fontWeight: 500 }}>The Rossi Family</b><small style={{ fontFamily: "var(--body)", fontSize: ".7rem" }}>1931 – 2027</small></div></div>
-              <h3>{t.keep.book.t}</h3><p className="muted">{t.keep.book.d}</p>
-            </article>
-            <article className="card">
-              <div className="vis"><div className="card" style={{ width: 180, padding: 12, fontSize: ".75rem" }}><b style={{ fontFamily: "var(--display)" }}>Rossi</b><div className="muted">4 · 3 · 38</div></div></div>
-              <h3>{t.keep.page.t}</h3><p className="muted">{t.keep.page.d}</p>
-            </article>
-            <article className="card">
-              <div className="vis">
-                <svg width="140" height="140" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="66" fill="none" stroke="var(--accent)" strokeWidth="3" /><circle cx="75" cy="75" r="58" fill="none" stroke="var(--accent)" /><path d="M28 98 L58 62 L72 78 L90 52 L122 98 Z" fill="var(--accent)" opacity=".85" /><ellipse cx="75" cy="40" rx="13" ry="9" fill="var(--warm)" /><circle cx="75" cy="112" r="11" fill="none" stroke="var(--accent)" strokeWidth="2" /></svg>
+          <div className="h-show">
+            <div className="h-row">
+              <div className="h-row-text"><h3>{h.show.tree.t}</h3><p>{h.show.tree.d}</p></div>
+              <div className="h-frame">
+                <TreeView people={people} links={links} label={h.show.tree.t} fit />
+                <span className="h-caption">{sp[6].first} · {sp[6].born}</span>
               </div>
-              <h3>{t.keep.emblem.t}</h3><p className="muted">{t.keep.emblem.d}</p>
-              <p className="small muted" style={{ fontStyle: "italic", marginTop: 8 }}>{t.keep.emblemNote}</p>
-            </article>
+            </div>
+
+            <div className="h-row flip">
+              <div className="h-row-text"><h3>{h.show.crest.t}</h3><p>{h.show.crest.d}</p></div>
+              <div className="h-frame">
+                <div className="h-crests">
+                  {SAMPLE_CRESTS.map((c, i) => (
+                    <figure key={i}>
+                      <CrestSvg c={c} size={i === 1 ? 128 : 104} idSuffix={`home-${i}`} title={h.sample.surnames[i]} />
+                      <figcaption>{h.sample.surnames[i]}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="h-row">
+              <div className="h-row-text"><h3>{h.show.book.t}</h3><p>{h.show.book.d}</p></div>
+              <div className="h-book" aria-label={h.show.book.t}>
+                <div className="h-page">
+                  <span className="chap">{h.bookChapter}</span>
+                  <h4>{h.bookTitle}</h4>
+                  <p>{h.bookText}</p>
+                </div>
+                <div className="h-page">
+                  <div className="h-photo" aria-hidden="true">
+                    <svg viewBox="0 0 120 90" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+                      <defs><linearGradient id="sep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d9c6a4" /><stop offset="1" stopColor="#b79c74" /></linearGradient></defs>
+                      <rect width="120" height="90" fill="url(#sep)" />
+                      <path d="M0 62 H120 V90 H0 Z" fill="#9c8260" opacity=".55" />
+                      <path d="M0 60 L120 60" stroke="#7d6648" strokeWidth="1.5" />
+                      {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M${6 + i * 13} 60 v-8`} stroke="#7d6648" strokeWidth="1.2" />)}
+                      <circle cx="46" cy="36" r="6" fill="#6f5638" /><rect x="40" y="42" width="12" height="20" rx="5" fill="#5f4a31" />
+                      <circle cx="64" cy="35" r="6.5" fill="#5a442d" /><rect x="57" y="41" width="14" height="21" rx="5" fill="#4d3a27" />
+                      <circle cx="98" cy="16" r="7" fill="#efe2c8" />
+                    </svg>
+                  </div>
+                  <div className="h-qr">
+                    <svg width="46" height="46" viewBox="0 0 7 7" aria-hidden="true" shapeRendering="crispEdges">
+                      {["1110111", "1010101", "1110111", "0001000", "1101011", "0110101", "1011101"].flatMap((row, y) => [...row].map((v, x) => (v === "1" ? <rect key={`${x}${y}`} x={x} y={y} width="1" height="1" fill="#2A2420" /> : null)))}
+                    </svg>
+                    <span>{h.bookScan}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-row flip">
+              <div className="h-row-text"><h3>{h.show.map.t}</h3><p>{h.show.map.d}</p></div>
+              <div className="h-frame h-map">
+                <svg viewBox="0 0 620 300" width="100%" role="img" aria-label={h.show.map.t}>
+                  {Array.from({ length: 11 }, (_, i) => <path key={`v${i}`} d={`M${i * 62} 0 V300`} stroke="#e4dccb" strokeWidth="1" />)}
+                  {Array.from({ length: 6 }, (_, i) => <path key={`h${i}`} d={`M0 ${i * 60} H620`} stroke="#e4dccb" strokeWidth="1" />)}
+                  <path d="M40 260 C140 170 180 230 260 160 S420 60 600 120" fill="none" stroke="#d8ccb4" strokeWidth="14" strokeLinecap="round" opacity=".5" />
+                  <path d={pts.map((p, i) => `${i ? "L" : "M"}${p.x} ${p.y}`).join(" ")} fill="none" stroke="var(--warm)" strokeWidth="2.5" strokeDasharray="7 6" />
+                  {pts.map((p) => (
+                    <g key={p.place}>
+                      <circle cx={p.x} cy={p.y} r="8" fill="var(--accent)" stroke="#fff" strokeWidth="2.5" />
+                      <text x={p.x} y={p.y - 16} textAnchor="middle" fontFamily="var(--display)" fontSize="15" fill="#2A2420">{p.place}</text>
+                      <text x={p.x} y={p.y + 26} textAnchor="middle" fontFamily="var(--body)" fontSize="12" fill="#6F665C">{p.year}</text>
+                      <text x={p.x} y={p.y + 42} textAnchor="middle" fontFamily="var(--hand)" fontSize="16" fill="var(--warm)">{who[pts.indexOf(p)]}</text>
+                    </g>
+                  ))}
+                  <g transform="translate(560 250)" opacity=".7"><circle r="18" fill="none" stroke="#a8977a" /><path d="M0 -16 L4 0 L0 16 L-4 0 Z" fill="#a8977a" /><text y="-22" textAnchor="middle" fontSize="10" fill="#a8977a">N</text></g>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="sec band">
+      {/* What Treename won't do */}
+      <section className="h-sec band">
         <div className="wrap">
-          <p className="eyebrow">{t.together.eyebrow}</p>
-          <h2>{t.together.title}</h2>
-          <p className="lead" style={{ marginTop: "1rem" }}>{t.together.body}</p>
-        </div>
-      </section>
-
-      <section className="sec">
-        <div className="wrap two">
-          <div>
-            <p className="eyebrow">{t.privacy.eyebrow}</p>
-            <h2>{t.privacy.title}</h2>
+          <p className="eyebrow">{h.honestEyebrow}</p>
+          <div className="h-honest">
+            {h.honest.map((x) => <article key={x.t}><b>{x.t}</b><p>{x.d}</p></article>)}
           </div>
-          <ul className="plist">
-            {t.privacy.items.map((i) => <li key={i.t}><div><b>{i.t}</b><span>{i.d}</span></div></li>)}
-          </ul>
         </div>
       </section>
 
-      <section className="sec band" id="pricing">
+      <section className="h-sec" id="pricing">
         <div className="wrap">
           <p className="eyebrow">{t.pricing.eyebrow}</p>
           <h2>{t.pricing.title}</h2>
@@ -219,10 +233,10 @@ export default async function Home({ params }: Props) {
         </div>
       </section>
 
-      <section className="sec">
-        <div className="narrow center stack" style={{ justifyItems: "center" }}>
+      <section className="h-sec band">
+        <div className="narrow center stack" style={{ justifyItems: "center", gap: 16 }}>
           <h2>{t.final.title}</h2>
-          <p className="muted">{t.final.body}</p>
+          <p className="muted" style={{ maxWidth: "34em" }}>{t.final.body}</p>
           <Link className="btn btn-primary" href={start}>{t.final.cta}</Link>
         </div>
       </section>

@@ -3,9 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Dict } from "@/i18n";
 
-const ORIGINAL =
-  "«Ci siamo conosciuti alla festa di San Francesco, nel ’53. Lui aveva una bicicletta rossa e mi ha offerto una granita al limone. Mia madre non era per niente d’accordo, ma tre anni dopo eravamo sposati.»";
-
 const N = 56;
 const TOTAL = 84; // seconds in the sample
 
@@ -51,7 +48,7 @@ export default function HeroDemo({ d }: { d: Dict["demo"] }) {
         </div>
         <div className="who"><strong>{d.who}</strong>{d.meta}</div>
       </div>
-      <p className="q">“{d.question}”</p>
+      <p className="q">{d.question}</p>
       <div className="player">
         <button className="play" onClick={toggle} aria-label={d.play}>
           {playing ? (
@@ -69,16 +66,14 @@ export default function HeroDemo({ d }: { d: Dict["demo"] }) {
         <button aria-pressed={!orig} onClick={() => setOrig(false)}>{d.translation}</button>
         <button aria-pressed={orig} onClick={() => setOrig(true)}>{d.original}</button>
       </div>
-      <p style={{ minHeight: "6.2em" }}>{orig ? ORIGINAL : d.answer}</p>
+      <p style={{ minHeight: "6.2em" }}>{orig ? d.original_text : d.answer}</p>
       <div className="facts">
         <small>{d.found}</small>
-        <span className="chip"><em>●</em> Maria Rossi</span>
-        <span className="chip"><em>●</em> Giuseppe Rossi</span>
-        <span className="chip"><em>⌖</em> Cosenza</span>
-        <span className="chip"><em>♡</em> 1953</span>
-        <span className="chip"><em>∞</em> ~1956</span>
+        {d.people.map((n) => <span key={n} className="chip"><em>●</em> {n}</span>)}
+        <span className="chip"><em>⌖</em> {d.place}</span>
+        <span className="chip"><em>♡</em> {d.year}</span>
       </div>
-      <span className="note-hand" aria-hidden="true">Maria &amp; Giuseppe, 1956</span>
+      <span className="note-hand" aria-hidden="true">{d.note}</span>
     </div>
   );
 }
