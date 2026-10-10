@@ -14,6 +14,8 @@ import { AVATARS } from "@/lib/avatars";
 import { RELATIONS, relationById } from "@/i18n/questions";
 import PersonAvatar, { PresetAvatar } from "@/components/PersonAvatar";
 import PhotoUpload from "@/components/PhotoUpload";
+import EventEdit from "@/components/EventEdit";
+import VoiceFill from "@/components/VoiceFill";
 import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, setParents, addEvent, deleteEvent } from "../../actions";
 
 export default async function PersonPage({
@@ -139,9 +141,13 @@ export default async function PersonPage({
                   {e.source !== "user" && <span className="muted small"> · {t.fromStory}</span>}
                 </span>
                 {editable && (
-                  <form action={deleteEvent.bind(null, e.id)}>
-                    <button className="btn-link small muted" aria-label={t.removeEvent}>{c.btn.remove}</button>
-                  </form>
+                  <span className="ev-actions">
+                    <EventEdit e={e} lang={lang} back={`/app/family/${p.id}`}
+                      l={{ edit: c.btn.edit, save: c.btn.save, year: t.year, what: t.whatHappened, place: t.place, country: familyT[lang].journey.country, whatShown: t.birthAuto }} />
+                    <form action={deleteEvent.bind(null, e.id)}>
+                      <button className="btn-link small muted" aria-label={t.removeEvent}>{c.btn.remove}</button>
+                    </form>
+                  </span>
                 )}
               </li>
             ))}
@@ -152,7 +158,7 @@ export default async function PersonPage({
             <input type="hidden" name="personId" value={p.id} />
             <input type="hidden" name="back" value={`/app/family/${p.id}`} />
             <div className="field"><label htmlFor="ev-year">{t.year}</label><input id="ev-year" name="year" inputMode="numeric" placeholder={t.phYear} /></div>
-            <div className="field"><label htmlFor="ev-desc">{t.whatHappened}</label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
+            <div className="field"><label htmlFor="ev-desc" className="voice-label">{t.whatHappened}<VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
             <div className="field"><label htmlFor="ev-place">{t.place}</label><input id="ev-place" name="place" placeholder={t.phPlace} /></div>
             <div className="field"><label htmlFor="ev-country">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="ev-country" /></div>
             <button className="btn btn-ghost">{c.btn.add}</button>

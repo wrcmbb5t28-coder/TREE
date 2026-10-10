@@ -411,6 +411,27 @@ export async function addEvent(form: FormData) {
   }
 }
 
+/** Fix an event (a typo, a wrong year or country). A birth also updates the person's profile. */
+export async function updateEvent(id: string, form: FormData) {
+  const { family } = await editor();
+  const ev = await db.lifeEvent.findFirst({ where: { id, familyId: family.id } });
+  if (!ev) return;
+  const birth = ev.description.endsWith(" is born");
+  const year = toInt(form.get("year"));
+  const place = clean(form.get("place"), 80) || null;
+  const country = countryCode(form.get("country"));
+  const description = birth ? ev.description : clean(form.get("description"), 200) || ev.description;
+  await db.lifeEvent.update({ where: { id }, data: { year, place, country, description } });
+  if (birth && ev.personId) {
+    await db.person.updateMany({ where: { id: ev.personId, familyId: family.id }, data: { birthYear: year, birthPlace: place, birthCountry: country } });
+    revalidatePath("/app/family");
+  }
+  revalidatePath("/app/journey");
+  if (ev.personId) revalidatePath(`/app/family/${ev.personId}`);
+  const back = clean(form.get("back"), 80);
+  redirect(back.startsWith("/app/") ? back : "/app/journey");
+}
+
 export async function deleteEvent(id: string) {
   const { family } = await editor();
   const ev = await db.lifeEvent.findFirst({ where: { id, familyId: family.id } });

@@ -8,6 +8,8 @@ import PersonAvatar from "@/components/PersonAvatar";
 import { countryName } from "@/i18n/config";
 import CountrySelect from "@/components/CountrySelect";
 import { addEvent, deleteEvent } from "../actions";
+import EventEdit from "@/components/EventEdit";
+import VoiceFill from "@/components/VoiceFill";
 import FamilyMap, { type MapPath, type MapPlace } from "@/components/FamilyMap";
 import { geocodeMany, placeKey } from "@/lib/geo";
 import { after } from "next/server";
@@ -329,6 +331,10 @@ export default async function JourneyPage() {
                         </div>
                         <p className="ct-what">{eventText(lang, e.description, e.person)}</p>
                         {where && <p className="ct-where">{where}</p>}
+                        {editable && (
+                          <EventEdit e={e} lang={lang} back="/app/journey"
+                            l={{ edit: common[lang].btn.edit, save: common[lang].btn.save, year: familyT[lang].person.year, what: familyT[lang].person.whatHappened, place: familyT[lang].person.place, country: t.country, whatShown: familyT[lang].person.birthAuto }} />
+                        )}
                         {e.person ? (
                           <Link href={`/app/family/${e.person.id}`} className="route-person ct-who">
                             <PersonAvatar person={e.person} size={24} /> {nm(e.person)}
@@ -359,7 +365,7 @@ export default async function JourneyPage() {
             </div>
             <div className="field"><label htmlFor="year">{t.year}</label><input id="year" name="year" inputMode="numeric" placeholder="1989" /></div>
           </div>
-          <div className="field"><label htmlFor="description">{t.whatHappened}</label><input id="description" name="description" required placeholder={t.phWhat} /></div>
+          <div className="field"><label htmlFor="description" className="voice-label">{t.whatHappened}<VoiceFill lang={lang} labels={{ speak: t.speak, listening: t.listening }} /></label><input id="description" name="description" required placeholder={t.phWhat} /></div>
           <div className="grid2">
             <div className="field"><label htmlFor="place">{t.town}</label><input id="place" name="place" /></div>
             <div className="field">

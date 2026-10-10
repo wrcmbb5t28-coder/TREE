@@ -641,3 +641,20 @@ a.chip:hover { background: #E2E9DA; }
 /* Family crests side by side in the "Keep" card (the .vis box is a grid that would stack them) */
 .vis.crest-strip { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 8px; padding: 0 10px; overflow: hidden; }
 .vis.crest-strip > svg { flex: 0 1 64px; min-width: 0; height: auto; }
+
+/* ---------- Editing an event in place ---------- */
+.ev-actions { display: inline-flex; gap: 14px; align-items: baseline; flex: none; }
+.timeline li { flex-wrap: wrap; }
+.ev-edit > summary { list-style: none; cursor: pointer; }
+.ev-edit > summary::-webkit-details-marker { display: none; }
+.timeline li:has(.ev-edit[open]) .ev-actions { flex-basis: 100%; flex-wrap: wrap; }
+.ev-edit[open] { flex-basis: 100%; }
+.ev-edit-form { margin-top: 10px; }
+.ct-card .ev-edit { margin-top: 6px; }
+.ct-card .ev-edit-form { grid-template-columns: 1fr; }
+.voice-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.voice-btn { padding: 2px 10px; min-height: 28px; font-size: .8rem; gap: 6px; display: inline-flex; align-items: center; }
+.voice-btn.is-on { background: #A33A2E; color: #fff; border-color: #A33A2E; animation: voicePulse 1.2s ease-in-out infinite; }
+@keyframes voicePulse { 50% { box-shadow: 0 0 0 5px rgba(163,58,46,.18); } }
+@media (prefers-reduced-motion: reduce) { .voice-btn.is-on { animation: none; } }
+.timeline li:has(.ev-edit[open]) .ev-actions { justify-content: flex-end; }
