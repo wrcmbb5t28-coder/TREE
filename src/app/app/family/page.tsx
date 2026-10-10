@@ -24,7 +24,7 @@ export default async function Family() {
   });
   const ids = people.map((p) => p.id);
   const links = await db.relationship.findMany({ where: { parentId: { in: ids }, childId: { in: ids } } });
-  const lines = await familyLines(family.id);
+  const lines = await familyLines(family.id).catch((e) => { console.error("[family] crests failed", e); return []; });
 
   return (
     <>

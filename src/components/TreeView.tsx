@@ -41,8 +41,25 @@ function taper(p: Pt[], w0: number, w1: number): string {
   return `M${l.map((q) => `${f(q.x)} ${f(q.y)}`).join(" L")} L${r.reverse().map((q) => `${f(q.x)} ${f(q.y)}`).join(" L")} Z`;
 }
 
-export default function TreeView({ people, links, label = "Family tree", fit = false }: { people: Person[]; links: Relationship[]; label?: string; fit?: boolean }) {
-  if (people.length === 0) return null;
+type Props = { people: Person[]; links: Relationship[]; label?: string; fit?: boolean };
+
+export default function TreeView(props: Props) {
+  if (props.people.length === 0) return null;
+  try {
+    return drawTree(props);
+  } catch (e) {
+    console.error("[tree] drawing failed, showing a plain list", e);
+    return (
+      <div className="tree-wrap">
+        <ul className="row" style={{ gap: 8, flexWrap: "wrap", listStyle: "none", padding: 0, margin: 0 }}>
+          {props.people.map((p) => <li key={p.id}><a className="chip-btn" href={`/app/family/${p.id}`}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}</a></li>)}
+        </ul>
+      </div>
+    );
+  }
+}
+
+function drawTree({ people, links, label = "Family tree", fit = false }: Props) {
   const { nodes, couples, families, width, height: h0, boxW, boxH } = layoutTree(people, links);
   const height = h0 + TRUNK;
   const id = `tv${Math.floor(rng(people.map((p) => p.id).join())() * 1e9).toString(36)}`;

@@ -17,6 +17,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
     <div className="empty stack" style={{ maxWidth: 560 }}>
       <h2 style={{ fontSize: "1.5rem" }}>{t.title}</h2>
       <p>{error.message && !error.message.includes("digest") ? error.message : t.fallback}</p>
+      {error.digest && <p className="small muted" style={{ margin: 0 }}>#{error.digest}</p>}
       <div className="row" style={{ justifyContent: "center" }}>
         <button className="btn btn-primary" onClick={reset}>{t.retry}</button>
         <Link className="btn btn-ghost" href="/app">{t.home}</Link>

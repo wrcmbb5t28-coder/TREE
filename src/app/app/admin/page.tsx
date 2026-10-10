@@ -21,6 +21,7 @@ export default async function Admin() {
     db.analyticsEvent.groupBy({ by: ["name"], where: { createdAt: { gte: since } }, _count: { _all: true } }),
   ]);
   const storage = await storageCheck();
+  const errors = await db.analyticsEvent.findMany({ where: { name: "server_error" }, orderBy: { createdAt: "desc" }, take: 12 });
   const keys: [string, boolean][] = [
     ["Database (DATABASE_URL)", !!process.env.DATABASE_URL],
     ["File storage (BLOB_STORE_ID or BLOB_READ_WRITE_TOKEN)", !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)],
@@ -55,6 +56,20 @@ export default async function Admin() {
           {keys.map(([label, on]) => <li key={label}>{on ? "✓" : "—"} {label}</li>)}
         </ul>
       </section>
+      {errors.length > 0 && (
+        <section className="card stack" style={{ gap: 10 }}>
+          <h2 style={{ fontSize: "1.2rem" }}>Recent server errors</h2>
+          {errors.map((e) => {
+            const p = JSON.parse(e.props || "{}") as Record<string, string>;
+            return (
+              <details key={e.id} className="small">
+                <summary><b>{e.createdAt.toISOString().slice(0, 16).replace("T", " ")}</b> · {p.path} · {p.digest} · {p.message?.slice(0, 140)}</summary>
+                <pre style={{ whiteSpace: "pre-wrap", fontSize: ".75rem" }}>{p.message}{"\n"}{p.stack}</pre>
+              </details>
+            );
+          })}
+        </section>
+      )}
       <div className="kpis">
         <div className="kpi"><b>{northStar}</b><span>Contributing families (North Star)</span></div>
         <div className="kpi"><b>{families}</b><span>families total</span></div>
