@@ -250,9 +250,9 @@ export function defaultCrest(key: string, suggestions: Suggestion[]): CrestConfi
   const colours: Tincture[] = ["gules", "azure", "vert", "purpure", "sable"];
   const metals: Tincture[] = ["or", "argent"];
   const colour = colours[h % colours.length];
-  const metal = metals[(h >> 3) % 2];
+  const metal = metals[(h >>> 3) % 2];
   const divisions: Division[] = ["plain", "pale", "fess", "bend", "chevron", "plain"];
-  const division = divisions[(h >> 5) % divisions.length];
+  const division = divisions[(h >>> 5) % divisions.length];
   return {
     shape: "heater",
     division,
