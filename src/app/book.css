@@ -50,10 +50,13 @@
 }
 /* ribbon bookmark */
 [data-theme="book"] main.page::before {
-  content: ""; position: absolute; top: -8px; right: clamp(40px, 10%, 120px); width: 20px; height: 150px;
+  content: ""; position: absolute; top: -8px; right: clamp(8px, 2vw, 26px); width: 18px; height: 120px; z-index: 0;
   background: var(--warm); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
   box-shadow: 0 0 0 1px rgba(0,0,0,.04); pointer-events: none;
 }
+/* the ribbon lies under the page's content, never over a button */
+[data-theme="book"] main.page > * { position: relative; z-index: 1; }
+
 /* a small ornament at the foot of the page, like a printed book */
 [data-theme="book"] main.page::after {
   content: "❦"; position: absolute; left: 0; right: 0; bottom: 22px; text-align: center;
@@ -180,7 +183,7 @@
 
 @media (max-width: 760px) {
   [data-theme="book"] main.page { width: calc(100% - 16px); margin-top: 12px; padding-top: 44px; }
-  [data-theme="book"] main.page::before { height: 90px; }
+  [data-theme="book"] main.page::before { height: 56px; right: 6px; width: 14px; }
   [data-theme="book"] .appnav a { padding: 11px 12px 10px; font-size: .85rem; }
   [data-theme="book"] .appbar .wrap { flex-wrap: wrap; }
   [data-theme="book"] .h-hero, [data-theme="book"] .h-sec > .wrap, [data-theme="book"] .h-sec > .narrow { width: calc(100% - 8px); }
@@ -189,3 +192,13 @@
 /* Cormorant has old-style figures (10 reads as "IO"): numbers use the text face */
 [data-theme="book"] .kpi b, [data-theme="book"] .amt, [data-theme="book"] .h-num, [data-theme="book"] .ct-year, [data-theme="book"] .jt-year, [data-theme="book"] .timeline-year, [data-theme="book"] .stat b { font-family: var(--body); font-weight: 500; letter-spacing: -.01em; }
 [data-theme="book"] .langs { background: rgba(247,240,225,.08); border-color: rgba(247,240,225,.25); }
+
+/* the printable family book: the preview sits straight on the page */
+[data-theme="book"] .book-page { background: transparent; }
+[data-theme="book"] .book-sheet { margin-top: 8px; }
+
+@media print {
+  [data-theme="book"] body { background: #fff; }
+  [data-theme="book"] main.page, [data-theme="book"] .book-sheet { box-shadow: none; background: #fff; margin: 0; width: auto; padding: 0; }
+  [data-theme="book"] main.page::before, [data-theme="book"] main.page::after, [data-theme="book"] .appbar { display: none; }
+}
