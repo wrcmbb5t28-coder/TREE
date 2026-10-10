@@ -67,6 +67,7 @@ export default async function Family() {
                   <option value={`parent-of:${p.id}`}>{t.parentOf(p.firstName)}</option>
                   <option value={`child-of:${p.id}`}>{t.childOf(p.firstName)}</option>
                   <option value={`partner-of:${p.id}`}>{t.partnerOf(p.firstName)}</option>
+                  <option value={`sibling-of:${p.id}`}>{t.siblingOf(p.firstName)}</option>
                 </optgroup>
               ))}
             </select>

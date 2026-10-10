@@ -85,7 +85,7 @@ export async function addPerson(form: FormData) {
   const { user, family } = await editor();
   const firstName = clean(form.get("firstName"), 60);
   if (!firstName) throw new Error("First name is required.");
-  const rel = clean(form.get("relation"), 80); // "parent-of:<id>" | "child-of:<id>" | "partner-of:<id>" | ""
+  const rel = clean(form.get("relation"), 80); // "parent-of:<id>" | "child-of:<id>" | "partner-of:<id>" | "sibling-of:<id>" | ""
   const [kind, otherId] = rel.split(":");
   const other = otherId ? await db.person.findFirst({ where: { id: otherId, familyId: family.id } }) : null;
   const generation = other ? (kind === "parent-of" ? other.generation - 1 : kind === "child-of" ? other.generation + 1 : other.generation) : 0;
@@ -109,6 +109,17 @@ export async function addPerson(form: FormData) {
     // Partners share children: link the new person as parent of the other's children.
     const kids = await db.relationship.findMany({ where: { parentId: other.id } });
     for (const k of kids) await db.relationship.create({ data: { parentId: person.id, childId: k.childId } }).catch(() => {});
+  }
+  if (other && kind === "sibling-of") {
+    // Brothers and sisters share parents. If the parents are not in the tree yet, add one unnamed parent ("?")
+    // so the two are drawn together; the family can fill in the name later.
+    let parents = (await db.relationship.findMany({ where: { childId: other.id } })).map((r) => r.parentId);
+    if (parents.length === 0) {
+      const ph = await db.person.create({ data: { familyId: family.id, firstName: "?", generation: other.generation - 1, isLiving: false } });
+      await db.relationship.create({ data: { parentId: ph.id, childId: other.id } });
+      parents = [ph.id];
+    }
+    for (const pid of parents) await db.relationship.create({ data: { parentId: pid, childId: person.id } }).catch(() => {});
   }
   if (person.birthYear || person.birthPlace || person.birthCountry) {
     await db.lifeEvent.create({ data: { familyId: family.id, personId: person.id, year: person.birthYear, place: person.birthPlace, country: person.birthCountry, description: `${firstName} is born`, source: "user" } });
