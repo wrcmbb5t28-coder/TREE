@@ -77,7 +77,8 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
   let counter = 0;
   const visit = (u: Unit, flip: boolean) => {
     if (visitOrder.has(u)) return;
-    visitOrder.set(u, counter++);
+    const k = (counter += 100);
+    visitOrder.set(u, k);
     let ms = u.members;
     if (ms.length === 2) {
       const [a, b] = ms;
@@ -85,6 +86,15 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
       ms = flip ? [other, main] : [main, other];
       u.members = ms;
     }
+    // Brothers and sisters stand right next to them, on the outer side (away from the partner).
+    ms.forEach((m, i) => {
+      const sibs = [...new Set((parentsOf.get(m) ?? []).flatMap((p) => childrenOf.get(p) ?? []))].filter((c) => c !== m);
+      sibs.forEach((c, j) => {
+        const su = unitOf.get(c)!;
+        if (su === u || visitOrder.has(su) || su.gen !== u.gen) return;
+        visitOrder.set(su, ms.length === 2 && i === 0 ? k - 1 - j : k + 1 + j);
+      });
+    });
     for (const m of ms) {
       const pu = [...new Set((parentsOf.get(m) ?? []).map((p) => unitOf.get(p)!))];
       const isMain = ms.length === 2 && depth(m) >= depth(ms.find((x) => x !== m)!);
@@ -105,8 +115,9 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
   const childUnits = (u: Unit) => u.members.flatMap((m) => (childrenOf.get(m) ?? []).map((c) => unitOf.get(c)!));
   const avg = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / xs.length;
 
-  // 3. Order within rows: barycentre sweeps down and up.
-  for (let it = 0; it < 8; it++) {
+  // 3. Order within rows: barycentre sweeps down and up — only when there is no "You" to grow the
+  // tree from; otherwise the order from the walk above (siblings together, sides alternating) is kept.
+  for (let it = 0; it < (selfP ? 0 : 8); it++) {
     for (let r = 1; r < rows.length; r++) {
       const key = new Map(rows[r].map((u) => { const ps = parentUnits(u); return [u, ps.length ? avg(ps.map((p) => idx.get(p)!)) : idx.get(u)!] as const; }));
       rows[r].sort((a, b) => key.get(a)! - key.get(b)!); reindex();
