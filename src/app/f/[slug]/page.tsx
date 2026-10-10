@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import Journey from "@/components/JourneyDemo";
 import Emblem from "@/components/Emblem";
+import CrestSvg from "@/components/CrestSvg";
+import { familyLines } from "@/lib/lines";
 import { countryName, isLang } from "@/i18n/config";
 import { getDict } from "@/i18n";
 
@@ -38,13 +40,20 @@ export default async function FamilyPage({ params }: Props) {
     db.person.findMany({ where: { familyId: family.id }, select: { generation: true, birthPlace: true, isLiving: true } }),
   ]);
   const generations = new Set(people.map((p) => p.generation)).size;
+  const lines = await familyLines(family.id);
   const countries = [...new Set(events.map((e) => e.country).filter(Boolean))] as string[];
   const stops = events.filter((e) => e.year && (e.place || e.country)).map((e) => ({ year: e.year!, place: e.place || countryName(e.country!, lang) }));
 
   return (
     <main className="narrow stack" style={{ paddingBlock: "40px 80px", gap: 32 }}>
       <header className="stack center" style={{ justifyItems: "center" }}>
-        <Emblem seed={family.id} countries={countries} places={people.filter((p) => !p.isLiving).map((p) => p.birthPlace ?? "").filter(Boolean)} size={120} />
+        {lines.length > 0 ? (
+          <div className="row" style={{ justifyContent: "center", gap: 10 }}>
+            {lines.slice(0, 4).map((l) => <CrestSvg key={l.key} c={{ ...l.config, motto: "" }} size={lines.length > 1 ? 72 : 110} idSuffix={`p-${l.key}`} />)}
+          </div>
+        ) : (
+          <Emblem seed={family.id} countries={countries} places={people.filter((p) => !p.isLiving).map((p) => p.birthPlace ?? "").filter(Boolean)} size={120} />
+        )}
         <h1>{family.name}</h1>
         <p className="muted">{generations} generations · {countries.length} countries · {stories.length} stories</p>
       </header>

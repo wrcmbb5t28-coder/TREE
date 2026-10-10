@@ -69,6 +69,7 @@ model Family {
   events           LifeEvent[]
   invites          Invite[]
   photos           Photo[]
+  crests      Crest[]
 }
 
 model Membership {
@@ -289,4 +290,15 @@ model Place {
   // ISO country code of the place (e.g. "CH"), used to count the family's countries
   country   String?
   createdAt DateTime @default(now())
+}
+
+/// Emblem of a family line (surname), edited in the crest builder. config = CrestConfig JSON (src/lib/crest.ts).
+model Crest {
+  id        String   @id @default(cuid())
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  key       String
+  config    String
+  updatedAt DateTime @updatedAt
+  @@unique([familyId, key])
 }

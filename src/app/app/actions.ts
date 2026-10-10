@@ -8,6 +8,7 @@ import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { avatarById } from "@/lib/avatars";
+import { isCrestConfig } from "@/lib/crest";
 import { relationById } from "@/i18n/questions";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
@@ -430,4 +431,27 @@ export async function switchFamily(id: string) {
   const { memberships } = await requireFamily();
   if (memberships.some((m) => m.familyId === id)) await setCurrentFamily(id);
   redirect("/app");
+}
+
+// ---------- Family crests ----------
+
+export async function saveCrest(key: string, config: string): Promise<{ ok: boolean }> {
+  const { family } = await editor();
+  const k = clean(key, 80).toLowerCase();
+  let parsed: unknown;
+  try { parsed = JSON.parse(config); } catch { return { ok: false }; }
+  if (!k || !isCrestConfig(parsed)) return { ok: false };
+  const value = JSON.stringify({ ...parsed, motto: clean(parsed.motto, 40) });
+  await db.crest.upsert({ where: { familyId_key: { familyId: family.id, key: k } }, create: { familyId: family.id, key: k, config: value }, update: { config: value } });
+  revalidatePath("/app/crests");
+  revalidatePath("/app/family");
+  return { ok: true };
+}
+
+export async function resetCrest(key: string): Promise<{ ok: boolean }> {
+  const { family } = await editor();
+  await db.crest.deleteMany({ where: { familyId: family.id, key: clean(key, 80).toLowerCase() } });
+  revalidatePath("/app/crests");
+  revalidatePath("/app/family");
+  return { ok: true };
 }

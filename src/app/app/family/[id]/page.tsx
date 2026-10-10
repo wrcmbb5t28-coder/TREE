@@ -1,3 +1,5 @@
+import { crestForPerson } from "@/lib/lines";
+import CrestSvg from "@/components/CrestSvg";
 import { countryName } from "@/i18n/config";
 import CountrySelect from "@/components/CountrySelect";
 import Link from "next/link";
@@ -57,6 +59,7 @@ export default async function PersonPage({
   });
 
   const name = [p.firstName, p.lastName].filter(Boolean).join(" ");
+  const crest = await crestForPerson(family.id, p.lastName);
   const kin = relationById(p.relation);
   const years = p.birthYear || p.deathYear ? `${p.birthYear ?? "?"}${p.isLiving ? "" : ` – ${p.deathYear ?? "?"}`}` : "";
   const uploadTexts = { ...T.upload, lang };
@@ -75,7 +78,14 @@ export default async function PersonPage({
         <PersonAvatar person={p} size={120} />
         <div className="stack" style={{ gap: 6, minWidth: 0 }}>
           <p className="eyebrow">{p.isSelf ? t.you : [kin && kin.id !== "other" ? c.yourRelation[kin.id] : null, p.isLiving ? null : t.inMemory].filter(Boolean).join(" · ") || t.living}{p.hidden ? ` · ${t.hiddenBranch}` : ""}</p>
-          <h1 style={{ fontSize: "clamp(2rem,4.5vw,2.9rem)" }}>{name}</h1>
+          <h1 style={{ fontSize: "clamp(2rem,4.5vw,2.9rem)", display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+            {name}
+            {crest && (
+              <Link href={`/app/crests?line=${encodeURIComponent(crest.key)}#editor`} title={crest.name} style={{ lineHeight: 0 }}>
+                <CrestSvg c={{ ...crest.config, motto: "" }} size={40} idSuffix="profile" title={crest.name} />
+              </Link>
+            )}
+          </h1>
           <p className="muted">{[years, (p.birthPlace || p.birthCountry) && t.bornIn([p.birthPlace, p.birthCountry && countryName(p.birthCountry, lang)].filter(Boolean).join(", "), p.gender)].filter(Boolean).join(" · ")}</p>
           {p.bio && <p className="lead" style={{ marginTop: 6 }}>{p.bio}</p>}
           <div className="row" style={{ marginTop: 8 }}>

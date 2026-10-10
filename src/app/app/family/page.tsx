@@ -7,6 +7,9 @@ import { appContext, plural } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
 import { familyT } from "@/i18n/app/family";
 import TreeView from "@/components/TreeView";
+import CrestSvg from "@/components/CrestSvg";
+import { familyLines } from "@/lib/lines";
+import { crestsT } from "@/i18n/app/crests";
 import { addPerson } from "../actions";
 import { RELATIONS } from "@/i18n/questions";
 
@@ -21,6 +24,7 @@ export default async function Family() {
   });
   const ids = people.map((p) => p.id);
   const links = await db.relationship.findMany({ where: { parentId: { in: ids }, childId: { in: ids } } });
+  const lines = await familyLines(family.id);
 
   return (
     <>
@@ -28,6 +32,15 @@ export default async function Family() {
         <div><p className="eyebrow">{plural(lang, people.length, t.people)}</p><h1>{t.title}</h1></div>
         <a className="btn btn-primary" href="#add">{t.addPerson}</a>
       </div>
+      {lines.length > 0 && (
+        <div className="crests-row" aria-label={crestsT[lang].title}>
+          {lines.map((l) => (
+            <Link key={l.key} href={`/app/crests?line=${encodeURIComponent(l.key)}#editor`} title={crestsT[lang].lineOf(l.name)}>
+              <CrestSvg c={{ ...l.config, motto: "" }} size={26} idSuffix={`row-${l.key}`} /> {l.name}
+            </Link>
+          ))}
+        </div>
+      )}
       <TreeView people={people} links={links} label={t.treeLabel} />
       <p className="small muted">{t.hint}</p>
 

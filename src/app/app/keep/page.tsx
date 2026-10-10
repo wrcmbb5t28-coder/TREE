@@ -7,11 +7,15 @@ import { more } from "@/i18n/app/more";
 import { appUrl } from "@/lib/util";
 import { isPaid } from "@/lib/plans";
 import Emblem from "@/components/Emblem";
+import CrestSvg from "@/components/CrestSvg";
+import { familyLines } from "@/lib/lines";
+import { crestsT } from "@/i18n/app/crests";
 import { togglePage } from "../actions";
 
 export default async function Keep() {
   const { family, role, lang } = await appContext();
   const t = more[lang].keep;
+  const lines = await familyLines(family.id);
   const c = common[lang];
   const [stories, publicStories, countries, people] = await Promise.all([
     db.story.count({ where: { familyId: family.id, visibility: { not: "private" } } }),
@@ -45,10 +49,14 @@ export default async function Keep() {
         </article>
 
         <article className="card stack">
-          <div className="vis"><Emblem seed={family.id} countries={countries.map((c) => c.country!)} places={places} size={150} /></div>
-          <h3>{t.emblemTitle}</h3>
-          <p className="muted small">{t.emblemText}</p>
-          <p className="small muted" style={{ fontStyle: "italic" }}>{t.emblemNote}</p>
+          <div className="vis row" style={{ justifyContent: "center", gap: 8 }}>
+            {lines.length ? lines.slice(0, 4).map((l) => <CrestSvg key={l.key} c={{ ...l.config, motto: "" }} size={64} idSuffix={`k-${l.key}`} title={l.name} />)
+              : <Emblem seed={family.id} countries={countries.map((c) => c.country!)} places={places} size={150} />}
+          </div>
+          <h3>{crestsT[lang].title}</h3>
+          <p className="muted small">{crestsT[lang].intro}</p>
+          <p><Link className="btn btn-ghost btn-sm" href="/app/crests">{crestsT[lang].edit}</Link></p>
+          <p className="small muted" style={{ fontStyle: "italic" }}>{crestsT[lang].note}</p>
         </article>
       </div>
 

@@ -7,6 +7,7 @@ import { isPaid } from "@/lib/plans";
 import { appContext } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
 import { setUiLang } from "./actions";
+import { crestsT } from "@/i18n/app/crests";
 
 export const metadata: Metadata = { title: "Treename", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               label={c.header.menu}
               familyName={family.name}
               links={[
+                { href: "/app/crests", label: crestsT[lang].nav },
                 { href: "/app/keep", label: c.nav.keep },
                 { href: "/app/settings", label: c.nav.settings },
                 ...(!paid ? [{ href: "/app/billing", label: `${c.plans.free} · ${c.header.upgrade}`, accent: true }] : []),
