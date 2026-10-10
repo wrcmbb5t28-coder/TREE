@@ -7,6 +7,7 @@ import { appUrl } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import TreeView from "@/components/TreeView";
 import PrintButton from "@/components/PrintButton";
+import { StoryPhoto } from "@/components/StoryArt";
 
 const ORDER = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard years", "Family life", "Traditions", "Advice", "The next generation"];
 
@@ -19,7 +20,7 @@ export default async function Book() {
   const t = more[lang].book;
   const stories = await db.story.findMany({
     where: { familyId: family.id, visibility: { not: "private" } },
-    include: { answer: { include: { question: { include: { storyteller: true } } } }, photos: true },
+    include: { answer: { include: { question: { include: { storyteller: true } } } }, photos: true, person: true },
     orderBy: { createdAt: "asc" },
   });
   const people = await db.person.findMany({ where: { familyId: family.id, hidden: false } });
@@ -34,6 +35,9 @@ export default async function Book() {
     chapters.get(c)!.push(s);
   }
   const sorted = ORDER.filter((c) => chapters.has(c));
+  // Inside a chapter, oldest first: the story of a person born in 1760 comes before one born in 1980.
+  const born = (s: (typeof stories)[number]) => s.person?.birthYear ?? s.answer?.question.storyteller.birthYear ?? 9999;
+  for (const list of chapters.values()) list.sort((a, b) => born(a) - born(b));
   const qr = new Map<string, string>();
   for (const s of stories) {
     if (s.answer?.audioPath) qr.set(s.id, await QRCode.toDataURL(appUrl(`/app/stories/${s.id}`), { margin: 0, width: 96 }));
@@ -62,9 +66,15 @@ export default async function Book() {
         {sorted.map((c) => (
           <section key={c} className="book-chapter">
             <h2>{chapterName(lang, c)}</h2>
-            {chapters.get(c)!.map((s) => (
+            {chapters.get(c)!.map((s, i) => {
+              const who = s.person ?? s.answer?.question.storyteller ?? null;
+              return (
               <div key={s.id} className="book-story">
+                {s.photos.length === 0 && (
+                  <div className={`book-art ${i % 2 ? "right" : "left"}`}><StoryPhoto seed={s.id} text={`${s.title} ${s.body}`} tilt={i % 2 ? 1.5 : -1.5} idSuffix="b" /></div>
+                )}
                 <h3>{s.title}</h3>
+                {who && <p className="book-who">{[who.firstName, who.lastName].filter(Boolean).join(" ")}{who.birthYear ? ` · ${who.birthYear}${who.deathYear ? `–${who.deathYear}` : ""}` : ""}</p>}
                 <p>{s.body}</p>
                 {s.photos.slice(0, 2).map((p) => (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -78,7 +88,8 @@ export default async function Book() {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </section>
         ))}
         {stories.length === 0 && <p className="muted">{t.empty}</p>}

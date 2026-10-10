@@ -53,7 +53,7 @@ export default function FamilyMap({ places, paths, label }: { places: MapPlace[]
         L.circleMarker([pl.lat, pl.lng], { radius: r, color: "#fff", weight: 2, fillColor: "#2F6B5E", fillOpacity: 0.95 })
           .addTo(map)
           .bindTooltip(`<b>${esc(pl.name)}</b> · ${esc(pl.years)}${pl.people.length ? `<br>${pl.people.map(esc).join(", ")}` : ""}`, {
-            permanent: places.length <= 12,
+            permanent: places.length <= 6,
             direction: side,
             offset,
             className: "fm-label",

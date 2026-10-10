@@ -600,3 +600,18 @@ a.chip:hover { background: #E2E9DA; }
 .jr-all > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 8px 0; list-style-position: inside; }
 .jr-all[open] > summary { margin-bottom: 14px; }
 @media (max-width: 640px) { .jr-person { width: 100%; } }
+.jr-countries { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 6px; }
+.jr-country { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.jr-country b { font-family: var(--display); font-size: 1.2rem; }
+.jr-country span { font-size: .9rem; color: var(--muted); line-height: 1.45; }
+.jr-gen { margin-top: 10px; }
+.jr-gen-title { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--warm); font-family: var(--body); font-weight: 600; margin: 14px 0 0; }
+.book-story::after { content: ""; display: block; clear: both; }
+.book-art { width: 42%; margin: 4px 0 12px; }
+.book-art.left { float: left; margin-right: 22px; }
+.book-art.right { float: right; margin-left: 22px; }
+.book-art .story-photo { padding: 8px 8px 30px; }
+.book-art .story-photo figcaption { display: none; }
+.book-art .tape { display: none; }
+.book-who { font-family: var(--body) !important; font-size: .85rem !important; color: var(--muted); letter-spacing: .04em; margin: -4px 0 8px !important; white-space: normal !important; }
+@media (max-width: 560px) { .book-art { width: 100%; float: none !important; margin: 0 0 12px !important; } }

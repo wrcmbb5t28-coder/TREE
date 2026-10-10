@@ -164,6 +164,9 @@ const en = {
     allEvents: (n: number) => `All events by year (${n})`,
     addMove: "Add a move",
     noPlaces: "Add birthplaces in profiles, or moves below, and the family’s road appears here.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b}: ${years} years of family history. Farthest away: ${far}, ${km.toLocaleString("en")} km from ${a}.`,
+    genLabel: (n: number, from: number | null) => `Generation ${n}${from ? ` · born from ${from}` : ""}`,
+    olderGens: (n: number, from: number | null) => `${n} earlier generations${from ? `, from ${from}` : ""}`,
   },
 };
 
@@ -328,6 +331,9 @@ const ru: FamilyT = {
     allEvents: (n: number) => `Все события по годам (${n})`,
     addMove: "Добавить переезд",
     noPlaces: "Укажите места рождения в профилях или добавьте переезды ниже — и здесь появится путь семьи.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b}: ${years} ${years % 10 === 1 && years % 100 !== 11 ? "год" : [2, 3, 4].includes(years % 10) && ![12, 13, 14].includes(years % 100) ? "года" : "лет"} истории семьи. Дальше всех — ${far}, ${km.toLocaleString("ru")} км от места «${a}».`,
+    genLabel: (n: number, from: number | null) => `Поколение ${n}${from ? ` · родились с ${from} года` : ""}`,
+    olderGens: (n: number, from: number | null) => `Ещё ${n} ${n % 10 === 1 && n % 100 !== 11 ? "поколение" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? "поколения" : "поколений"} раньше${from ? `, с ${from} года` : ""}`,
   },
 };
 
@@ -490,6 +496,9 @@ const de: FamilyT = {
     allEvents: (n: number) => `Alle Ereignisse nach Jahr (${n})`,
     addMove: "Umzug hinzufügen",
     noPlaces: "Tragen Sie Geburtsorte in den Profilen oder unten Umzüge ein, dann erscheint hier der Weg der Familie.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b}: ${years} Jahre Familiengeschichte. Am weitesten weg: ${far}, ${km.toLocaleString("de")} km von ${a}.`,
+    genLabel: (n: number, from: number | null) => `Generation ${n}${from ? ` · geboren ab ${from}` : ""}`,
+    olderGens: (n: number, from: number | null) => `${n} frühere Generationen${from ? `, ab ${from}` : ""}`,
   },
 };
 
@@ -652,6 +661,9 @@ const fr: FamilyT = {
     allEvents: (n: number) => `Tous les événements par année (${n})`,
     addMove: "Ajouter un déménagement",
     noPlaces: "Ajoutez les lieux de naissance dans les profils, ou des déménagements ci-dessous, et le chemin de la famille apparaît ici.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b} : ${years} ans d’histoire familiale. Le plus loin : ${far}, à ${km.toLocaleString("fr")} km de ${a}.`,
+    genLabel: (n: number, from: number | null) => `Génération ${n}${from ? ` · nés à partir de ${from}` : ""}`,
+    olderGens: (n: number, from: number | null) => `${n} générations plus anciennes${from ? `, depuis ${from}` : ""}`,
   },
 };
 
@@ -811,6 +823,9 @@ const it: FamilyT = {
     allEvents: (n: number) => `Tutti gli eventi per anno (${n})`,
     addMove: "Aggiungi un trasloco",
     noPlaces: "Aggiungi i luoghi di nascita nei profili, o i traslochi qui sotto, e qui comparirà la strada della famiglia.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b}: ${years} anni di storia di famiglia. Il più lontano: ${far}, a ${km.toLocaleString("it")} km da ${a}.`,
+    genLabel: (n: number, from: number | null) => `Generazione ${n}${from ? ` · nati dal ${from}` : ""}`,
+    olderGens: (n: number, from: number | null) => `${n} generazioni precedenti${from ? `, dal ${from}` : ""}`,
   },
 };
 
@@ -970,6 +985,9 @@ const es: FamilyT = {
     allEvents: (n: number) => `Todos los eventos por año (${n})`,
     addMove: "Añadir una mudanza",
     noPlaces: "Añade los lugares de nacimiento en los perfiles, o mudanzas abajo, y aquí aparecerá el camino de la familia.",
+    summaryFar: (a: string, b: string, years: number, far: string, km: number) => `${a} → ${b}: ${years} años de historia familiar. Lo más lejano: ${far}, a ${km.toLocaleString("es")} km de ${a}.`,
+    genLabel: (n: number, from: number | null) => `Generación ${n}${from ? ` · nacidos desde ${from}` : ""}`,
+    olderGens: (n: number, from: number | null) => `${n} generaciones anteriores${from ? `, desde ${from}` : ""}`,
   },
 };
 

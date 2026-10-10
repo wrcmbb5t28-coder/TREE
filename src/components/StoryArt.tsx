@@ -11,8 +11,8 @@ const RULES: [Scene, RegExp][] = [
   ["pier", /пристан|набережн|познаком|свидан|свадьб|любов|влюб|pier|wedding|met |love|hochzeit|kennengelernt|mariage|rencontr|matrimonio|innamor|boda|enamor/i],
   ["river", /волг|река|реке|реки|пароход|судн|корабл|капитан|матрос|мор[еяю]|флот|лодк|river|ship|boat|sea|captain|sailor|fluss|schiff|meer|fleuve|bateau|navire|fiume|nave|barca|río|barco/i],
   ["school", /школ|учител|класс|урок|институт|университет|учил|school|teacher|class|lesson|schule|lehrer|école|professeur|scuola|maestr|escuela|maestr/i],
-  ["village", /деревн|сел[оае]|огород|сад|дач|колхоз|урожай|сено|корова|village|farm|garden|harvest|dorf|bauernhof|garten|ferme|jardin|fattoria|giardino|granja|huerto/i],
-  ["city", /город|москв|улиц|трамва|метро|завод|площад|city|street|tram|factory|stadt|straße|ville|rue|città|strada|ciudad|calle/i],
+  ["village", /деревн|(?<![\p{L}])сел[оае](?![\p{L}])|огород|(?<![\p{L}])сад|дач[аеиу]|колхоз|урожай|сено|коров|хутор|землянк|масло|пашн|village|farm|garden|harvest|dorf|bauernhof|garten|ferme|jardin|fattoria|giardino|granja|huerto/iu],
+  ["city", /город|москв|улиц|трамва|метро|завод|шахт|площад|вокзал|общежит|city|street|tram|factory|stadt|straße|ville|rue|città|strada|ciudad|calle/i],
   ["house", /дом|изб|квартир|двор|крыльц|печ[ьи]|house|home|yard|haus|wohnung|maison|casa|cortile|patio/i],
 ];
 

@@ -114,6 +114,10 @@ export function layoutTree(people: Person[], links: Relationship[], dims: Partia
     for (const b of blocks) for (let k = 0; k < b.n; k++, i++) row[i].x = b.sum / b.n + c[i];
   };
   const fromParents = (u: Unit) => {
+    const withParents = u.members.filter((m) => (parentsOf.get(m) ?? []).length);
+    // A couple where only one partner comes from this tree: centre the couple under the parents,
+    // otherwise every generation drifts half a box sideways and the tree becomes a staircase.
+    if (u.members.length === 2 && withParents.length === 1) return avg(parentsOf.get(withParents[0])!.map(personX));
     const ws = u.members.flatMap((m) => {
       const ps = parentsOf.get(m) ?? [];
       return ps.length ? [avg(ps.map(personX)) - offset(u, m)] : [];

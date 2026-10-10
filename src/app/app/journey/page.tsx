@@ -14,6 +14,8 @@ import { after } from "next/server";
 import { avatarById } from "@/lib/avatars";
 import { distinctNames } from "@/lib/names";
 
+const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+
 const PALETTE = ["#2F6B5E", "#9C4F5A", "#4F6D8F", "#B4774A", "#7A5C8E", "#5E7A3A", "#A0663A", "#3F5E6B"];
 
 /**
@@ -124,9 +126,37 @@ export default async function JourneyPage() {
     const d = Math.acos(Math.min(1, Math.sin(a.lat * rad) * Math.sin(b.lat * rad) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.cos((b.lng - a.lng) * rad))) * R;
     return d > 30 ? Math.round(d / 100) * 100 : null;
   };
-  const summary = first && last && first.key !== last.key
-    ? t.summary(first.name, last.name, km(placeAgg.get(first.key), placeAgg.get(last.key)), Math.max(1, new Date().getFullYear() - first.year!))
-    : null;
+  const years = first ? Math.max(1, new Date().getFullYear() - first.year!) : 0;
+  const firstLast = first && last ? km(placeAgg.get(first.key), placeAgg.get(last.key)) : null;
+  // The farthest place from where the story starts: tells more than first → last when the family came back.
+  const far = first ? [...placeAgg.entries()].map(([k, v]) => ({ k, name: v.name, d: km(placeAgg.get(first.key), v) ?? 0 })).sort((x, y) => y.d - x.d)[0] : null;
+  const summary = !first || !last || first.key === last.key ? null
+    : (firstLast ?? 0) < 500 && far && far.d >= 500 ? t.summaryFar(first.name, last.name, years, far.name, far.d)
+    : t.summary(first.name, last.name, firstLast, years);
+
+  // Many places: group them by country (west to east) instead of one long row.
+  const countryOfKey = (k: string) => (allCoords.get(k) ?? coords.get(k))?.country || k.split("|")[1] || "";
+  const byCountry = new Map<string, { name: string; lng: number[]; places: string[] }>();
+  for (const [k, v] of placeAgg) {
+    const cc = countryOfKey(k);
+    const g = byCountry.get(cc) ?? { name: cc ? countryName(cc, lang) : "—", lng: [], places: [] };
+    if (v.lng != null) g.lng.push(v.lng);
+    g.places.push(v.name);
+    byCountry.set(cc, g);
+  }
+  const countryGroups = [...byCountry.values()].sort((x, y) => (x.lng.length ? avg(x.lng) : 999) - (y.lng.length ? avg(y.lng) : 999));
+  // Many people: one block per generation, oldest first.
+  const gens = [...new Set(roads.map((r) => r.person.generation))].sort((a, b) => a - b);
+  const roadGroups = gens.map((g, i) => {
+    const list = roads.filter((r) => r.person.generation === g).sort((a, b) => (a.person.birthYear ?? 9999) - (b.person.birthYear ?? 9999));
+    const yearsIn = list.map((r) => r.person.birthYear).filter((y): y is number => !!y);
+    return { label: t.genLabel(i + 1, yearsIn.length ? Math.min(...yearsIn) : null), list };
+  });
+  const grouped = roads.length > 10 && gens.length > 1;
+  // Long families: the four youngest generations stay open, older ones fold away.
+  const shownGroups = grouped && roadGroups.length > 5 ? roadGroups.slice(-4) : roadGroups;
+  const olderGroups = grouped && roadGroups.length > 5 ? roadGroups.slice(0, -4) : [];
+  const olderFrom = olderGroups.flatMap((g) => g.list.map((r) => r.person.birthYear)).filter((y): y is number => !!y);
 
   // Questions from the gaps: one place only → "and then?"; a move → "why?". Living people first.
   const gaps: { q: string; personId: string | null; name: string }[] = [];
@@ -159,6 +189,16 @@ export default async function JourneyPage() {
         <section className="stack" style={{ gap: 8 }}>
           <h2 className="section-title">{t.places}</h2>
           <p className="muted small">{t.placesSub}</p>
+          {placeList.length > 8 ? (
+            <div className="jr-countries">
+              {countryGroups.map((g) => (
+                <div key={g.name} className="jr-country">
+                  <b>{g.name}</b>
+                  <span>{g.places.join(" · ")}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="jr-places-wrap">
             <ol className="jr-places" style={{ gridTemplateColumns: `repeat(${placeList.length}, minmax(120px, 1fr))` }}>
               {placeList.map((pl, i) => (
@@ -170,6 +210,7 @@ export default async function JourneyPage() {
               ))}
             </ol>
           </div>
+          )}
         </section>
       )}
 
@@ -177,8 +218,14 @@ export default async function JourneyPage() {
         <section className="stack" style={{ gap: 8 }}>
           <h2 className="section-title">{t.roads}</h2>
           <p className="muted small">{t.roadsSub}</p>
+          {olderGroups.length > 0 && (
+            <details className="jr-all jr-older">
+              <summary>{t.olderGens(olderGroups.length, olderFrom.length ? Math.min(...olderFrom) : null)}</summary>
+              {olderGroups.map((grp) => (
+          <div key={grp.label || "all"} className="jr-gen">
+          {grp.label && <h3 className="jr-gen-title">{grp.label}</h3>}
           <ul className="jr-roads">
-            {roads.map(({ person, stops }) => (
+            {grp.list.map(({ person, stops }) => (
               <li key={person.id}>
                 <Link href={`/app/family/${person.id}`} className="jr-person">
                   <PersonAvatar person={person} size={46} />
@@ -191,13 +238,43 @@ export default async function JourneyPage() {
                       <span className="jr-stop"><b>{st.name}</b>{st.year ? <span>{st.year}</span> : null}</span>
                     </span>
                   ))}
-                  {stops.length === 1 && (
+                  {stops.length === 1 && person.isLiving && (
                     <span className="jr-step"><span className="jr-arrow" aria-hidden="true">→</span><span className="jr-stop jr-unknown"><b>?</b><span>{t.later}</span></span></span>
                   )}
                 </div>
               </li>
             ))}
           </ul>
+          </div>
+          ))}
+            </details>
+          )}
+          {(grouped ? shownGroups : [{ label: "", list: roads }]).map((grp) => (
+          <div key={grp.label || "all"} className="jr-gen">
+          {grp.label && <h3 className="jr-gen-title">{grp.label}</h3>}
+          <ul className="jr-roads">
+            {grp.list.map(({ person, stops }) => (
+              <li key={person.id}>
+                <Link href={`/app/family/${person.id}`} className="jr-person">
+                  <PersonAvatar person={person} size={46} />
+                  <span><b>{nm(person)}</b>{person.birthYear ? <small>{person.birthYear}{person.deathYear ? `–${person.deathYear}` : ""}</small> : null}</span>
+                </Link>
+                <div className="jr-stops">
+                  {stops.map((st, i) => (
+                    <span key={st.key + i} className="jr-step">
+                      {i > 0 && <span className="jr-arrow" aria-hidden="true">→</span>}
+                      <span className="jr-stop"><b>{st.name}</b>{st.year ? <span>{st.year}</span> : null}</span>
+                    </span>
+                  ))}
+                  {stops.length === 1 && person.isLiving && (
+                    <span className="jr-step"><span className="jr-arrow" aria-hidden="true">→</span><span className="jr-stop jr-unknown"><b>?</b><span>{t.later}</span></span></span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+          </div>
+          ))}
           {editable && <a href="#add" className="small" style={{ justifySelf: "start" }}>+ {t.addMove}</a>}
         </section>
       )}
