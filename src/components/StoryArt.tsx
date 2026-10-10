@@ -192,3 +192,34 @@ export function StoryPhoto({ seed, text, caption, tilt = -2, idSuffix }: { seed:
     </figure>
   );
 }
+
+export const SCENES: Scene[] = ["river", "pier", "house", "school", "village", "city", "field"];
+
+type CoverPhoto = { id: string; path: string; caption?: string | null };
+type Resolved = { photo: CoverPhoto; scene?: undefined } | { photo?: undefined; scene: Scene; auto: boolean };
+
+/** What a story shows as its picture: the chosen photo or drawing, else its first photo, else a drawing from its words. */
+export function resolveCover(cover: string | null | undefined, photos: CoverPhoto[], text: string): Resolved {
+  if (cover?.startsWith("photo:")) { const p = photos.find((x) => x.id === cover.slice(6)); if (p) return { photo: p }; }
+  if (cover?.startsWith("scene:") && (SCENES as string[]).includes(cover.slice(6))) return { scene: cover.slice(6) as Scene, auto: false };
+  if (photos[0]) return { photo: photos[0] };
+  return { scene: sceneFor(text), auto: true };
+}
+
+/** The story's picture: in a card (`card`) or as a taped photograph (`photo`). */
+export function StoryCover({ seed, text, cover, photos, variant = "card", tilt = -2, idSuffix }: {
+  seed: string; text: string; cover?: string | null; photos: CoverPhoto[]; variant?: "card" | "photo"; tilt?: number; idSuffix?: string;
+}) {
+  const r = resolveCover(cover, photos, text);
+  const pic = r.photo
+    // eslint-disable-next-line @next/next/no-img-element
+    ? <img src={`/api/files/${r.photo.path}`} alt={r.photo.caption ?? ""} loading="lazy" width={320} height={200} style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 10", objectFit: "cover" }} />
+    : <StoryArt seed={seed} scene={r.scene} idSuffix={idSuffix} />;
+  if (variant === "card") return pic;
+  return (
+    <figure className="story-photo" style={{ transform: `rotate(${tilt}deg)` }}>
+      <span className="tape tape-l" aria-hidden="true" /><span className="tape tape-r" aria-hidden="true" />
+      {pic}
+    </figure>
+  );
+}

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { StoryPhoto } from "@/components/StoryArt";
+import StoryArt, { StoryCover, SCENES, resolveCover } from "@/components/StoryArt";
+import { coverT } from "@/i18n/app/cover";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { canEdit } from "@/lib/auth";
@@ -7,7 +8,7 @@ import { appContext, fmtDate } from "@/i18n/app";
 import { common, chapterName } from "@/i18n/app/common";
 import { storiesT } from "@/i18n/app/stories";
 import { fmtDuration } from "@/lib/util";
-import { confirmFact, rejectFact, updateStory, deleteStory, askFollowUp, uploadPhoto } from "../../actions";
+import { confirmFact, rejectFact, updateStory, deleteStory, askFollowUp, uploadPhoto, setStoryCover } from "../../actions";
 
 const CHAPTER_KEYS = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard years", "Family life", "Traditions", "Advice", "The next generation"];
 
@@ -26,7 +27,7 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
     include: {
       answer: { include: { question: { include: { storyteller: true, askedBy: true } } } },
       facts: { orderBy: { createdAt: "asc" } },
-      photos: true,
+      photos: { orderBy: { createdAt: "asc" } },
       author: true,
     },
   });
@@ -50,9 +51,33 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
         </p>
       </div>
 
-      {s.photos.length === 0 && (
-        <div className="story-hero-art"><StoryPhoto seed={s.id} text={`${s.title} ${s.body}`} tilt={-1.5} idSuffix="h" /></div>
-      )}
+      <div className="story-hero-art"><StoryCover variant="photo" seed={s.id} text={`${s.title} ${s.body}`} cover={s.cover} photos={s.photos} tilt={-1.5} idSuffix="h" /></div>
+
+      {editable && (() => {
+        const ct = coverT[lang];
+        const now = resolveCover(s.cover, s.photos, `${s.title} ${s.body}`);
+        const tile = (value: string, label: string, pic: React.ReactNode, on: boolean) => (
+          <form key={value || "auto"} action={setStoryCover.bind(null, s.id, value)}>
+            <button className={`cover-tile${on ? " on" : ""}`} aria-pressed={on}>
+              <span className="cover-tile-pic">{pic}</span>
+              <span className="cover-tile-label">{label}{on ? ` · ${ct.current}` : ""}</span>
+            </button>
+          </form>
+        );
+        return (
+          <details className="cover-pick">
+            <summary className="btn btn-ghost btn-sm">{ct.change}</summary>
+            <p className="small muted">{ct.hint}</p>
+            <div className="cover-grid">
+              {tile("", ct.auto, <StoryCover seed={s.id} text={`${s.title} ${s.body}`} cover={null} photos={s.photos} idSuffix="pa" />, !s.cover)}
+              {s.photos.map((p, i) => tile(`photo:${p.id}`, `${ct.photo} ${i + 1}`,
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`/api/files/${p.path}`} alt="" loading="lazy" />, !!s.cover && now.photo?.id === p.id))}
+              {SCENES.map((sc) => tile(`scene:${sc}`, ct.scenes[sc], <StoryArt seed={s.id} scene={sc} idSuffix={`p${sc}`} />, s.cover === `scene:${sc}`))}
+            </div>
+          </details>
+        );
+      })()}
 
       {s.answer?.audioPath && (
         <div className="player" style={{ display: "block" }}>

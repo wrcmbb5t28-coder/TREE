@@ -1,5 +1,5 @@
 import Link from "next/link";
-import StoryArt from "@/components/StoryArt";
+import { StoryCover } from "@/components/StoryArt";
 import { db } from "@/lib/db";
 import { familyCountries, geocodeMany } from "@/lib/geo";
 import { after } from "next/server";
@@ -27,7 +27,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
       where: role === "owner" ? { familyId: family.id } : { familyId: family.id, OR: [{ visibility: { not: "private" } }, { authorId: user.id }] },
       orderBy: { createdAt: "desc" },
       take: 6,
-      include: { answer: { include: { question: { include: { storyteller: true } } } }, facts: { where: { status: "suggested" } } },
+      include: { answer: { include: { question: { include: { storyteller: true } } } }, facts: { where: { status: "suggested" } }, photos: { orderBy: { createdAt: "asc" } } },
     }),
     db.question.findMany({ where: { familyId: family.id, status: { not: "answered" } }, include: { storyteller: true }, orderBy: { createdAt: "desc" } }),
     db.fact.count({ where: { familyId: family.id, status: "suggested" } }),
@@ -123,7 +123,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
           <div className="grid-cards">
             {stories.map((s) => (
               <Link key={s.id} href={`/app/stories/${s.id}`} className="card feed-item" style={{ textDecoration: "none" }}>
-                <div className="card-art" aria-hidden="true"><StoryArt seed={s.id} text={`${s.title} ${s.body}`} idSuffix="c" /></div>
+                <div className="card-art" aria-hidden="true"><StoryCover seed={s.id} text={`${s.title} ${s.body}`} cover={s.cover} photos={s.photos} idSuffix="c" /></div>
                 <span className="small muted">
                   {s.answer ? `${s.answer.question.storyteller.firstName} · ${t.voice(fmtDuration(s.answer.durationS))}` : ts.stories.written}
                   {s.chapter ? ` · ${chapterName(lang, s.chapter)}` : ""}

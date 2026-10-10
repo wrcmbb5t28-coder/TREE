@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireFamily, canEdit, setCurrentFamily } from "@/lib/auth";
 import { isDemoFamily, switchDemoLang } from "@/lib/demo";
+import { SCENES } from "@/components/StoryArt";
 import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
@@ -269,6 +270,21 @@ export async function updateStory(id: string, form: FormData) {
     },
   });
   revalidatePath(`/app/stories/${id}`);
+  redirect(`/app/stories/${id}`);
+}
+
+/** Picture on a story's card: "" = automatic, "photo:<id>" (a photo of this story) or "scene:<name>". */
+export async function setStoryCover(id: string, value: string) {
+  const { family } = await editor();
+  const story = await db.story.findFirst({ where: { id, familyId: family.id }, include: { photos: { select: { id: true } } } });
+  if (!story) return;
+  const v = clean(value, 60);
+  const ok = v === "" || (v.startsWith("photo:") && story.photos.some((p) => p.id === v.slice(6))) || (v.startsWith("scene:") && (SCENES as string[]).includes(v.slice(6)));
+  if (!ok) return;
+  await db.story.update({ where: { id }, data: { cover: v || null } });
+  revalidatePath(`/app/stories/${id}`);
+  revalidatePath("/app/stories");
+  revalidatePath("/app");
   redirect(`/app/stories/${id}`);
 }
 

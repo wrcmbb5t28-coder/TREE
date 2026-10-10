@@ -187,6 +187,9 @@ model Story {
   // Sensitive stories (war, illness, adoption...) are private by default
   sensitive  Boolean  @default(false)
   chapter    String?
+  // Picture on the story's card: null = automatic (first photo, else a drawing picked from the words),
+  // "photo:<id>" = that photo, "scene:<river|pier|...>" = that drawing
+  cover      String?
   // Whose story this is (the storyteller for interviews, chosen by hand for written memories)
   personId   String?
   person     Person?  @relation("PersonStories", fields: [personId], references: [id], onDelete: SetNull)
