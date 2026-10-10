@@ -29,7 +29,7 @@ export default async function NewMemory({ searchParams }: { searchParams: Promis
           <label htmlFor="chapter">{t.chapter}</label>
           <select id="chapter" name="chapter" defaultValue="Family life">{CHAPTERS.map((ch) => <option key={ch} value={ch}>{chapterName(lang, ch)}</option>)}</select>
         </div>
-        <label className="row small" style={{ alignSelf: "end", minHeight: 48 }}><input type="checkbox" name="private" /> {t.private}</label>
+        <label className="check" style={{ alignSelf: "end", minHeight: 48, alignItems: "center" }}><input type="checkbox" name="private" /> <span>{t.private}</span></label>
       </div>
       <div><button className="btn btn-primary" type="submit">{t.save}</button></div>
     </form>

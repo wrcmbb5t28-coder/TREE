@@ -7,7 +7,7 @@ export default function PersonAvatar({ person, size = 48 }: { person: P; size?: 
   const style = { width: size, height: size, borderRadius: "50%", flex: "none" } as const;
   if (person.photoPath) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={`/api/files/${person.photoPath}`} alt="" style={{ ...style, objectFit: "cover", background: "var(--tint)" }} />;
+    return <img src={`/api/files/${person.photoPath}`} alt="" width={size} height={size} loading="lazy" style={{ ...style, objectFit: "cover", background: "var(--tint)" }} />;
   }
   const preset = avatarById(person.avatar);
   if (preset) return <PresetAvatar preset={preset} size={size} />;

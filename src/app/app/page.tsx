@@ -10,6 +10,8 @@ import { getDict, fill } from "@/i18n";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import ShareQuestion from "@/components/ShareQuestion";
 import { deleteQuestion } from "./actions";
+import TreeView from "@/components/TreeView";
+import { canEdit } from "@/lib/auth";
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ asked?: string; welcome?: string; paid?: string }> }) {
   const sp = await searchParams;
@@ -38,6 +40,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
   const askerName = user.name || self?.firstName || t.familyFallback;
   const generations = (await db.person.findMany({ where: { familyId: family.id }, distinct: ["generation"], select: { generation: true } })).length;
   const paid = isPaid(family);
+  const treePeople = await db.person.findMany({ where: { familyId: family.id, ...(canEdit(role) ? {} : { hidden: false }) }, orderBy: [{ generation: "asc" }, { createdAt: "asc" }] });
+  const treeLinks = treePeople.length > 1
+    ? await db.relationship.findMany({ where: { parentId: { in: treePeople.map((p) => p.id) }, childId: { in: treePeople.map((p) => p.id) } } })
+    : [];
 
   return (
     <>
@@ -48,20 +54,29 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
       )}
       {sp.paid && <div className="notice"><b>{t.paidTitle}</b> {t.paidText}</div>}
 
-      <div className="page-head">
-        <div>
-          <p className="eyebrow">{family.name}</p>
-          <h1>{t.hello(askerName)}</h1>
+      <section className="home-hero">
+        <div className="stack" style={{ gap: 18 }}>
+          <div className="stack" style={{ gap: 6 }}>
+            <p className="eyebrow">{family.name}</p>
+            <h1>{t.hello(askerName)}</h1>
+          </div>
+          <div className="kpis">
+            <div className="kpi"><b>{people}</b><span>{plural(lang, people, t.kpiPeople)}</span></div>
+            <div className="kpi"><b>{generations}</b><span>{plural(lang, generations, t.kpiGenerations)}</span></div>
+            <div className="kpi"><b>{countries.length}</b><span>{plural(lang, countries.length, t.kpiCountries)}</span></div>
+            <div className="kpi"><b>{answered}</b><span>{plural(lang, answered, t.kpiAnswers)}</span></div>
+          </div>
+          <div className="row">
+            <Link className="btn btn-primary" href="/app/ask">{t.askCta}</Link>
+            <Link className="btn btn-ghost" href="/app/family">{c.nav.family}</Link>
+          </div>
         </div>
-        <Link className="btn btn-primary" href="/app/ask">{t.askCta}</Link>
-      </div>
-
-      <div className="kpis">
-        <div className="kpi"><b>{people}</b><span>{plural(lang, people, t.kpiPeople)}</span></div>
-        <div className="kpi"><b>{generations}</b><span>{plural(lang, generations, t.kpiGenerations)}</span></div>
-        <div className="kpi"><b>{countries.length}</b><span>{plural(lang, countries.length, t.kpiCountries)}</span></div>
-        <div className="kpi"><b>{answered}</b><span>{plural(lang, answered, t.kpiAnswers)}</span></div>
-      </div>
+        {treePeople.length > 0 && (
+          <div className="home-hero-tree">
+            <TreeView people={treePeople} links={treeLinks} label={c.nav.family} fit />
+          </div>
+        )}
+      </section>
 
       {waiting.length > 0 && (
         <section className="stack">

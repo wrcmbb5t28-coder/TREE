@@ -17,14 +17,16 @@ export type Family = { from: { x: number; y: number }; busY: number; children: {
 
 export const BOX_W = 176;
 export const BOX_H = 66;
-const COUPLE_GAP = 22;
-const UNIT_GAP = 40;
-const ROW_H = BOX_H + 78;
 const MARGIN = 24;
+
+export type TreeDims = { boxW: number; boxH: number; coupleGap: number; unitGap: number; rowGap: number };
+const DEFAULT_DIMS: TreeDims = { boxW: BOX_W, boxH: BOX_H, coupleGap: 22, unitGap: 40, rowGap: 78 };
 
 type Unit = { id: string; members: string[]; gen: number; x: number };
 
-export function layoutTree(people: Person[], links: Relationship[]) {
+export function layoutTree(people: Person[], links: Relationship[], dims: Partial<TreeDims> = {}) {
+  const { boxW: BW, boxH: BH, coupleGap: COUPLE_GAP, unitGap: UNIT_GAP, rowGap } = { ...DEFAULT_DIMS, ...dims };
+  const ROW_H = BH + rowGap;
   const byId = new Map(people.map((p) => [p.id, p]));
   const valid = links.filter((l) => byId.has(l.parentId) && byId.has(l.childId));
   const parentsOf = new Map<string, string[]>();
@@ -88,10 +90,10 @@ export function layoutTree(people: Person[], links: Relationship[]) {
   }
 
   // 4. Horizontal positions.
-  const width = (u: Unit) => u.members.length * BOX_W + (u.members.length - 1) * COUPLE_GAP;
+  const width = (u: Unit) => u.members.length * BW + (u.members.length - 1) * COUPLE_GAP;
   const offset = (u: Unit, m: string) => {
     const i = u.members.indexOf(m);
-    return -width(u) / 2 + BOX_W / 2 + i * (BOX_W + COUPLE_GAP);
+    return -width(u) / 2 + BW / 2 + i * (BW + COUPLE_GAP);
   };
   const personX = (m: string) => { const u = unitOf.get(m)!; return u.x + offset(u, m); };
   rows.forEach((row) => { let x = 0; for (const u of row) { u.x = x + width(u) / 2; x += width(u) + UNIT_GAP; } });
@@ -131,7 +133,7 @@ export function layoutTree(people: Person[], links: Relationship[]) {
   const minX = Math.min(...units.map((u) => u.x - width(u) / 2));
   const maxX = Math.max(...units.map((u) => u.x + width(u) / 2));
   const shift = MARGIN - minX;
-  const rowY = new Map(gens.map((g, i) => [g, MARGIN + BOX_H / 2 + i * ROW_H]));
+  const rowY = new Map(gens.map((g, i) => [g, MARGIN + BH / 2 + i * ROW_H]));
   const pos = new Map<string, { x: number; y: number }>();
   for (const u of units) for (const m of u.members) pos.set(m, { x: u.x + shift + offset(u, m), y: rowY.get(u.gen)! });
 
@@ -161,18 +163,18 @@ export function layoutTree(people: Person[], links: Relationship[]) {
   for (const f of famMap.values()) {
     const pp = f.parents.map((p) => pos.get(p)!);
     const isCouple = pp.length === 2 && unitOf.get(f.parents[0]) === unitOf.get(f.parents[1]);
-    const from = isCouple ? { x: avg(pp.map((p) => p.x)), y: pp[0].y } : { x: pp[0].x, y: pp[0].y + BOX_H / 2 };
+    const from = isCouple ? { x: avg(pp.map((p) => p.x)), y: pp[0].y } : { x: pp[0].x, y: pp[0].y + BH / 2 };
     const y0 = pp[0].y;
     const n = busUsed.get(y0) ?? 0;
     busUsed.set(y0, n + 1);
-    const busY = y0 + BOX_H / 2 + (ROW_H - BOX_H) / 2 + ((n % 3) - 1) * 8;
+    const busY = y0 + BH / 2 + (ROW_H - BH) / 2 + ((n % 3) - 1) * 8;
     families.push({ from, busY, children: f.kids.map((k) => pos.get(k)!) });
   }
 
   return {
     nodes, couples, families,
     width: maxX - minX + MARGIN * 2,
-    height: MARGIN * 2 + BOX_H + (gens.length - 1) * ROW_H,
-    boxW: BOX_W, boxH: BOX_H,
+    height: MARGIN * 2 + BH + (gens.length - 1) * ROW_H,
+    boxW: BW, boxH: BH,
   };
 }

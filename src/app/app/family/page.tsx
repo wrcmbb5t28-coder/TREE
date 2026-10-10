@@ -78,7 +78,7 @@ export default async function Family() {
           </div>
           <div className="grid2">
             <div className="field"><label htmlFor="deathYear">{t.deathYearIf}</label><input id="deathYear" name="deathYear" inputMode="numeric" /></div>
-            <label className="row small" style={{ alignSelf: "end", minHeight: 48 }}><input type="checkbox" name="deceased" /> {t.passedAway}</label>
+            <label className="check" style={{ alignSelf: "end", minHeight: 48, alignItems: "center" }}><input type="checkbox" name="deceased" /> <span>{t.passedAway}</span></label>
           </div>
           <div><button className="btn btn-primary">{t.addToTree}</button></div>
         </form>

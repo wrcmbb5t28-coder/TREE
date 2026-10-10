@@ -147,7 +147,7 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
             {s.photos.map((p) => (
               <figure key={p.id} className="card" style={{ margin: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/api/files/${p.path}`} alt={p.caption ?? t.photoAlt} style={{ borderRadius: 10 }} />
+                <img src={`/api/files/${p.path}`} alt={p.caption ?? t.photoAlt} loading="lazy" style={{ borderRadius: 10, height: "auto" }} width={1200} height={900} />
                 {p.caption && <figcaption className="small muted" style={{ marginTop: 6 }}>{p.caption}{p.year ? ` · ${p.year}` : ""}</figcaption>}
               </figure>
             ))}

@@ -18,9 +18,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const paid = isPaid(family);
   return (
     <div data-ui-lang={lang} lang={lang}>
+      <a className="skip-link" href="#main">{c.header.skip}</a>
       <header className="appbar">
         <div className="wrap">
-          <Link className="logo" href="/app"><b style={{ fontSize: "1.35rem" }}>Treename</b></Link>
+          <Link className="logo" href="/app" aria-label="Treename">
+            <svg className="logo-mark" width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="12" r="9" fill="#C9D9B8" /><circle cx="10.5" cy="14" r="5.5" fill="#AFC79B" /><circle cx="21.5" cy="14" r="5.5" fill="#B7CDA3" />
+              <path d="M16 13v15M16 20l-4-4M16 18l4-4" stroke="#6E5238" strokeWidth="2" strokeLinecap="round" fill="none" />
+            </svg>
+            <b style={{ fontSize: "1.35rem" }}>Treename</b>
+          </Link>
           <AppNav labels={c.nav} />
           <div className="appbar-right">
             <Link className="btn btn-primary btn-sm" href="/app/ask">{c.header.ask}</Link>
@@ -42,7 +49,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
-      <main className="wrap page">{children}</main>
+      <main id="main" className="wrap page">{children}</main>
     </div>
   );
 }

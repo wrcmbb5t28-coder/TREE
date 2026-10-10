@@ -144,13 +144,13 @@ export default async function PersonPage({
           </ol>
         )}
         {editable && (
-          <form action={addEvent} className="row" style={{ alignItems: "end", gap: 8 }}>
+          <form action={addEvent} className="event-form">
             <input type="hidden" name="personId" value={p.id} />
             <input type="hidden" name="back" value={`/app/family/${p.id}`} />
-            <div className="field" style={{ width: 90 }}><label htmlFor="ev-year">{t.year}</label><input id="ev-year" name="year" inputMode="numeric" placeholder={t.phYear} /></div>
-            <div className="field" style={{ flex: "2 1 220px" }}><label htmlFor="ev-desc">{t.whatHappened}</label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
-            <div className="field" style={{ flex: "1 1 140px" }}><label htmlFor="ev-place">{t.place}</label><input id="ev-place" name="place" placeholder={t.phPlace} /></div>
-            <div className="field" style={{ flex: "1 1 160px" }}><label htmlFor="ev-country">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="ev-country" /></div>
+            <div className="field"><label htmlFor="ev-year">{t.year}</label><input id="ev-year" name="year" inputMode="numeric" placeholder={t.phYear} /></div>
+            <div className="field"><label htmlFor="ev-desc">{t.whatHappened}</label><input id="ev-desc" name="description" required placeholder={t.phWhat} /></div>
+            <div className="field"><label htmlFor="ev-place">{t.place}</label><input id="ev-place" name="place" placeholder={t.phPlace} /></div>
+            <div className="field"><label htmlFor="ev-country">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="ev-country" /></div>
             <button className="btn btn-ghost">{c.btn.add}</button>
           </form>
         )}
@@ -172,7 +172,7 @@ export default async function PersonPage({
                 <figure key={ph.id} className={`photo-tile${isAvatar ? " is-avatar" : ""}`}>
                   <a href={`/api/files/${ph.path}`} target="_blank" rel="noreferrer">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/api/files/${ph.path}`} alt={ph.caption ?? t.photoAlt(p.firstName)} loading="lazy" />
+                    <img src={`/api/files/${ph.path}`} alt={ph.caption ?? t.photoAlt(p.firstName)} loading="lazy" width={320} height={320} />
                   </a>
                   {editable ? (
                     <figcaption className="photo-actions">
@@ -293,9 +293,9 @@ export default async function PersonPage({
               <div className="field"><label htmlFor="birthPlace">{t.birthPlace}</label><input id="birthPlace" name="birthPlace" defaultValue={p.birthPlace ?? ""} /></div>
               <div className="field"><label htmlFor="birthCountry">{familyT[lang].journey.country}</label><CountrySelect lang={lang} id="birthCountry" name="birthCountry" defaultValue={p.birthCountry} /></div>
               <div className="field"><label htmlFor="deathYear">{t.deathYear}</label><input id="deathYear" name="deathYear" defaultValue={p.deathYear ?? ""} inputMode="numeric" /></div>
-              <div className="stack" style={{ gap: 4, alignSelf: "end" }}>
-                <label className="row small"><input type="checkbox" name="deceased" defaultChecked={!p.isLiving} /> {t.passedAway}</label>
-                <label className="row small"><input type="checkbox" name="hidden" defaultChecked={p.hidden} /> {t.hide}</label>
+              <div className="stack" style={{ gap: 0, alignSelf: "end", gridColumn: "1 / -1" }}>
+                <label className="check"><input type="checkbox" name="deceased" defaultChecked={!p.isLiving} /> <span>{t.passedAway}</span></label>
+                <label className="check"><input type="checkbox" name="hidden" defaultChecked={p.hidden} /> <span>{t.hide}</span></label>
               </div>
             </div>
             <div><button className="btn btn-primary">{c.btn.save}</button></div>
