@@ -7,6 +7,7 @@ import { db } from "./db";
  */
 export type EventName =
   | "onboarding_started"
+  | "crest_generated"
   | "onboarding_step_completed"
   | "first_person_created"
   | "first_parent_added"

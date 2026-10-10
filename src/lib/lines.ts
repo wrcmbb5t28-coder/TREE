@@ -1,7 +1,7 @@
 /** Family lines (surnames) of a family with their emblem: saved, or a first draft built from the family's data. */
 import { db } from "./db";
 import { placeKey } from "./geo";
-import { defaultCrest, isCrestConfig, lineName, suggestCharges, surnameKey, type CrestConfig, type Suggestion } from "./crest";
+import { defaultCrest, normalizeCrest, lineName, suggestCharges, surnameKey, type CrestConfig, type Suggestion } from "./crest";
 
 export type FamilyLine = {
   key: string;
@@ -48,7 +48,7 @@ export async function familyLines(familyId: string): Promise<FamilyLine[]> {
       const row = crests.find((c) => c.key === key);
       let config = draft;
       if (row) {
-        try { const j = JSON.parse(row.config); if (isCrestConfig(j)) config = j; } catch {}
+        try { config = normalizeCrest(JSON.parse(row.config)) ?? draft; } catch {}
       }
       return {
         key,

@@ -33,9 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /** Example crests for the three sample family lines. */
 const SAMPLE_CRESTS: CrestConfig[] = [
-  { shape: "heater", division: "fess", field: "azure", field2: "argent", charge: "anchor", chargeColor: "or", motto: "" },
-  { shape: "french", division: "plain", field: "vert", field2: "or", charge: "wheat", chargeColor: "or", motto: "" },
-  { shape: "heater", division: "bend", field: "gules", field2: "or", charge: "book", chargeColor: "argent", motto: "" },
+  { shape: "heater", division: "plain", field: "azure", field2: "argent", ordinary: "chief", ordinaryColor: "argent", charges: ["anchor", "star", "star"], chargeColor: "or", motto: "" },
+  { shape: "french", division: "plain", field: "vert", field2: "or", ordinary: "bordure", ordinaryColor: "or", charges: ["wheat", "wheat", "sun"], chargeColor: "or", motto: "" },
+  { shape: "heater", division: "pale", field: "gules", field2: "or", ordinary: "none", ordinaryColor: "argent", charges: ["book", "feather"], chargeColor: "argent", motto: "" },
 ];
 const SAMPLE_AVATARS = ["anchor", "flower", "wheat", "sun", "tree", "book", null, "star"];
 

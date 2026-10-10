@@ -6,7 +6,7 @@ import { familyLines } from "@/lib/lines";
 import CrestSvg from "@/components/CrestSvg";
 import CrestEditor from "@/components/CrestEditor";
 import PersonAvatar from "@/components/PersonAvatar";
-import { saveCrest, resetCrest } from "../actions";
+import { saveCrest, resetCrest, generateCrest } from "../actions";
 import { countryName } from "@/i18n/config";
 
 export default async function CrestsPage({ searchParams }: { searchParams: Promise<{ line?: string }> }) {
@@ -59,6 +59,7 @@ export default async function CrestsPage({ searchParams }: { searchParams: Promi
               t={editorT}
               save={saveCrest}
               reset={resetCrest}
+              generate={generateCrest}
               canEdit={canEdit(role)}
             />
           </section>

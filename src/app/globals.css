@@ -366,10 +366,15 @@ table.simple th { font-size: .8rem; text-transform: uppercase; letter-spacing: .
 .swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
 .swatch.is-on { outline: 3px solid var(--accent); outline-offset: 2px; }
 .charge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
-.charge-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font: inherit; font-size: .75rem; cursor: pointer; }
+.charge-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font: inherit; font-size: .75rem; cursor: pointer; position: relative; }
 .charge-btn.is-on, .shape-btn.is-on, .chip-btn.is-on { border-color: var(--accent); color: var(--accent); background: var(--tint); }
 .shape-btn { display: inline-grid; place-items: center; width: 42px; height: 46px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); cursor: pointer; }
 .chip-btn { display: inline-flex; align-items: center; gap: 6px; padding: .35rem .75rem; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--ink); font: inherit; font-size: .85rem; cursor: pointer; }
+.charge-pos { position: absolute; top: 4px; left: 6px; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .68rem; font-weight: 700; line-height: 17px; text-align: center; }
+.crest-prompt { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--tint); }
+.crest-prompt textarea { width: 100%; resize: vertical; font: inherit; padding: .6rem .75rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface, #fff); color: var(--ink); }
+.crest-or { display: flex; align-items: center; gap: 10px; }
+.crest-or::before, .crest-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .crests-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .crests-row a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px 4px 6px; font-size: .9rem; }
 @media (max-width: 760px) {

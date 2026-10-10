@@ -8,7 +8,8 @@ import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
 import { avatarById } from "@/lib/avatars";
-import { isCrestConfig } from "@/lib/crest";
+import { normalizeCrest, type CrestConfig } from "@/lib/crest";
+import { crestFromText } from "@/lib/crestAi";
 import { relationById } from "@/i18n/questions";
 import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
@@ -440,12 +441,25 @@ export async function saveCrest(key: string, config: string): Promise<{ ok: bool
   const k = clean(key, 80).toLowerCase();
   let parsed: unknown;
   try { parsed = JSON.parse(config); } catch { return { ok: false }; }
-  if (!k || !isCrestConfig(parsed)) return { ok: false };
-  const value = JSON.stringify({ ...parsed, motto: clean(parsed.motto, 40) });
+  const crest = normalizeCrest(parsed);
+  if (!k || !crest) return { ok: false };
+  const value = JSON.stringify({ ...crest, motto: clean(crest.motto, 40) });
   await db.crest.upsert({ where: { familyId_key: { familyId: family.id, key: k } }, create: { familyId: family.id, key: k, config: value }, update: { config: value } });
   revalidatePath("/app/crests");
   revalidatePath("/app/family");
   return { ok: true };
+}
+
+/** Draws a crest from a free-text description. Returns it without saving, so the family can still adjust it. */
+export async function generateCrest(key: string, name: string, prompt: string, current: string): Promise<{ config?: CrestConfig; error?: boolean }> {
+  const { family, user } = await editor();
+  let base: CrestConfig | null = null;
+  try { base = normalizeCrest(JSON.parse(current)); } catch { /* use a neutral base */ }
+  base ??= { shape: "heater", division: "plain", field: "azure", field2: "argent", ordinary: "none", ordinaryColor: "or", charges: ["tree"], chargeColor: "or", motto: "" };
+  const config = await crestFromText(clean(prompt, 600), base, clean(name, 80) || clean(key, 80));
+  if (!config) return { error: true };
+  await track("crest_generated", { familyId: family.id, userId: user.id, props: { ai: Boolean(process.env.ANTHROPIC_API_KEY) } });
+  return { config };
 }
 
 export async function resetCrest(key: string): Promise<{ ok: boolean }> {

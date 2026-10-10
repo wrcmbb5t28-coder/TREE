@@ -1,12 +1,13 @@
-import { CHARGES, DIVISIONS, SHAPES, TINCTURES, type CrestConfig } from "@/lib/crest";
+import { CHARGES, DIVISIONS, ORDINARIES, SHAPES, TINCTURES, chargeLayout, type CrestConfig } from "@/lib/crest";
 
 /** Renders a family-line emblem. Pure SVG: works on the server, in the editor and in print. */
 export default function CrestSvg({ c, size = 120, title, idSuffix = "" }: { c: CrestConfig; size?: number; title?: string; idSuffix?: string }) {
   const clip = `crest-${c.shape}-${idSuffix}`;
-  const charge = CHARGES[c.charge] ?? CHARGES.tree;
   const col = TINCTURES[c.chargeColor].hex;
+  const ord = TINCTURES[c.ordinaryColor].hex;
   const hasMotto = c.motto.trim().length > 0;
   const h = hasMotto ? 150 : 122;
+  const layout = chargeLayout(c);
   return (
     <svg width={size} height={(size * h) / 100} viewBox={`0 0 100 ${h}`} role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
       {title && <title>{title}</title>}
@@ -14,17 +15,25 @@ export default function CrestSvg({ c, size = 120, title, idSuffix = "" }: { c: C
       <g clipPath={`url(#${clip})`}>
         <rect x="0" y="0" width="100" height="120" fill={TINCTURES[c.field].hex} />
         {DIVISIONS[c.division] && <path d={DIVISIONS[c.division]} fill={TINCTURES[c.field2].hex} />}
-        {/* Dark contour keeps the symbol readable on any field, also across a division line. */}
-        <g transform="translate(18 21) scale(0.64)">
-          {charge.stroke ? (
-            <>
-              <path d={charge.d} fill="none" stroke="#2B2F2C" strokeWidth={charge.stroke + 4} strokeLinecap="round" strokeLinejoin="round" />
-              <path d={charge.d} fill="none" stroke={col} strokeWidth={charge.stroke} strokeLinecap="round" strokeLinejoin="round" />
-            </>
-          ) : (
-            <path d={charge.d} fill={col} stroke="#2B2F2C" strokeWidth={2.6} strokeLinejoin="round" paintOrder="stroke" />
-          )}
-        </g>
+        {c.ordinary === "bordure" && <path d={SHAPES[c.shape]} fill="none" stroke={ord} strokeWidth={16} />}
+        {ORDINARIES[c.ordinary] && <path d={ORDINARIES[c.ordinary]} fill={ord} stroke="#2B2F2C" strokeWidth={1.2} />}
+        {/* Dark contour keeps each symbol readable on any field, also across lines and bands. */}
+        {c.charges.map((id, i) => {
+          const ch = CHARGES[id] ?? CHARGES.tree;
+          const [cx, cy, s] = layout[i] ?? layout[0];
+          return (
+            <g key={i} transform={`translate(${cx - 50 * s} ${cy - 50 * s}) scale(${s})`}>
+              {ch.stroke ? (
+                <>
+                  <path d={ch.d} fill="none" stroke="#2B2F2C" strokeWidth={ch.stroke + 4} strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={ch.d} fill="none" stroke={col} strokeWidth={ch.stroke} strokeLinecap="round" strokeLinejoin="round" />
+                </>
+              ) : (
+                <path d={ch.d} fill={col} stroke="#2B2F2C" strokeWidth={1.6 / s} strokeLinejoin="round" paintOrder="stroke" />
+              )}
+            </g>
+          );
+        })}
       </g>
       <path d={SHAPES[c.shape]} fill="none" stroke="#2B2F2C" strokeWidth={2.4} strokeLinejoin="round" />
       {hasMotto && (
