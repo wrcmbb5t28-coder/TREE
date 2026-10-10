@@ -49,7 +49,7 @@ export default async function Keep() {
         </article>
 
         <article className="card stack">
-          <div className="vis row" style={{ justifyContent: "center", gap: 8 }}>
+          <div className={`vis${lines.length ? " crest-strip" : ""}`}>
             {lines.length ? lines.slice(0, 4).map((l) => <CrestSvg key={l.key} c={{ ...l.config, motto: "" }} size={64} idSuffix={`k-${l.key}`} title={l.name} />)
               : <Emblem seed={family.id} countries={countries.map((c) => c.country!)} places={places} size={150} />}
           </div>
