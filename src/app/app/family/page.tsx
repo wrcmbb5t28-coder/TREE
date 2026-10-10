@@ -63,11 +63,11 @@ export default async function Family() {
             <select id="relation" name="relation" defaultValue="">
               <option value="">{t.notSure}</option>
               {people.map((p) => (
-                <optgroup key={p.id} label={p.firstName}>
-                  <option value={`parent-of:${p.id}`}>{t.parentOf(p.firstName)}</option>
-                  <option value={`child-of:${p.id}`}>{t.childOf(p.firstName)}</option>
-                  <option value={`partner-of:${p.id}`}>{t.partnerOf(p.firstName)}</option>
-                  <option value={`sibling-of:${p.id}`}>{t.siblingOf(p.firstName)}</option>
+                <optgroup key={p.id} label={[p.firstName, p.lastName].filter(Boolean).join(" ") + (p.birthYear ? ` · ${p.birthYear}` : "")}>
+                  <option value={`parent-of:${p.id}`}>{t.parentOf([p.firstName, p.lastName].filter(Boolean).join(" "))}</option>
+                  <option value={`child-of:${p.id}`}>{t.childOf([p.firstName, p.lastName].filter(Boolean).join(" "))}</option>
+                  <option value={`partner-of:${p.id}`}>{t.partnerOf([p.firstName, p.lastName].filter(Boolean).join(" "))}</option>
+                  <option value={`sibling-of:${p.id}`}>{t.siblingOf([p.firstName, p.lastName].filter(Boolean).join(" "))}</option>
                 </optgroup>
               ))}
             </select>

@@ -14,7 +14,7 @@ import { AVATARS } from "@/lib/avatars";
 import { RELATIONS, relationById } from "@/i18n/questions";
 import PersonAvatar, { PresetAvatar } from "@/components/PersonAvatar";
 import PhotoUpload from "@/components/PhotoUpload";
-import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, addEvent, deleteEvent } from "../../actions";
+import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, setParents, addEvent, deleteEvent } from "../../actions";
 
 export default async function PersonPage({
   params,
@@ -59,6 +59,9 @@ export default async function PersonPage({
     orderBy: { createdAt: "desc" },
   });
 
+  const everyone = editable ? await db.person.findMany({ where: { familyId: family.id, id: { not: p.id } }, orderBy: [{ generation: "asc" }, { birthYear: "asc" }, { firstName: "asc" }] }) : [];
+  const label = (x: { firstName: string; lastName: string | null; birthYear: number | null }) => [x.firstName, x.lastName].filter(Boolean).join(" ") + (x.birthYear ? ` · ${x.birthYear}` : "");
+  const curParents = p.parentLinks.map((l) => l.parent.id);
   const name = [p.firstName, p.lastName].filter(Boolean).join(" ");
   const crest = await crestForPerson(family.id, p.lastName);
   const kin = relationById(p.relation);
@@ -249,14 +252,37 @@ export default async function PersonPage({
                     <PresetAvatar preset={a} size={44} />
                   </button>
                 ))}
-                <button name="avatar" value="" title={t.initials} aria-label={t.initials}
-                  className={`avatar-pick${!p.photoPath && !p.avatar ? " is-on" : ""}`}>
-                  <PersonAvatar person={{ ...p, photoPath: null, avatar: null }} size={44} />
-                </button>
+              </div>
+              <p className="small muted">{t.chooseFace}</p>
+              <div className="avatar-grid">
+                {["", "face:1", "face:2", "face:3", "face:4", "face:5"].map((v) => (
+                  <button key={v || "face"} name="avatar" value={v} title={t.initials} aria-label={`${t.initials}${v ? ` ${v.slice(5)}` : ""}`}
+                    className={`avatar-pick${!p.photoPath && (p.avatar ?? "") === v ? " is-on" : ""}`}>
+                    <PersonAvatar person={{ ...p, photoPath: null, avatar: v || null }} size={44} />
+                  </button>
+                ))}
               </div>
               {p.photoPath && <p className="small muted">{t.symbolKeepsPhotos}</p>}
             </form>
           </div>
+
+          {(
+            <form action={setParents.bind(null, p.id)} className="stack" style={{ gap: 8 }}>
+              <h3 className="small" style={{ fontWeight: 600 }}>{t.parentsTitle}</h3>
+              <p className="small muted" style={{ margin: 0 }}>{t.parentsHint}</p>
+              <div className="grid2">
+                {[0, 1].map((i) => (
+                  <div key={i} className="field">
+                    <select name={`parent${i + 1}`} defaultValue={curParents[i] ?? ""} aria-label={`${t.parentsTitle} ${i + 1}`}>
+                      <option value="">{t.parentNone}</option>
+                      {everyone.map((x) => <option key={x.id} value={x.id}>{label(x)}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <div><button className="btn btn-ghost btn-sm">{t.saveParents}</button></div>
+            </form>
+          )}
 
           <form action={updatePerson.bind(null, p.id)} className="stack">
             {!p.isSelf && (

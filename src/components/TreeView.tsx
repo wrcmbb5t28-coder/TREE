@@ -203,7 +203,7 @@ function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
       </>
     ) : (
       <g transform={`translate(${cx - R} ${cy - R}) scale(${(2 * R) / 100})`}>
-        <Face p={{ id: n.id, firstName: n.first, lastName: n.last, gender: n.gender, relation: n.relation, birthYear: n.birthYear, deathYear: n.deathYear }} clipId={`fc-${n.id}`} />
+        <Face p={{ id: n.id, firstName: n.first, lastName: n.last, gender: n.gender, relation: n.relation, birthYear: n.birthYear, deathYear: n.deathYear, avatar: n.avatar }} clipId={`fc-${n.id}`} />
         {!n.living && <circle cx="50" cy="50" r="50" fill="#B8935F" opacity=".2" />}
       </g>
     );

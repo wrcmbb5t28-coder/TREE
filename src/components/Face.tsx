@@ -13,7 +13,12 @@ export type FacePerson = {
   relation?: string | null;
   birthYear?: number | null;
   deathYear?: number | null;
+  // "face:<n>" picks another drawn variant of this person's portrait (chosen on their page)
+  avatar?: string | null;
 };
+
+/** Variant number of the drawn portrait (0 = the default one). */
+export const faceVariant = (avatar?: string | null) => (avatar?.startsWith("face:") ? Math.max(0, parseInt(avatar.slice(5), 10) || 0) : 0);
 
 const FEMALE_REL = /^(mother|grandmother|greatGrandmother|wife|daughter|granddaughter|sister|aunt|niece|sisterInLaw|motherInLaw|cousinF|stepmother|stepdaughter)$/;
 const MALE_REL = /^(father|grandfather|greatGrandfather|husband|son|grandson|brother|uncle|nephew|brotherInLaw|fatherInLaw|cousinM|stepfather|stepson)$/;
@@ -51,7 +56,8 @@ function shade(hex: string, k: number) {
 
 /** Face drawn into a 0..100 box. Wrap it in <svg viewBox="0 0 100 100"> or a scaled <g>. */
 export default function Face({ p, clipId, now = 2026, square = false }: { p: FacePerson; clipId: string; now?: number; square?: boolean }) {
-  const r = rng(p.id ?? `${p.firstName} ${p.lastName ?? ""}`);
+  const v = faceVariant(p.avatar);
+  const r = rng((p.id ?? `${p.firstName} ${p.lastName ?? ""}`) + (v ? `:${v}` : ""));
   const g = guessGender(p);
   const age = p.birthYear ? (p.deathYear ?? now) - p.birthYear : 40;
   const stage = age < 12 ? "child" : age < 20 ? "teen" : age < 45 ? "adult" : age < 65 ? "middle" : "elder";
@@ -76,7 +82,7 @@ export default function Face({ p, clipId, now = 2026, square = false }: { p: Fac
   const styleM = old ? pick(r, ["bald", "short", "side"]) : small ? pick(r, ["short", "curly"]) : pick(r, ["short", "side", "curly", "side"]);
   const style = g === "f" ? styleF : styleM;
   const beard = g === "m" && (stage === "adult" || stage === "middle") && r() < 0.28;
-  const moustache = g === "m" && !beard && (stage === "middle" || old) && r() < 0.35;
+  const moustache = g === "m" && (beard || ((stage === "middle" || old) && r() < 0.35));
 
   const top = hy - ry; // top of the head
   const sideL = 50 - rx - 1, sideR = 50 + rx + 1;
@@ -139,7 +145,10 @@ export default function Face({ p, clipId, now = 2026, square = false }: { p: Fac
         <ellipse cx={50 - rx} cy={eyeY + 2} rx={3.4} ry={4.5} fill={skinDark} />
         <ellipse cx={50 + rx} cy={eyeY + 2} rx={3.4} ry={4.5} fill={skinDark} />
         <ellipse cx="50" cy={hy} rx={rx} ry={ry} fill={skin} />
-        {beard && <path d={`M${50 - rx + 1} ${hy + 2} C${50 - rx + 2} ${hy + ry + 4} ${50 + rx - 2} ${hy + ry + 4} ${50 + rx - 1} ${hy + 2} C${58} ${hy + 14} ${42} ${hy + 14} ${50 - rx + 1} ${hy + 2} Z`} fill={hair} stroke={hairDark} strokeWidth={0.6} />}
+        {/* a short, neat beard along the jaw, open around the mouth */}
+        {beard && <path d={`M${50 - rx + 0.3} ${hy + 3} C${50 - rx + 1} ${hy + ry - 2} ${50 - 9} ${hy + ry + 3.5} 50 ${hy + ry + 3.5} C${50 + 9} ${hy + ry + 3.5} ${50 + rx - 1} ${hy + ry - 2} ${50 + rx - 0.3} ${hy + 3}
+          C${50 + rx - 3} ${hy + 10} ${58} ${eyeY + 10.5} ${50} ${eyeY + 10.5} C${42} ${eyeY + 10.5} ${50 - rx + 3} ${hy + 10} ${50 - rx + 0.3} ${hy + 3} Z`}
+          fill={hair} fillOpacity={0.82} stroke={hairDark} strokeWidth={0.5} strokeOpacity={0.5} />}
         {front}
         {/* cheeks */}
         <circle cx={50 - eyeDx - 2} cy={eyeY + 8} r={3.6} fill="#E38E7E" opacity={stage === "child" || g === "f" ? 0.32 : 0.18} />
@@ -184,7 +193,7 @@ export default function Face({ p, clipId, now = 2026, square = false }: { p: Fac
 
 /** Standalone round portrait for HTML (lists, chips, profile header). */
 export function FaceSvg({ p, size = 48, idSuffix = "" }: { p: FacePerson; size?: number; idSuffix?: string }) {
-  const clip = `fc-${(p.id ?? p.firstName).replace(/[^a-zA-Z0-9_-]/g, "")}${idSuffix}-${size}`;
+  const clip = `fc-${(p.id ?? p.firstName).replace(/[^a-zA-Z0-9_-]/g, "")}${idSuffix}-${size}-v${faceVariant(p.avatar)}`;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden style={{ flex: "none", borderRadius: "50%", display: "block" }}>
       <Face p={p} clipId={clip} />

@@ -221,10 +221,36 @@ export async function deletePersonPhoto(photoId: string) {
 }
 
 /** Preset symbol (or initials when empty). Photos stay in the gallery. */
+/** Who this person's parents are (up to two); replaces the links to their parents. */
+export async function setParents(id: string, form: FormData) {
+  const { family } = await editor();
+  const person = await db.person.findFirst({ where: { id, familyId: family.id } });
+  if (!person) return;
+  const wanted = [...new Set([clean(form.get("parent1"), 40), clean(form.get("parent2"), 40)].filter((x) => x && x !== id))];
+  const parents = wanted.length ? await db.person.findMany({ where: { id: { in: wanted }, familyId: family.id } }) : [];
+  // never make someone their own ancestor
+  const descendants = new Set<string>([id]);
+  for (let frontier = [id]; frontier.length; ) {
+    const kids = await db.relationship.findMany({ where: { parentId: { in: frontier } } });
+    frontier = kids.map((k) => k.childId).filter((c) => !descendants.has(c));
+    frontier.forEach((c) => descendants.add(c));
+  }
+  const ok = parents.filter((p) => !descendants.has(p.id));
+  await db.relationship.deleteMany({ where: { childId: id } });
+  for (const p of ok) await db.relationship.create({ data: { parentId: p.id, childId: id } });
+  if (ok.length) await db.person.update({ where: { id }, data: { generation: Math.max(...ok.map((p) => p.generation)) + 1 } });
+  revalidatePath(`/app/family/${id}`);
+  revalidatePath("/app/family");
+  redirect(`/app/family/${id}?saved=1`);
+}
+
 export async function setPersonAvatar(id: string, form: FormData) {
   const { family } = await editor();
-  const preset = avatarById(clean(form.get("avatar"), 20));
-  await db.person.updateMany({ where: { id, familyId: family.id }, data: { avatar: preset?.id ?? null, photoPath: null } });
+  const v = clean(form.get("avatar"), 20);
+  const preset = avatarById(v);
+  // a preset symbol, another drawn portrait ("face:1".."face:9"), or "" for the default drawn portrait
+  const avatar = preset?.id ?? (/^face:[1-9]$/.test(v) ? v : null);
+  await db.person.updateMany({ where: { id, familyId: family.id }, data: { avatar, photoPath: null } });
   revalidatePath(`/app/family/${id}`);
   revalidatePath("/app/family");
   redirect(`/app/family/${id}#edit`);
