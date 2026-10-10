@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { contributingFamilies28d } from "@/lib/analytics";
 import { storageCheck } from "@/lib/storage";
+import SampleImagesPanel from "@/components/SampleImagesPanel";
+import { ALL_LANGS, existingSamples, imageKey, sampleSlots } from "@/lib/sampleImages";
+import { sampleBook } from "@/lib/sampleBook";
 
 /**
  * Founder metrics. Visible only to emails listed in ADMIN_EMAILS (comma-separated).
@@ -21,12 +24,17 @@ export default async function Admin() {
     db.analyticsEvent.groupBy({ by: ["name"], where: { createdAt: { gte: since } }, _count: { _all: true } }),
   ]);
   const storage = await storageCheck();
+  const sampleRows = await Promise.all(ALL_LANGS.map(async (lang) => {
+    const has = await existingSamples(lang);
+    return { lang, family: sampleBook(lang).title, slots: sampleSlots(lang).map((s) => ({ slot: s.slot, title: s.title, has: has.has(s.slot) })) };
+  }));
   const errors = await db.analyticsEvent.findMany({ where: { name: "server_error" }, orderBy: { createdAt: "desc" }, take: 12 });
   const keys: [string, boolean][] = [
     ["Database (DATABASE_URL)", !!process.env.DATABASE_URL],
     ["File storage (BLOB_STORE_ID or BLOB_READ_WRITE_TOKEN)", !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)],
     ["AI stories (ANTHROPIC_API_KEY)", !!process.env.ANTHROPIC_API_KEY],
     ["Voice to text (TRANSCRIBE_API_KEY)", !!process.env.TRANSCRIBE_API_KEY],
+    ["Sample book photographs (OPENAI_API_KEY)", !!imageKey()],
     ["Email (RESEND_API_KEY)", !!process.env.RESEND_API_KEY],
     ["Payments (STRIPE_SECRET_KEY)", !!process.env.STRIPE_SECRET_KEY],
     ["Sign-in links on screen (SHOW_LOGIN_LINKS) — remove before launch", process.env.SHOW_LOGIN_LINKS === "1"],
@@ -86,6 +94,11 @@ export default async function Admin() {
             </div>
           </div>
         ))}
+      </section>
+      <section className="card stack">
+        <h2 style={{ fontSize: "1.3rem" }}>Sample book photographs</h2>
+        <p className="small muted">Each language has its own made-up family. Pictures are made once (about 10 per language) and stored with the other files.</p>
+        <SampleImagesPanel rows={sampleRows} hasKey={!!imageKey()} />
       </section>
     </div>
   );

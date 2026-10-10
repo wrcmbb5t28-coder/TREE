@@ -42,6 +42,38 @@ export async function loadFile(rel: string): Promise<Buffer> {
   return readFile(safeLocal(rel));
 }
 
+/** Saves a file at a fixed path, replacing what was there (used for the sample book's pictures). */
+export async function saveFileAt(rel: string, data: Buffer): Promise<void> {
+  if (rel.includes("..")) throw new Error("Invalid path");
+  if (useBlob()) {
+    await put(rel, data, { access: "private", contentType: mimeFor(rel), addRandomSuffix: false, allowOverwrite: true });
+    return;
+  }
+  const abs = safeLocal(rel);
+  await mkdir(path.dirname(abs), { recursive: true });
+  await writeFile(abs, data);
+}
+
+/** Names (relative paths) of the files stored under a folder. */
+export async function listFiles(prefix: string): Promise<string[]> {
+  if (useBlob()) {
+    const out: string[] = [];
+    let cursor: string | undefined;
+    do {
+      const page = await list({ prefix, cursor });
+      out.push(...page.blobs.map((b) => b.pathname));
+      cursor = page.hasMore ? page.cursor : undefined;
+    } while (cursor);
+    return out;
+  }
+  try {
+    const { readdir } = await import("node:fs/promises");
+    return (await readdir(safeLocal(prefix.replace(/\/$/, "")))).map((f) => `${prefix.replace(/\/$/, "")}/${f}`);
+  } catch {
+    return [];
+  }
+}
+
 export async function deleteFile(rel: string): Promise<void> {
   try {
     if (useBlob()) await del(rel);

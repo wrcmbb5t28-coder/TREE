@@ -844,3 +844,20 @@ a.chip:hover { background: #E2E9DA; }
 .h-book-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
 .br-nav .btn-primary, .sb-top .btn-primary { background: #D9B65E; color: #1F2E27; border-color: #D9B65E; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
 .br-nav .btn-primary:hover, .sb-top .btn-primary:hover { background: #E6C676; }
+/* sample book: generated photographs and the family-photo page */
+.sb-img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; filter: saturate(.92) contrast(1.02); }
+.sb-familypage { justify-content: center; align-items: stretch; }
+.sb-familypage .sb-photo { margin: 0 1cqw; }
+.sb-familypage .sb-img { aspect-ratio: 3 / 2.3; }
+.sb-small { margin: 4cqw 0 0; font-size: 2.4cqw; color: var(--sb-soft); text-align: center; font-style: italic; }
+.sb-center { text-align: center; }
+.sb-numbers svg { width: 26cqw; height: auto; margin: 2cqw auto 0; display: block; }
+.sb-recipe-text { font-size: 3.2cqw !important; }
+.sb-right .sb-recipe-text::first-letter { float: none; font-size: inherit; padding: 0; color: inherit; font-family: inherit; font-weight: inherit; }
+.sb-right .sb-recipe-text::after { content: none; }
+.sb-right .sb-card { margin-bottom: 1cqw; }
+.sb-right .sb-card ul { font-size: 3.7cqw; line-height: 4.2cqw; }
+.sb-right .sb-card { background-image: repeating-linear-gradient(transparent 0 calc(4.2cqw - 1px), #DCE6EE calc(4.2cqw - 1px) 4.2cqw); padding: 2.4cqw 4cqw; }
+.sb-recipe-text { font-size: 2.95cqw !important; line-height: 1.5 !important; }
+.sb-right .sb-hand { font-size: 4cqw; margin: 1cqw 0 4cqw; }
+.sb-recipe-left .sb-photo { margin-top: 5cqw; }

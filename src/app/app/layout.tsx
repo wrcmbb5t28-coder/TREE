@@ -54,7 +54,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
-      {isDemoFamily(family.id) && <Suspense fallback={null}><DemoBanner lang={lang} /></Suspense>}
+      {isDemoFamily(family.id) && <Suspense fallback={null}><DemoBanner lang={lang} family={family.name} /></Suspense>}
       <main id="main" className="wrap page">{children}</main>
     </div>
   );

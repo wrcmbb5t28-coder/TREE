@@ -9,11 +9,5 @@ import es from "./es";
 
 export * from "./types";
 const BOOKS: Record<Lang, SampleBookText> = { ru, en, de, fr, it, es };
-// One drawing per story, the same in every language (mill, journey, colony, pier, prairie, farm, mine town, school, station, home).
-const SCENES = ["river", "river", "village", "pier", "field", "village", "city", "school", "city", "house"] as const;
-
-/** The sample book (the made-up Müller family) in the visitor's language. */
-export const sampleBook = (lang: Lang): SampleBookText => {
-  const b = BOOKS[lang] ?? en;
-  return { ...b, stories: b.stories.map((s, i) => ({ ...s, scene: SCENES[i] ?? s.scene })) };
-};
+/** The sample book in the visitor's language: each language has its own made-up family. */
+export const sampleBook = (lang: Lang): SampleBookText => BOOKS[lang] ?? en;
