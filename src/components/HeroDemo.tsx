@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Dict } from "@/i18n";
+import Face from "./Face";
 
 const N = 56;
 const TOTAL = 84; // seconds in the sample
@@ -44,7 +45,13 @@ export default function HeroDemo({ d }: { d: Dict["demo"] }) {
     <div className="card-elev story" id="example" aria-label={d.who}>
       <div className="story-head">
         <div className="photo" aria-hidden="true">
-          <svg viewBox="0 0 80 100"><rect width="80" height="100" fill="#d9c3a0" /><rect y="62" width="80" height="38" fill="#b89a72" /><circle cx="29" cy="40" r="9" fill="#7b5f42" /><rect x="20" y="49" width="18" height="30" rx="7" fill="#6a513a" /><circle cx="52" cy="38" r="9.5" fill="#5e4733" /><rect x="42" y="47" width="20" height="33" rx="7" fill="#4f3c2b" /><circle cx="66" cy="16" r="6" fill="#efe1c6" /></svg>
+          {/* a drawn old photograph of the grandmother */}
+          <svg viewBox="8 0 84 100" preserveAspectRatio="xMidYMid slice">
+            <Face p={{ id: "grandma-3", firstName: "Valentina", gender: "f", birthYear: 1938 }} clipId="demo-grandma" square />
+            <rect width="100" height="100" fill="#B8935F" opacity=".28" />
+            <rect width="100" height="100" fill="url(#demo-vig)" />
+            <defs><radialGradient id="demo-vig" cx=".5" cy=".5" r=".75"><stop offset=".55" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#3A2A18" stopOpacity=".4" /></radialGradient></defs>
+          </svg>
         </div>
         <div className="who"><strong>{d.who}</strong>{d.meta}</div>
       </div>

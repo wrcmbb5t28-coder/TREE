@@ -19,6 +19,7 @@ const GROUND = 150; // room for the trunk under the youngest row
 const PAD = 34; // painted margin around the layout
 
 const INK = "#6E5238";
+const WASH = ["#C9D9B8", "#B7CDA3", "#D7E3C6", "#AFC79B", "#C3D5B0"];
 const INK_SOFT = "#9C8164";
 const GOLD = "#B8924A";
 
@@ -116,16 +117,13 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
       <svg viewBox={`${-PAD} ${-PAD} ${width + PAD * 2} ${height + PAD}`} role="img" aria-label={label}
         style={{ width: "100%", minWidth: fit ? 0 : Math.min(width, 620), maxWidth: Math.max(width, 520), margin: "0 auto", display: "block" }}>
         <defs>
-          <filter id={`${id}-wc`} filterUnits="userSpaceOnUse" x={-PAD - 60} y={-PAD - 60} width={width + PAD * 2 + 120} height={height + PAD + 120}>
-            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="7" result="n" />
-            <feDisplacementMap in="SourceGraphic" in2="n" scale="20" xChannelSelector="R" yChannelSelector="G" result="d" />
-            <feGaussianBlur in="d" stdDeviation="2.2" />
-          </filter>
-          <filter id={`${id}-bk`} filterUnits="userSpaceOnUse" x={-PAD - 60} y={-PAD - 60} width={width + PAD * 2 + 120} height={height + PAD + 120}>
-            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="3" result="n" />
-            <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" result="d" />
-            <feGaussianBlur in="d" stdDeviation="0.6" />
-          </filter>
+          {WASH.map((c, i) => (
+            <radialGradient key={c} id={`${id}-w${i}`}>
+              <stop offset="0" stopColor={c} stopOpacity=".75" />
+              <stop offset=".62" stopColor={c} stopOpacity=".5" />
+              <stop offset="1" stopColor={c} stopOpacity="0" />
+            </radialGradient>
+          ))}
           <linearGradient id={`${id}-bark`} x1="0" x2="1">
             <stop offset="0" stopColor="#B39573" />
             <stop offset=".5" stopColor="#CDB497" />
@@ -134,11 +132,11 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
         </defs>
 
         {/* Painted background */}
-        <g filter={`url(#${id}-wc)`} aria-hidden="true">
+        <g aria-hidden="true">
           <ellipse cx={bx} cy={groundY + 6} rx={Math.min(width * 0.36, 220)} ry={12} fill="#D9E2C8" opacity=".85" />
-          {washes.map((w, i) => <circle key={i} cx={w.x} cy={w.y} r={w.r} fill={w.c} opacity=".4" />)}
+          {washes.map((w, i) => <circle key={i} cx={w.x} cy={w.y} r={w.r * 1.15} fill={`url(#${id}-w${Math.max(0, WASH.indexOf(w.c))})`} />)}
         </g>
-        <g filter={`url(#${id}-bk)`} aria-hidden="true">
+        <g aria-hidden="true">
           <path d={trunk} fill={`url(#${id}-bark)`} opacity=".8" />
           <path d={`M${bx - 2} ${groundY - 8} C${bx - 4} ${groundY - 50} ${bx + 3} ${trunkTop + 30} ${bx - 1} ${trunkTop - 20} M${bx + 6} ${groundY - 20} C${bx + 7} ${groundY - 60} ${bx + 2} ${trunkTop + 40} ${bx + 4} ${trunkTop}`}
             fill="none" stroke="#8F7254" strokeOpacity=".45" strokeWidth={1.2} />
@@ -192,7 +190,8 @@ function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
         <clipPath id={clip}><circle cx={cx} cy={cy} r={R} /></clipPath>
         <circle cx={cx} cy={cy} r={R} fill="var(--tint)" />
         <image href={`/api/files/${n.photoPath}`} x={cx - R} y={cy - R} width={R * 2} height={R * 2} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${clip})`}
-          style={n.living ? undefined : { filter: "sepia(.5) saturate(.8)" }} />
+          />
+        {!n.living && <circle cx={cx} cy={cy} r={R} fill="#B8935F" opacity=".22" />}
       </>
     );
   } else {
@@ -203,8 +202,9 @@ function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
         <g transform={`translate(${cx - 15} ${cy - 15}) scale(1.25)`}><path d={preset.d} fill="none" stroke="#fff" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" /></g>
       </>
     ) : (
-      <g transform={`translate(${cx - R} ${cy - R}) scale(${(2 * R) / 100})`} style={n.living ? undefined : { filter: "sepia(.35) saturate(.85)" }}>
+      <g transform={`translate(${cx - R} ${cy - R}) scale(${(2 * R) / 100})`}>
         <Face p={{ id: n.id, firstName: n.first, lastName: n.last, gender: n.gender, relation: n.relation, birthYear: n.birthYear, deathYear: n.deathYear }} clipId={`fc-${n.id}`} />
+        {!n.living && <circle cx="50" cy="50" r="50" fill="#B8935F" opacity=".2" />}
       </g>
     );
   }

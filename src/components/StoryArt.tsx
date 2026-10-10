@@ -170,13 +170,13 @@ export default function StoryArt({ seed, text, scene, title, idSuffix = "" }: { 
       <defs>
         <linearGradient id={`${id}-sky`} x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#E3D5B7" /><stop offset="1" stopColor={SKY} /></linearGradient>
         <radialGradient id={`${id}-vig`} cx=".5" cy=".5" r=".75"><stop offset=".55" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#3A2A18" stopOpacity=".38" /></radialGradient>
-        <filter id={`${id}-grain`} x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" /><feColorMatrix values="0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .12  0 0 0 .22 0" /></filter>
+        <pattern id={`${id}-grain`} width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".6" fill="#5A4630" opacity=".16" /><circle cx="4" cy="4" r=".5" fill="#5A4630" opacity=".12" /></pattern>
       </defs>
       <rect width="320" height="200" fill={`url(#${id}-sky)`} />
       {s !== "city" && <Birds r={r} />}
       <SceneBody scene={s} r={r} />
       <rect width="320" height="200" fill="#8A6A3E" opacity=".1" />
-      <rect width="320" height="200" filter={`url(#${id}-grain)`} />
+      <rect width="320" height="200" fill={`url(#${id}-grain)`} />
       <rect width="320" height="200" fill={`url(#${id}-vig)`} />
     </svg>
   );

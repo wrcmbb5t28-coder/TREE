@@ -50,7 +50,7 @@ function shade(hex: string, k: number) {
 }
 
 /** Face drawn into a 0..100 box. Wrap it in <svg viewBox="0 0 100 100"> or a scaled <g>. */
-export default function Face({ p, clipId, now = 2026 }: { p: FacePerson; clipId: string; now?: number }) {
+export default function Face({ p, clipId, now = 2026, square = false }: { p: FacePerson; clipId: string; now?: number; square?: boolean }) {
   const r = rng(p.id ?? `${p.firstName} ${p.lastName ?? ""}`);
   const g = guessGender(p);
   const age = p.birthYear ? (p.deathYear ?? now) - p.birthYear : 40;
@@ -125,7 +125,7 @@ export default function Face({ p, clipId, now = 2026 }: { p: FacePerson; clipId:
   const ink = "#3A2C24";
   return (
     <g>
-      <defs><clipPath id={clipId}><circle cx="50" cy="50" r="50" /></clipPath></defs>
+      <defs><clipPath id={clipId}>{square ? <rect width="100" height="100" /> : <circle cx="50" cy="50" r="50" />}</clipPath></defs>
       <g clipPath={`url(#${clipId})`}>
         <rect width="100" height="100" fill={bg} />
         <g transform="translate(50 59) scale(1.22) translate(-50 -54)">
