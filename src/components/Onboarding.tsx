@@ -182,7 +182,7 @@ export default function Onboarding({
         {sent.devLink && (
           <div className="notice">
             <p className="small">{t.preview.devLink}</p>
-            <a href={sent.devLink} style={{ wordBreak: "break-all" }}>{sent.devLink}</a>
+            <a className="btn btn-primary" href={sent.devLink} style={{ marginTop: 10 }}>{t.preview.devButton}</a>
           </div>
         )}
       </>

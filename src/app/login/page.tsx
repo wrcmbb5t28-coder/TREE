@@ -28,7 +28,7 @@ export default async function Login({
             {sp.dev && (
               <div className="notice">
                 <p className="small">{t.devMode}</p>
-                <a href={sp.dev} style={{ wordBreak: "break-all" }}>{sp.dev}</a>
+                <a className="btn btn-primary" href={sp.dev} style={{ marginTop: 10 }}>{t.devButton}</a>
               </div>
             )}
           </div>
