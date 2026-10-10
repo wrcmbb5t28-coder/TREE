@@ -11,7 +11,7 @@ const de: Dict = {
     title: "Fragen Sie jetzt, solange sie es Ihnen noch erzählen können",
     sub: "Schicken Sie Ihrer Oma eine Frage per WhatsApp. Sie antwortet mit einer Sprachnachricht, in ihren eigenen Worten und in ihrer Sprache. Treename bewahrt die Aufnahme und schreibt ihre Geschichte auf. Antwort für Antwort entsteht so Ihre Familiengeschichte: ein Stammbaum, eine Karte und ein Buch.",
     cta: "Die erste Frage stellen",
-    cta2: "So sieht es aus",
+    cta2: "Beispielfamilie ansehen",
     trust: ["Kostenlos, ohne Kreditkarte", "Nur Ihre Familie sieht es", "Daten in der Schweiz gespeichert"],
   },
   demo: {

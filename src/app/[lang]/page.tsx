@@ -89,7 +89,7 @@ export default async function Home({ params }: Props) {
             <p className="lead h-reveal d1">{t.hero.sub}</p>
             <div className="row h-reveal d2">
               <Link className="btn btn-primary" href={start}>{t.hero.cta}</Link>
-              <a className="btn btn-ghost" href="#show">{t.hero.cta2}</a>
+              <a className="btn btn-ghost" href={`/demo?lang=${lang}`}>{t.hero.cta2}</a>
             </div>
             <div className="trust h-reveal d3">{t.hero.trust.map((x) => <span key={x}>{x}</span>)}</div>
           </div>

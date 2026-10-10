@@ -3,9 +3,11 @@ import { requireFamily } from "@/lib/auth";
 import { stripe, priceFor, type Product } from "@/lib/stripe";
 import { appUrl, clean } from "@/lib/util";
 import { track } from "@/lib/analytics";
+import { isDemoFamily } from "@/lib/demo";
 
 export async function POST(req: Request) {
   const { user, family } = await requireFamily();
+  if (isDemoFamily(family.id)) return NextResponse.redirect(new URL("/app?readonly=1", req.url), 303);
   const form = await req.formData();
   const product = clean(form.get("product"), 20) as Product;
   const giftTo = clean(form.get("giftTo"), 200).toLowerCase();

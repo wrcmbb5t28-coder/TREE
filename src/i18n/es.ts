@@ -11,7 +11,7 @@ const es: Dict = {
     title: "Pregúntales ahora, mientras todavía pueden contártelo",
     sub: "Envía a tu abuela una pregunta por WhatsApp. Ella responde con su voz, con sus palabras y en su idioma. Treename guarda la grabación y pone por escrito lo que cuenta. Respuesta a respuesta, la historia de tu familia va tomando forma: un árbol, un mapa y un libro.",
     cta: "Haz la primera pregunta",
-    cta2: "Mira cómo queda",
+    cta2: "Ver una familia de ejemplo",
     trust: ["Gratis para empezar, sin tarjeta", "Solo lo ve tu familia", "Datos alojados en Suiza"],
   },
   demo: {

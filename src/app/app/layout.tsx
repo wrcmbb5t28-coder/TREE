@@ -9,6 +9,9 @@ import { common } from "@/i18n/app/common";
 import { setUiLang } from "./actions";
 import { crestsT } from "@/i18n/app/crests";
 import ThemeToggle from "@/components/ThemeToggle";
+import DemoBanner from "@/components/DemoBanner";
+import { isDemoFamily } from "@/lib/demo";
+import { Suspense } from "react";
 
 export const metadata: Metadata = { title: "Treename", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -51,6 +54,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </header>
+      {isDemoFamily(family.id) && <Suspense fallback={null}><DemoBanner lang={lang} /></Suspense>}
       <main id="main" className="wrap page">{children}</main>
     </div>
   );

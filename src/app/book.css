@@ -202,3 +202,9 @@
   [data-theme="book"] main.page, [data-theme="book"] .book-sheet { box-shadow: none; background: #fff; margin: 0; width: auto; padding: 0; }
   [data-theme="book"] main.page::before, [data-theme="book"] main.page::after, [data-theme="book"] .appbar { display: none; }
 }
+
+/* Sample family: a paper slip pinned under the chapter tabs */
+[data-theme="book"] .demo-banner { background: transparent; border: 0; }
+[data-theme="book"] .demo-banner-in { max-width: 1120px; margin: 4px auto 10px; padding: 10px 16px; background: #F6E7B8; color: #3B2A1A; border-radius: 2px; box-shadow: 0 6px 14px rgba(0,0,0,.25); transform: rotate(-.3deg); }
+[data-theme="book"] .demo-banner p { font-family: var(--body, Lora, serif); }
+[data-theme="book"] .demo-banner-hl .demo-banner-in { background: #F3D58A; }

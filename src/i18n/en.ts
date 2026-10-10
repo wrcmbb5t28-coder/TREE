@@ -9,7 +9,7 @@ const en = {
     title: "Ask them now, while they’re still here to tell it",
     sub: "Send your grandmother a question on WhatsApp. She answers by voice, in her own words and her own language. Treename keeps the recording, writes down her story, and answer by answer your family history takes shape: a tree, a map and a book.",
     cta: "Ask the first question",
-    cta2: "See what it looks like",
+    cta2: "See a sample family",
     trust: ["Free to start, no card", "Only your family can see it", "Data hosted in Switzerland"],
   },
   demo: {

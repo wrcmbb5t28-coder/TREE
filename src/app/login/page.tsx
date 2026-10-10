@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getUser } from "@/lib/auth";
+import { getRealUser } from "@/lib/auth";
 import { authT, visitorLang } from "@/i18n/app/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +14,7 @@ export default async function Login({
   searchParams: Promise<{ sent?: string; dev?: string; error?: string; invite?: string }>;
 }) {
   const sp = await searchParams;
-  if (!sp.invite && (await getUser())) redirect("/app");
+  if (!sp.invite && (await getRealUser())) redirect("/app");
   const lang = await visitorLang();
   const t = authT[lang].login;
   return (

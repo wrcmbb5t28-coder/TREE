@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireFamily, canEdit, setCurrentFamily } from "@/lib/auth";
+import { isDemoFamily, switchDemoLang } from "@/lib/demo";
 import { clean, toInt, token } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { saveFile, deleteFile, deleteFamilyFiles, MAX_UPLOAD_BYTES } from "@/lib/storage";
@@ -18,6 +19,8 @@ import { familyT } from "@/i18n/app/family";
 
 async function editor() {
   const ctx = await requireFamily();
+  // The sample family is read-only for everyone; say so instead of showing an error page.
+  if (isDemoFamily(ctx.family.id)) redirect("/app?readonly=1");
   if (!canEdit(ctx.role)) throw new Error("You can view this family but not change it.");
   return ctx;
 }
@@ -401,7 +404,8 @@ export async function updateSettings(form: FormData) {
 }
 
 export async function updateProfile(form: FormData) {
-  const { user } = await requireFamily();
+  const { user, family } = await requireFamily();
+  if (isDemoFamily(family.id)) redirect("/app?readonly=1");
   const lang = clean(form.get("lang"), 2);
   await db.user.update({
     where: { id: user.id },
@@ -413,8 +417,9 @@ export async function updateProfile(form: FormData) {
 
 /** Language switcher in the app header. */
 export async function setUiLang(lang: string) {
-  const { user } = await requireFamily();
+  const { user, family } = await requireFamily();
   if (!isLang(lang)) return;
+  if (isDemoFamily(family.id)) { await switchDemoLang(lang); revalidatePath("/app", "layout"); return; }
   await db.user.update({ where: { id: user.id }, data: { uiLang: lang, lang } });
   revalidatePath("/app", "layout");
 }

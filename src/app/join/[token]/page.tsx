@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { getUser, setCurrentFamily } from "@/lib/auth";
+import { getRealUser as getUser, setCurrentFamily } from "@/lib/auth";
 import { track } from "@/lib/analytics";
 import { authT } from "@/i18n/app/auth";
 import { isLang } from "@/i18n/config";

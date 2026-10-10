@@ -38,6 +38,12 @@ export async function getUser() {
   return s.user;
 }
 
+/** Like getUser(), but a visitor looking at the sample family counts as signed out (for sign-in and invite pages). */
+export async function getRealUser() {
+  const u = await getUser();
+  return u && !u.email.endsWith("@demo.treename.invalid") ? u : null;
+}
+
 export async function requireUser() {
   const user = await getUser();
   if (!user) redirect("/login");
