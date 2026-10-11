@@ -477,6 +477,21 @@ export async function updateSettings(form: FormData) {
   redirect("/app/settings?saved=1");
 }
 
+/** The family's name, as shown on the cover of the book: a chosen surname line or the family's own words. */
+export async function setBookTitle(form: FormData) {
+  const { family } = await editor();
+  const custom = clean(form.get("custom"), 80);
+  const pick = clean(form.get("pick"), 80);
+  let name = custom || pick;
+  if (!name) {
+    const self = await db.person.findFirst({ where: { familyId: family.id, isSelf: true } });
+    name = `${self?.firstName ?? "My"}'s family`;
+  }
+  await db.family.update({ where: { id: family.id }, data: { name } });
+  revalidatePath("/app/book");
+  redirect("/app/book");
+}
+
 export async function updateProfile(form: FormData) {
   const { user, family } = await requireFamily();
   if (isDemoFamily(family.id)) redirect("/app?readonly=1");

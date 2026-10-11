@@ -2,6 +2,9 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { appContext, plural } from "@/i18n/app";
+import { canEdit } from "@/lib/auth";
+import { isDemoFamily } from "@/lib/demo";
+import { setBookTitle } from "../actions";
 import { chapterName } from "@/i18n/app/common";
 import { more } from "@/i18n/app/more";
 import { ownBook } from "@/i18n/app/ownbook";
@@ -82,7 +85,7 @@ const Folio = ({ n }: { n: number }) => <span className="sb-folio">{n}</span>;
 
 /** The family's own book, leafed through like the sample book: cover, contents, generations, map, numbers, stories. */
 export default async function FlipBook() {
-  const { user, family, lang } = await appContext();
+  const { user, family, lang, role } = await appContext();
   const t = more[lang].book;
   const o = ownBook[lang];
   const ui = sampleBook(lang).ui;
@@ -110,7 +113,7 @@ export default async function FlipBook() {
     const father = parents.find((p) => p.gender === "m" || p.relation === "father") ?? parents[0];
     if (father?.lastName) ownKey = surnameKey(father.lastName);
   }
-  const line = lines.find((l) => l.key === ownKey) ?? lines[0];
+  const line = lines.find((l) => o.titleOf(l.name) === family.name.trim()) ?? lines.find((l) => l.key === ownKey) ?? lines[0];
   const autoName = /'s family$/i.test(family.name.trim());
   const title = !autoName ? family.name : line ? o.titleOf(line.name) : o.fallbackTitle;
   const crest = line?.config ?? null;
@@ -318,6 +321,19 @@ export default async function FlipBook() {
         <p className="sb-eyebrow">{t.eyebrow} · {plural(lang, stories.length, t.stories)}</p>
         <Link href="/app/book?print=1" className="btn btn-ghost btn-sm ob-print">{t.print}</Link>
       </header>
+      {canEdit(role) && !isDemoFamily(family.id) && (
+        <details className="ob-name">
+          <summary>{o.cover}: <b>{title}</b></summary>
+          <form action={setBookTitle} className="ob-name-form">
+            <select name="pick" defaultValue={autoName ? "" : lines.map((l) => o.titleOf(l.name)).includes(family.name) ? family.name : ""}>
+              <option value="">{o.auto}</option>
+              {lines.map((l) => <option key={l.key} value={o.titleOf(l.name)}>{o.titleOf(l.name)}</option>)}
+            </select>
+            <input name="custom" placeholder={o.custom} defaultValue={!autoName && !lines.map((l) => o.titleOf(l.name)).includes(family.name) ? family.name : ""} maxLength={80} />
+            <button className="btn btn-primary btn-sm">{o.save}</button>
+          </form>
+        </details>
+      )}
       <BookReader pages={pages} labels={{ prev: ui.prev, next: ui.next, page: ui.page, of: ui.of, hint: ui.hint, open: ui.open }} />
     </div>
   );

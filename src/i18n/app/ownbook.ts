@@ -13,6 +13,10 @@ export const ownBook: Record<Lang, {
   endText: string;
   endCta: string;
   back: string;
+  cover: string;
+  custom: string;
+  save: string;
+  auto: string;
 }> = {
   ru: {
     titleOf: (l) => l,
@@ -24,6 +28,7 @@ export const ownBook: Record<Lang, {
     endText: "Каждая новая история появится здесь сама. Спросите родных о том, что ещё не записано, пока есть кого спросить.",
     endCta: "Задать вопрос",
     back: "← В приложение",
+    cover: "Название на обложке", custom: "или своё название", save: "Сохранить", auto: "Автоматически",
   },
   en: {
     titleOf: (l) => `The ${l} Family`,
@@ -35,6 +40,7 @@ export const ownBook: Record<Lang, {
     endText: "Every new story will appear here by itself. Ask your family about what hasn’t been written down yet, while there is someone to ask.",
     endCta: "Ask a question",
     back: "← Back to the app",
+    cover: "Name on the cover", custom: "or your own words", save: "Save", auto: "Automatic",
   },
   de: {
     titleOf: (l) => `Familie ${l}`,
@@ -46,6 +52,7 @@ export const ownBook: Record<Lang, {
     endText: "Jede neue Geschichte erscheint hier von selbst. Fragen Sie Ihre Familie nach dem, was noch nicht aufgeschrieben ist, solange es jemanden zu fragen gibt.",
     endCta: "Eine Frage stellen",
     back: "← Zur App",
+    cover: "Name auf dem Umschlag", custom: "oder eigener Name", save: "Speichern", auto: "Automatisch",
   },
   fr: {
     titleOf: (l) => `Famille ${l}`,
@@ -57,6 +64,7 @@ export const ownBook: Record<Lang, {
     endText: "Chaque nouvelle histoire apparaîtra ici d’elle-même. Interrogez vos proches sur ce qui n’a pas encore été écrit, tant qu’il y a quelqu’un à qui demander.",
     endCta: "Poser une question",
     back: "← Retour à l’application",
+    cover: "Nom sur la couverture", custom: "ou votre propre titre", save: "Enregistrer", auto: "Automatique",
   },
   it: {
     titleOf: (l) => `Famiglia ${l}`,
@@ -68,6 +76,7 @@ export const ownBook: Record<Lang, {
     endText: "Ogni nuova storia comparirà qui da sola. Chiedete ai vostri cari ciò che non è ancora scritto, finché c’è qualcuno a cui chiederlo.",
     endCta: "Fai una domanda",
     back: "← Torna all’app",
+    cover: "Nome sulla copertina", custom: "o un titolo vostro", save: "Salva", auto: "Automatico",
   },
   es: {
     titleOf: (l) => `Familia ${l}`,
@@ -79,5 +88,6 @@ export const ownBook: Record<Lang, {
     endText: "Cada nueva historia aparecerá aquí sola. Pregunta a tu familia lo que aún no está escrito, mientras haya a quién preguntar.",
     endCta: "Hacer una pregunta",
     back: "← Volver a la app",
+    cover: "Nombre en la portada", custom: "o tu propio título", save: "Guardar", auto: "Automático",
   },
 };
