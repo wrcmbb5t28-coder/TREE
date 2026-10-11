@@ -11,7 +11,13 @@ type Rec = { lang: string; interimResults: boolean; continuous: boolean; start()
  * "What happened", and the year when it is heard and the year field is still empty.
  * Uses the browser's own speech recognition (Chrome, Safari, Edge); hidden where there is none.
  */
-export default function VoiceFill({ lang, labels }: { lang: string; labels: { speak: string; listening: string } }) {
+export default function VoiceFill({ lang, labels, target, dictate = false }: {
+  lang: string; labels: { speak: string; listening: string };
+  /** field to fill (default: the event's "description") */
+  target?: string;
+  /** long text (a life story, a memory): keep listening until stopped and add each sentence */
+  dictate?: boolean;
+}) {
   const [ok, setOk] = useState(false);
   const [on, setOn] = useState(false);
   const rec = useRef<Rec | null>(null);
@@ -25,6 +31,19 @@ export default function VoiceFill({ lang, labels }: { lang: string; labels: { sp
   function fill(text: string) {
     const form = btn.current?.closest("form");
     if (!form) return;
+    if (dictate) {
+      const el = form.querySelector<HTMLTextAreaElement | HTMLInputElement>(`[name="${target ?? "description"}"]`);
+      let t = text.trim();
+      if (!el || !t) return;
+      const before = el.value.replace(/\s+$/, "");
+      const startsSentence = !before || /[.!?…]$/.test(before);
+      if (startsSentence) t = t.charAt(0).toUpperCase() + t.slice(1);
+      if (!/[.!?…,;:]$/.test(t)) t += ".";
+      el.value = before ? `${before} ${t}` : t;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.scrollTop = el.scrollHeight;
+      return;
+    }
     const set = (name: string, v: string, onlyEmpty = false) => {
       const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`);
       if (el && (!onlyEmpty || !el.value.trim())) el.value = v;
@@ -37,7 +56,7 @@ export default function VoiceFill({ lang, labels }: { lang: string; labels: { sp
       what = what.replace(new RegExp(`^(в|во|in|im|en|nel|el)?\\s*${year[1]}\\s*(году|г\\.?|года)?[,\\s]*`, "i"), "");
     }
     if (what) {
-      const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement>('[name="description"]');
+      const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${target ?? "description"}"]`);
       const cap = what.charAt(0).toUpperCase() + what.slice(1);
       if (el) { el.value = el.value.trim() ? `${el.value.trim()} ${what}` : cap; el.focus(); }
     }
@@ -51,8 +70,14 @@ export default function VoiceFill({ lang, labels }: { lang: string; labels: { sp
     const r = new R();
     r.lang = LOCALE[lang] ?? lang;
     r.interimResults = false;
-    r.continuous = false;
-    r.onresult = (e) => { const t = Array.from(e.results).map((x) => x[0].transcript).join(" "); fill(t); };
+    r.continuous = dictate;
+    let done = 0; // in continuous mode results accumulate: add only the new ones
+    r.onresult = (e) => {
+      const all = Array.from(e.results);
+      const t = all.slice(dictate ? done : 0).map((x) => x[0].transcript).join(" ");
+      done = all.length;
+      fill(t);
+    };
     r.onend = () => setOn(false);
     r.onerror = () => setOn(false);
     rec.current = r;

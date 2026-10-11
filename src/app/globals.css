@@ -944,3 +944,8 @@ a.chip:hover { background: #E2E9DA; }
 .ob-album-1 .ob-snap img, .ob-album-2 .ob-snap img { max-height: 70cqw; }
 .ob-album-2 { grid-template-columns: 1fr; padding: 0 4cqw; }
 .ob-album-2 .ob-snap img { max-height: 46cqw; }
+.fix-notice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; line-height: 1.5; }
+.fix-notice s { color: #A33A2E; text-decoration-thickness: 1.5px; }
+.fix-notice ins { color: var(--accent); text-decoration: none; font-weight: 600; }
+.fix-notice small { color: var(--muted); }
+.fix-actions { margin-left: auto; display: inline-flex; gap: 6px; }

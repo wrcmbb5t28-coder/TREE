@@ -6,7 +6,9 @@ import AppMenu from "@/components/AppMenu";
 import { isPaid } from "@/lib/plans";
 import { appContext } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
-import { setUiLang } from "./actions";
+import { setUiLang, undoFix } from "./actions";
+import FixNotice from "@/components/FixNotice";
+import { fixT } from "@/i18n/app/fix";
 import { crestsT } from "@/i18n/app/crests";
 import ThemeToggle from "@/components/ThemeToggle";
 import DemoBanner from "@/components/DemoBanner";
@@ -55,7 +57,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       {isDemoFamily(family.id) && <Suspense fallback={null}><DemoBanner lang={lang} family={family.name} /></Suspense>}
-      <main id="main" className="wrap page">{children}</main>
+      <main id="main" className="wrap page">
+        <FixNotice labels={{ ...fixT[lang], more: fixT[lang].more(0).replace("0", "#") }} undo={undoFix} />
+        {children}
+      </main>
     </div>
   );
 }

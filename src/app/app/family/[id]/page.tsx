@@ -16,6 +16,7 @@ import PersonAvatar, { PresetAvatar } from "@/components/PersonAvatar";
 import PhotoUpload from "@/components/PhotoUpload";
 import EventEdit from "@/components/EventEdit";
 import VoiceFill from "@/components/VoiceFill";
+import { fixT } from "@/i18n/app/fix";
 import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, setParents, addEvent, deleteEvent } from "../../actions";
 
 export default async function PersonPage({
@@ -315,11 +316,11 @@ export default async function PersonPage({
             )}
             {!p.isSelf && <p className="small muted" style={{ marginTop: -8 }}>{t.genderHint(p.firstName)}</p>}
             <div className="field">
-              <label htmlFor="bio">{t.inOneLine}</label>
+              <div className="voice-label"><label htmlFor="bio">{t.inOneLine}</label><VoiceFill lang={lang} target="bio" dictate labels={{ speak: fixT[lang].speak, listening: fixT[lang].listening }} /></div>
               <input id="bio" name="bio" maxLength={280} defaultValue={p.bio ?? ""} placeholder={t.phBio} />
             </div>
             <div className="field">
-              <label htmlFor="lifePath">{t.lifeStory}</label>
+              <div className="voice-label"><label htmlFor="lifePath">{t.lifeStory}</label><VoiceFill lang={lang} target="lifePath" dictate labels={{ speak: fixT[lang].speak, listening: fixT[lang].listening }} /></div>
               <textarea id="lifePath" name="lifePath" defaultValue={p.lifePath ?? ""} style={{ minHeight: 220 }}
                 placeholder={t.phLifePath} />
             </div>

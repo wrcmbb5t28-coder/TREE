@@ -17,6 +17,7 @@ import { FREE_LIMITS, isPaid } from "@/lib/plans";
 import { isLang } from "@/i18n/config";
 import { uiLang } from "@/i18n/app";
 import { familyT } from "@/i18n/app/family";
+import { proofread, noteFixes, type Undo } from "@/lib/proofread";
 
 async function editor() {
   const ctx = await requireFamily();
@@ -83,8 +84,13 @@ export async function deleteQuestion(id: string) {
 
 export async function addPerson(form: FormData) {
   const { user, family } = await editor();
-  const firstName = clean(form.get("firstName"), 60);
-  if (!firstName) throw new Error("First name is required.");
+  if (!clean(form.get("firstName"), 60)) throw new Error("First name is required.");
+  const pr = await proofread(family.lang, {
+    firstName: { kind: "name", value: clean(form.get("firstName"), 60) },
+    lastName: { kind: "name", value: clean(form.get("lastName"), 60) },
+    birthPlace: { kind: "place", value: clean(form.get("birthPlace"), 80) },
+  });
+  const firstName = pr.values.firstName ?? clean(form.get("firstName"), 60);
   const rel = clean(form.get("relation"), 80); // "parent-of:<id>" | "child-of:<id>" | "partner-of:<id>" | "sibling-of:<id>" | ""
   const [kind, otherId] = rel.split(":");
   const other = otherId ? await db.person.findFirst({ where: { id: otherId, familyId: family.id } }) : null;
@@ -93,9 +99,9 @@ export async function addPerson(form: FormData) {
   const person = await db.person.create({
     data: {
       familyId: family.id, firstName,
-      lastName: clean(form.get("lastName"), 60) || null,
+      lastName: pr.values.lastName || null,
       birthYear: toInt(form.get("birthYear")),
-      birthPlace: clean(form.get("birthPlace"), 80) || null,
+      birthPlace: pr.values.birthPlace || null,
       birthCountry: countryCode(form.get("birthCountry")),
       deathYear,
       isLiving: !deathYear && form.get("deceased") !== "on",
@@ -124,6 +130,7 @@ export async function addPerson(form: FormData) {
   if (person.birthYear || person.birthPlace || person.birthCountry) {
     await db.lifeEvent.create({ data: { familyId: family.id, personId: person.id, year: person.birthYear, place: person.birthPlace, country: person.birthCountry, description: `${firstName} is born`, source: "user" } });
   }
+  await noteFixes(pr.changes, pr.changes.length ? { model: "person", id: person.id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) } : undefined);
   await track("family_member_added", { familyId: family.id, userId: user.id, props: { relation: kind || "none" } });
   revalidatePath("/app/family");
   redirect("/app/family");
@@ -131,16 +138,29 @@ export async function addPerson(form: FormData) {
 
 export async function updatePerson(id: string, form: FormData) {
   const { family } = await editor();
+  const before = await db.person.findFirst({ where: { id, familyId: family.id } });
+  if (!before) return;
+  // the proofreader looks only at what was changed now
+  const typed = {
+    firstName: clean(form.get("firstName"), 60), lastName: clean(form.get("lastName"), 60), birthPlace: clean(form.get("birthPlace"), 80),
+    bio: clean(form.get("bio"), 280), lifePath: clean(form.get("lifePath"), 20000),
+  };
+  const kinds = { firstName: "name", lastName: "name", birthPlace: "place", bio: "text", lifePath: "text" } as const;
+  const changed = Object.fromEntries(Object.entries(typed)
+    .filter(([k, v]) => v && v !== (before[k as keyof typeof typed] ?? ""))
+    .map(([k, v]) => [k, { kind: kinds[k as keyof typeof kinds], value: v }]));
+  const pr = await proofread(family.lang, changed);
+  const val = (k: keyof typeof typed) => pr.values[k] ?? typed[k];
   const deathYear = toInt(form.get("deathYear"));
   const birthYear = toInt(form.get("birthYear"));
-  const birthPlace = clean(form.get("birthPlace"), 80) || null;
+  const birthPlace = val("birthPlace") || null;
   const birthCountry = countryCode(form.get("birthCountry"));
-  const firstName = clean(form.get("firstName"), 60) || undefined;
+  const firstName = val("firstName") || undefined;
   await db.person.updateMany({
     where: { id, familyId: family.id },
     data: {
       firstName,
-      lastName: clean(form.get("lastName"), 60) || null,
+      lastName: val("lastName") || null,
       birthYear,
       birthPlace,
       birthCountry,
@@ -148,10 +168,11 @@ export async function updatePerson(id: string, form: FormData) {
       isLiving: !deathYear && form.get("deceased") !== "on",
       hidden: form.get("hidden") === "on",
       ...(form.has("role") ? roleFields(form) : {}),
-      bio: clean(form.get("bio"), 280) || null,
-      lifePath: clean(form.get("lifePath"), 20000) || null,
+      bio: val("bio") || null,
+      lifePath: val("lifePath") || null,
     },
   });
+  if (pr.changes.length) await noteFixes(pr.changes, { model: "person", id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) });
   // Keep the birth event on the timeline and map in step with the profile.
   const person = await db.person.findFirst({ where: { id, familyId: family.id } });
   if (person) {
@@ -277,18 +298,21 @@ async function personInFamily(familyId: string, raw: FormDataEntryValue | null):
 
 export async function writeMemory(form: FormData) {
   const { user, family } = await editor();
-  const body = clean(form.get("body"), 20000);
-  if (body.length < 10) throw new Error("Write a little more.");
+  const typedBody = clean(form.get("body"), 20000);
+  if (typedBody.length < 10) throw new Error("Write a little more.");
+  const pr = await proofread(family.lang, { title: { kind: "text", value: clean(form.get("title"), 100) }, body: { kind: "text", value: typedBody } });
+  const body = pr.values.body ?? typedBody;
   const story = await db.story.create({
     data: {
       familyId: family.id, authorId: user.id,
-      title: clean(form.get("title"), 100) || body.slice(0, 50),
+      title: pr.values.title || body.slice(0, 50),
       body, bodyLang: family.lang,
       chapter: clean(form.get("chapter"), 40) || null,
       visibility: form.get("private") === "on" ? "private" : "family",
       personId: await personInFamily(family.id, form.get("personId")),
     },
   });
+  if (pr.changes.length) await noteFixes(pr.changes, { model: "story", id: story.id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) });
   await track("story_created", { familyId: family.id, userId: user.id, props: { source: "written" } });
   redirect(`/app/stories/${story.id}`);
 }
@@ -296,16 +320,21 @@ export async function writeMemory(form: FormData) {
 export async function updateStory(id: string, form: FormData) {
   const { family } = await editor();
   const vis = clean(form.get("visibility"), 10);
+  const before = await db.story.findFirst({ where: { id, familyId: family.id } });
+  const typed = { title: clean(form.get("title"), 100), body: clean(form.get("body"), 20000) };
+  const pr = await proofread(family.lang, Object.fromEntries(Object.entries(typed)
+    .filter(([k, v]) => v && v !== before?.[k as "title" | "body"]).map(([k, v]) => [k, { kind: "text" as const, value: v }])));
   await db.story.updateMany({
     where: { id, familyId: family.id },
     data: {
-      title: clean(form.get("title"), 100) || undefined,
-      body: clean(form.get("body"), 20000) || undefined,
+      title: (pr.values.title ?? typed.title) || undefined,
+      body: (pr.values.body ?? typed.body) || undefined,
       chapter: clean(form.get("chapter"), 40) || null,
       visibility: ["family", "private", "public"].includes(vis) ? vis : undefined,
       ...(form.has("personId") ? { personId: await personInFamily(family.id, form.get("personId")) } : {}),
     },
   });
+  if (pr.changes.length) await noteFixes(pr.changes, { model: "story", id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) });
   revalidatePath(`/app/stories/${id}`);
   redirect(`/app/stories/${id}`);
 }
@@ -392,17 +421,19 @@ export async function uploadPhoto(form: FormData) {
 
 export async function addEvent(form: FormData) {
   const { family } = await editor();
-  const description = clean(form.get("description"), 1000);
-  if (!description) throw new Error("Describe what happened.");
-  await db.lifeEvent.create({
+  if (!clean(form.get("description"), 1000)) throw new Error("Describe what happened.");
+  const pr = await proofread(family.lang, { description: { kind: "text", value: clean(form.get("description"), 1000) }, place: { kind: "place", value: clean(form.get("place"), 80) } });
+  const description = pr.values.description ?? clean(form.get("description"), 1000);
+  const ev = await db.lifeEvent.create({
     data: {
       familyId: family.id, description,
       year: toInt(form.get("year")),
-      place: clean(form.get("place"), 80) || null,
+      place: pr.values.place || null,
       country: countryCode(form.get("country")),
       personId: await personInFamily(family.id, form.get("personId")),
     },
   });
+  if (pr.changes.length) await noteFixes(pr.changes, { model: "event", id: ev.id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) });
   revalidatePath("/app/journey");
   const back = clean(form.get("back"), 80);
   if (back.startsWith("/app/family/")) {
@@ -418,10 +449,16 @@ export async function updateEvent(id: string, form: FormData) {
   if (!ev) return;
   const birth = ev.description.endsWith(" is born");
   const year = toInt(form.get("year"));
-  const place = clean(form.get("place"), 80) || null;
+  const typedPlace = clean(form.get("place"), 80), typedDesc = birth ? "" : clean(form.get("description"), 1000);
+  const pr = await proofread(family.lang, {
+    ...(typedPlace && typedPlace !== ev.place ? { place: { kind: "place" as const, value: typedPlace } } : {}),
+    ...(typedDesc && typedDesc !== ev.description ? { description: { kind: "text" as const, value: typedDesc } } : {}),
+  });
+  const place = (pr.values.place ?? typedPlace) || null;
   const country = countryCode(form.get("country"));
-  const description = birth ? ev.description : clean(form.get("description"), 1000) || ev.description;
+  const description = birth ? ev.description : (pr.values.description ?? typedDesc) || ev.description;
   await db.lifeEvent.update({ where: { id }, data: { year, place, country, description } });
+  if (pr.changes.length) await noteFixes(pr.changes, { model: "event", id, familyId: family.id, data: Object.fromEntries(pr.changes.map((c) => [c.field, c.from])), fixed: Object.fromEntries(pr.changes.map((c) => [c.field, c.to])) });
   if (birth && ev.personId) {
     await db.person.updateMany({ where: { id: ev.personId, familyId: family.id }, data: { birthYear: year, birthPlace: place, birthCountry: country } });
     revalidatePath("/app/family");
@@ -514,9 +551,35 @@ export async function setMyName(form: FormData) {
     const p = await db.person.findFirst({ where: { id: pid, familyId: family.id } });
     name = p?.firstName ?? "";
   }
+  if (name && !pid) {
+    const pr = await proofread(family.lang, { name: { kind: "name", value: name } });
+    if (pr.changes.length) await noteFixes(pr.changes);
+    name = pr.values.name ?? name;
+  }
   if (name) await db.user.update({ where: { id: user.id }, data: { name } });
   revalidatePath("/app", "layout");
   redirect("/app");
+}
+
+/** "Undo" on the proofreader's notice: put back the text exactly as typed (if nobody changed it since). */
+export async function undoFix(eventId: string) {
+  const { family } = await editor();
+  const ev = await db.analyticsEvent.findFirst({ where: { id: eventId, name: "proofread_fix", familyId: family.id } });
+  if (!ev) return;
+  const u = JSON.parse(ev.props) as Undo;
+  const keep = <T extends Record<string, unknown>>(row: T | null) =>
+    Object.fromEntries(Object.entries(u.data).filter(([k]) => row && row[k] === u.fixed[k]));
+  if (u.model === "person") {
+    const row = await db.person.findFirst({ where: { id: u.id, familyId: family.id } });
+    await db.person.updateMany({ where: { id: u.id, familyId: family.id }, data: keep(row) });
+  } else if (u.model === "story") {
+    const row = await db.story.findFirst({ where: { id: u.id, familyId: family.id } });
+    await db.story.updateMany({ where: { id: u.id, familyId: family.id }, data: keep(row) });
+  } else if (u.model === "event") {
+    const row = await db.lifeEvent.findFirst({ where: { id: u.id, familyId: family.id } });
+    await db.lifeEvent.updateMany({ where: { id: u.id, familyId: family.id }, data: keep(row) });
+  }
+  revalidatePath("/app", "layout");
 }
 
 /** Language switcher in the app header. */

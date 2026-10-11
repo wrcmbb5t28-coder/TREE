@@ -7,6 +7,8 @@ import { canEdit } from "@/lib/auth";
 import { appContext, fmtDate } from "@/i18n/app";
 import { common, chapterName } from "@/i18n/app/common";
 import { storiesT } from "@/i18n/app/stories";
+import VoiceFill from "@/components/VoiceFill";
+import { fixT } from "@/i18n/app/fix";
 import { fmtDuration } from "@/lib/util";
 import { confirmFact, rejectFact, updateStory, deleteStory, askFollowUp, uploadPhoto, setStoryCover } from "../../actions";
 
@@ -89,7 +91,7 @@ export default async function StoryPage({ params, searchParams }: { params: Prom
       {edit && editable ? (
         <form action={updateStory.bind(null, s.id)} className="card stack">
           <div className="field"><label htmlFor="title">{t.titleLabel}</label><input id="title" name="title" defaultValue={s.title} /></div>
-          <div className="field"><label htmlFor="body">{t.body}</label><textarea id="body" name="body" defaultValue={s.body} style={{ minHeight: 280 }} /></div>
+          <div className="field"><div className="voice-label"><label htmlFor="body">{t.body}</label><VoiceFill lang={lang} target="body" dictate labels={{ speak: fixT[lang].speak, listening: fixT[lang].listening }} /></div><textarea id="body" name="body" defaultValue={s.body} style={{ minHeight: 280 }} /></div>
           <div className="grid2">
             <div className="field">
               <label htmlFor="chapter">{t.chapter}</label>

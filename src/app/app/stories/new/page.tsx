@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { appContext } from "@/i18n/app";
 import { common, chapterName } from "@/i18n/app/common";
 import { storiesT } from "@/i18n/app/stories";
+import VoiceFill from "@/components/VoiceFill";
+import { fixT } from "@/i18n/app/fix";
 
 const CHAPTERS = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard years", "Family life", "Traditions", "Advice", "The next generation"];
 
@@ -16,7 +18,7 @@ export default async function NewMemory({ searchParams }: { searchParams: Promis
     <form action={writeMemory} className="stack" style={{ maxWidth: 760 }}>
       <div className="page-head"><h1>{t.title}</h1></div>
       <div className="field"><label htmlFor="title">{t.titleLabel}</label><input id="title" name="title" placeholder={t.titlePh} /></div>
-      <div className="field"><label htmlFor="body">{t.body}</label><textarea id="body" name="body" required minLength={10} placeholder={t.bodyPh} style={{ minHeight: 260 }} /></div>
+      <div className="field"><div className="voice-label"><label htmlFor="body">{t.body}</label><VoiceFill lang={lang} target="body" dictate labels={{ speak: fixT[lang].speak, listening: fixT[lang].listening }} /></div><textarea id="body" name="body" required minLength={10} placeholder={t.bodyPh} style={{ minHeight: 260 }} /></div>
       <div className="field">
         <label htmlFor="personId">{t.whose}</label>
         <select id="personId" name="personId" defaultValue={people.some((x) => x.id === person) ? person : ""}>

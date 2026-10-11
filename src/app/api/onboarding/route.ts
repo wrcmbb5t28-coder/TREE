@@ -4,6 +4,7 @@ import { clean, familySlug, token } from "@/lib/util";
 import { isLang } from "@/i18n/config";
 import { track } from "@/lib/analytics";
 import { sendLoginLink } from "@/lib/login";
+import { proofread } from "@/lib/proofread";
 
 type Body = {
   name?: string; born?: string;
@@ -21,12 +22,21 @@ type Body = {
 export async function POST(req: Request) {
   const b = (await req.json().catch(() => ({}))) as Body;
   const email = clean(b.email, 200).toLowerCase();
-  const name = clean(b.name, 60);
+  let name = clean(b.name, 60);
   if (!/^\S+@\S+\.\S+$/.test(email)) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
   if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
   const lang = isLang(b.lang) ? b.lang : "en";
   const channel = ["whatsapp", "link", "together"].includes(b.channel ?? "") ? b.channel! : "whatsapp";
 
+  // Names and the birthplace go through the proofreader (typos like "Алесандр"); nothing else changes.
+  const keys = ["name", "mother", "father", "gm1", "gf1", "gm2", "gf2", "tellerName"] as const;
+  const pr = await proofread(lang, {
+    ...Object.fromEntries(keys.map((k) => [k, { kind: "name" as const, value: clean(b[k], 60) }])),
+    born: { kind: "place", value: clean(b.born, 80) },
+  });
+  for (const k of [...keys, "born"] as const) if (pr.values[k]) b[k] = pr.values[k];
+
+  name = clean(b.name, 60) || name;
   const result = await db.$transaction(async (tx) => {
     const family = await tx.family.create({ data: { name: `${name}'s family`, lang, pageSlug: familySlug(name) } });
     const mk = (firstName: string, generation: number, extra: { isSelf?: boolean; birthPlace?: string; relation?: string; gender?: string } = {}) =>
