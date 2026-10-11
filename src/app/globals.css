@@ -876,3 +876,24 @@ a.chip:hover { background: #E2E9DA; }
 .h-gift-steps span { color: var(--muted); line-height: 1.5; }
 .h-gift-cta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
 @media (max-width: 760px) { .h-gift-in { grid-template-columns: 1fr; } }
+
+/* The family's own book (/app/book): same paper as the sample book, text cut into pages */
+.ob-root { min-height: calc(100svh - 120px); border-radius: 14px; padding-top: 4px; }
+.ob-root .sb-top { padding-left: 4px; padding-right: 4px; }
+.ob-print { color: #F3EBDD !important; border-color: rgba(243,235,221,.4) !important; background: transparent !important; white-space: nowrap; }
+.ob-cover-title { font-size: 10cqw; text-wrap: balance; }
+.ob-text { margin: 0; font-size: 3.55cqw; line-height: 1.6; white-space: pre-line; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }
+.ob-first::first-letter { float: left; font-family: var(--sb-display); font-weight: 600; font-size: 10.5cqw; line-height: .82; padding: 1.2cqw 1.6cqw 0 0; color: var(--sb-red); }
+.ob-last::after { content: " ❦"; color: var(--sb-red); font-size: .9em; }
+.ob-filler { justify-content: center; }
+.ob-motto { margin-top: 3cqw; }
+.ob-toc li { font-size: 3cqw; }
+.sb-voice img { width: 11cqw; height: 11cqw; flex: none; }
+@media (max-width: 600px) { .ob-print { display: none; } }
+.ob-root .br-stage { --pw: min(88vw, calc((100svh - 300px) * .72), 470px); }
+.ob-root .br-stage.br-wide { --pw: min(40vw, calc((100svh - 300px) * .72), 520px); }
+.ob-mottopage { align-items: center; }
+.ob-mottopage .sb-orn { margin: 0; }
+.ob-mottopage .ob-motto { font-size: 5.4cqw; max-width: 80%; }
+.ob-root { width: 100%; max-width: 100%; overflow: hidden; }
+@media (max-width: 899px) { .ob-root { padding: 0 10px 18px; } .ob-root .br-stage { --pw: min(calc(100vw - 96px), calc((100svh - 300px) * .72), 470px); } }

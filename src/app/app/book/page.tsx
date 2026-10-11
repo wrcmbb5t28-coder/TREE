@@ -8,6 +8,7 @@ import { track } from "@/lib/analytics";
 import TreeView from "@/components/TreeView";
 import PrintButton from "@/components/PrintButton";
 import { StoryCover, resolveCover } from "@/components/StoryArt";
+import FlipBook from "./FlipBook";
 
 const ORDER = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard years", "Family life", "Traditions", "Advice", "The next generation"];
 
@@ -15,7 +16,13 @@ const ORDER = ["Origins", "Childhood", "Love", "Work", "Leaving home", "Hard yea
  * The digital Family Book: print-ready (A4/Letter) HTML.
  * "Save as PDF" in the browser produces the PDF; the same layout is the base for the printed hardcover.
  */
-export default async function Book() {
+export default async function Book({ searchParams }: { searchParams: Promise<{ print?: string }> }) {
+  const { print } = await searchParams;
+  return print ? <PrintBook /> : <FlipBook />;
+}
+
+/** The same book as one long page, for "Save as PDF" and printing. */
+async function PrintBook() {
   const { user, family, lang } = await appContext();
   const t = more[lang].book;
   const stories = await db.story.findMany({
@@ -48,7 +55,7 @@ export default async function Book() {
   return (
     <div className="book-page" style={{ borderRadius: 12 }}>
       <div className="no-print row between" style={{ padding: 16 }}>
-        <span className="small muted">{plural(lang, stories.length, t.stories)} · {plural(lang, sorted.length, t.chapters)}</span>
+        <span className="small muted"><a href="/app/book">← {t.eyebrow}</a> · {plural(lang, stories.length, t.stories)} · {plural(lang, sorted.length, t.chapters)}</span>
         <PrintButton label={t.print} />
       </div>
       <div className="book-sheet">

@@ -51,6 +51,21 @@ export default function BookReader({ pages, labels }: { pages: ReactNode[]; labe
 
   useEffect(() => { const t = setTimeout(() => setDir(""), 450); return () => clearTimeout(t); }, [pos]);
 
+  // Text marked data-fit must never be cut off: if a page overflows, its text gets a little smaller.
+  const stage = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const fit = () => stage.current?.querySelectorAll<HTMLElement>(".br-page:not([hidden]) [data-fit]").forEach((el) => {
+      const page = el.closest<HTMLElement>(".sb-p");
+      if (!page) return;
+      el.style.fontSize = "";
+      const base = parseFloat(getComputedStyle(el).fontSize);
+      for (let k = 1; page.scrollHeight > page.clientHeight + 1 && k <= 8; k++) el.style.fontSize = `${base * (1 - k * 0.04)}px`;
+    });
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [pos, wide]);
+
   const shown: number[] = wide ? (pos === 0 ? [0] : [2 * pos - 1, 2 * pos].filter((i) => i < n)) : [pos];
   const cover = shown.length === 1 && shown[0] === 0;
   const pageLabel = cover ? "" : shown.length === 2 ? `${labels.page} ${shown[0]}–${shown[1]} ${labels.of} ${n - 1}` : `${labels.page} ${shown[0]} ${labels.of} ${n - 1}`;
@@ -58,6 +73,7 @@ export default function BookReader({ pages, labels }: { pages: ReactNode[]; labe
   return (
     <div className="br">
       <div
+        ref={stage}
         className={`br-stage${wide ? " br-wide" : ""}${cover ? " br-cover" : ""}${dir ? ` br-turn-${dir}` : ""}`}
         onTouchStart={(e) => { touch.current = e.touches[0].clientX; }}
         onTouchEnd={(e) => {
