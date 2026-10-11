@@ -6,6 +6,8 @@ import { db } from "@/lib/db";
 // Only these events may come from the browser; everything else is tracked server-side.
 const CLIENT_EVENTS = new Set<EventName>([
   "onboarding_started",
+  "landing_view",
+  "sample_book_opened",
   "onboarding_step_completed",
   "share_clicked",
   "book_preview_opened",

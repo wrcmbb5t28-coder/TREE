@@ -40,7 +40,25 @@ export default async function Admin() {
     ["Sign-in links on screen (SHOW_LOGIN_LINKS) — remove before launch", process.env.SHOW_LOGIN_LINKS === "1"],
   ];
   const n = (name: string) => events.find((e) => e.name === name)?._count._all ?? 0;
+  const attributed = await db.analyticsEvent.findMany({
+    where: { createdAt: { gte: since }, name: { in: ["landing_view", "sample_book_opened", "demo_opened", "signup", "checkout_started", "subscription_started", "gift_purchased"] } },
+    select: { name: true, props: true },
+  });
+  const COLS = ["landing_view", "sample_book_opened", "demo_opened", "signup", "checkout_started", "paid"] as const;
+  const bySrc = new Map<string, Record<string, number>>();
+  for (const e of attributed) {
+    let src = "direct";
+    try { src = (JSON.parse(e.props || "{}") as { src?: string }).src || "direct"; } catch { /* keep direct */ }
+    const col = e.name === "subscription_started" || e.name === "gift_purchased" ? "paid" : e.name;
+    const row = bySrc.get(src) ?? {};
+    row[col] = (row[col] ?? 0) + 1;
+    bySrc.set(src, row);
+  }
+  const sources = [...bySrc.entries()].sort((a, b) => (b[1].landing_view ?? 0) - (a[1].landing_view ?? 0));
   const funnel = [
+    ["Homepage visits", n("landing_view")],
+    ["Sample book opened", n("sample_book_opened")],
+    ["Demo family opened", n("demo_opened")],
     ["Onboarding started", n("onboarding_started")],
     ["Tree created", n("tree_created")],
     ["Signed up", n("signup")],
@@ -94,6 +112,24 @@ export default async function Admin() {
             </div>
           </div>
         ))}
+      </section>
+      <section className="card stack">
+        <h2 style={{ fontSize: "1.3rem" }}>Where visitors come from</h2>
+        <p className="small muted">First source a visitor arrived with: utm_source or ?ref= in the link (e.g. treename.ai/?ref=instagram). Without a tag it is "direct".</p>
+        {sources.length === 0 ? <p className="small muted">No data yet.</p> : (
+          <div style={{ overflowX: "auto" }}>
+            <table className="small" style={{ width: "100%", borderCollapse: "collapse", fontVariantNumeric: "tabular-nums" }}>
+              <thead><tr style={{ textAlign: "left" }}><th>Source</th><th>Visits</th><th>Book</th><th>Demo</th><th>Sign-ups</th><th>Checkout</th><th>Paid</th></tr></thead>
+              <tbody>
+                {sources.map(([src, r]) => (
+                  <tr key={src} style={{ borderTop: "1px solid var(--line)" }}>
+                    <td>{src}</td>{COLS.map((c) => <td key={c}>{r[c] ?? 0}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
       <section className="card stack">
         <h2 style={{ fontSize: "1.3rem" }}>Sample book illustrations</h2>

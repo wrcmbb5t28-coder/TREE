@@ -99,6 +99,20 @@ const fr: Dict = {
     family: { name: "Famille", price: "$59", per: "par an, toute la famille", features: ["Entretiens et voix illimités", "Histoires, chapitres et traduction", "Carte du voyage et page familiale", "Livre de famille numérique"], cta: "Choisir l'offre famille" },
     legacy: { name: "Cadeau", price: "$99", per: "paiement unique", features: ["Un an d’offre Famille", "52 questions hebdomadaires pour un conteur", "Un livre relié en couleur avec codes vocaux", "Livré sous forme de jolie carte"], cta: "Offrir Treename" },
   },
+  gift: {
+    heroBook: "ou feuilleter un livre exemple →",
+    season: "Un cadeau pour vos parents pour les fêtes",
+    title: "Un cadeau qui reste dans la famille",
+    lead: "Vous offrez une année de questions. Maman ou Papa répondent de vive voix quand ils veulent, et à la fin de l'année naît un livre de leurs histoires, avec des codes qui font entendre leur voix.",
+    steps: [
+      { t: "Aujourd'hui", d: "Vous payez le cadeau et indiquez à qui il est destiné. La personne reçoit aussitôt une carte électronique avec la première question." },
+      { t: "Toute l'année", d: "Une nouvelle question chaque semaine sur WhatsApp. Réponse à voix haute, dans sa langue — sans appli ni mot de passe." },
+      { t: "À la fin", d: "Un livre relié : les histoires, les photos et des codes vocaux sur les pages." },
+    ],
+    cta: "L'offrir pour 99 $",
+    more: "Feuilleter un livre exemple",
+    note: "Un seul paiement, sans abonnement.",
+  },
   final: {
     title: "Surtout, ne remettez pas à plus tard",
     body: "Interrogez vos proches tant qu’ils sont en vie. Nous vous aidons pour la première question : cela prend deux minutes, et la réponse reste dans votre famille pour de bon.",

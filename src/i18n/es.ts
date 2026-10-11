@@ -99,6 +99,20 @@ const es: Dict = {
     family: { name: "Familia", price: "$59", per: "al año, toda la familia", features: ["Entrevistas y voz ilimitadas", "Historias, capítulos y traducción", "Mapa del viaje y página familiar", "Libro familiar digital"], cta: "Elegir el plan familiar" },
     legacy: { name: "Regalo", price: "$99", per: "pago único", features: ["Un año del plan Familia", "52 preguntas semanales para un narrador", "Un libro a color de tapa dura con códigos de voz", "Llega como una tarjeta bonita"], cta: "Regalar Treename" },
   },
+  gift: {
+    heroBook: "o hojea un libro de ejemplo →",
+    season: "Un regalo para tus padres estas fiestas",
+    title: "Un regalo que se queda en la familia",
+    lead: "Regalas un año de preguntas. Mamá o papá responden con su voz cuando les apetece, y al final del año hay un libro con sus historias y códigos que hacen sonar su voz.",
+    steps: [
+      { t: "Hoy", d: "Pagas el regalo y dices para quién es. Recibe al momento una tarjeta por correo con la primera pregunta." },
+      { t: "Todo el año", d: "Cada semana una pregunta nueva por WhatsApp. Responde con su voz, en su idioma, sin apps ni contraseñas." },
+      { t: "Al final", d: "Un libro de tapa dura: las historias, las fotos y códigos de voz en las páginas." },
+    ],
+    cta: "Regalarlo por $99",
+    more: "Hojear un libro de ejemplo",
+    note: "Un solo pago, sin suscripción.",
+  },
   final: {
     title: "Sobre todo, no lo dejes para después",
     body: "Pregunta a tu familia mientras viven. Te ayudamos con la primera pregunta: son dos minutos, y la respuesta se queda con tu familia para siempre.",

@@ -99,6 +99,20 @@ const de: Dict = {
     family: { name: "Familie", price: "$59", per: "pro Jahr, ganze Familie", features: ["Unbegrenzte Interviews und Sprachaufnahmen", "Geschichten, Kapitel und Übersetzung", "Familienreise-Karte und Familienseite", "Digitales Familienbuch"], cta: "Familien-Abo starten" },
     legacy: { name: "Geschenk", price: "$99", per: "einmalig", features: ["Ein Jahr im Abo „Familie“", "52 wöchentliche Fragen für eine erzählende Person", "Ein gebundenes Farbbuch mit Sprachcodes", "Kommt als schöne Geschenkkarte"], cta: "Treename verschenken" },
   },
+  gift: {
+    heroBook: "oder im Beispielbuch blättern →",
+    season: "Ein Geschenk für Ihre Eltern zu den Feiertagen",
+    title: "Ein Geschenk, das in der Familie bleibt",
+    lead: "Sie schenken ein Jahr voller Fragen. Mama oder Papa antworten mit ihrer Stimme, wann es ihnen passt, und am Ende des Jahres entsteht ein Buch ihrer Geschichten – mit Codes, über die man ihre Stimme hört.",
+    steps: [
+      { t: "Heute", d: "Sie bezahlen das Geschenk und sagen, für wen es ist. Die Beschenkten bekommen sofort eine E-Karte mit der ersten Frage." },
+      { t: "Das ganze Jahr", d: "Jede Woche eine neue Frage per WhatsApp. Antwort mit der Stimme, in der eigenen Sprache – ohne App und Passwort." },
+      { t: "Am Ende", d: "Ein Buch mit festem Einband: Geschichten, Fotos und Sprach-Codes auf den Seiten." },
+    ],
+    cta: "Für $99 verschenken",
+    more: "Im Beispielbuch blättern",
+    note: "Einmal bezahlen, kein Abo.",
+  },
   final: {
     title: "Vor allem: Schieben Sie es nicht auf",
     body: "Fragen Sie Ihre Angehörigen, solange sie leben. Bei der ersten Frage helfen wir Ihnen: Es dauert zwei Minuten, und die Antwort bleibt für immer in Ihrer Familie.",

@@ -10,8 +10,10 @@ import CrestSvg from "@/components/CrestSvg";
 import type { CrestConfig } from "@/lib/crest";
 import { appUrl } from "@/lib/util";
 import { sampleBook } from "@/lib/sampleBook";
+import PageView from "@/components/PageView";
 
 export const dynamicParams = false;
+export const revalidate = 86400;
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
 }
@@ -82,6 +84,7 @@ export default async function Home({ params }: Props) {
 
   return (
     <>
+      <PageView name="landing_view" lang={lang} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="wrap">
         <SiteNav lang={lang} t={t} />
@@ -94,6 +97,7 @@ export default async function Home({ params }: Props) {
               <Link className="btn btn-primary" href={start}>{t.hero.cta}</Link>
               <a className="btn btn-ghost" href={`/demo?lang=${lang}`}>{t.hero.cta2}</a>
             </div>
+            <Link className="h-booklink h-reveal d2" href={`/${lang}/book`}>{t.gift.heroBook}</Link>
             <div className="trust h-reveal d3">{t.hero.trust.map((x) => <span key={x}>{x}</span>)}</div>
           </div>
           <div className="h-reveal d2"><HeroDemo d={t.demo} /></div>
@@ -228,6 +232,28 @@ export default async function Home({ params }: Props) {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="h-sec h-gift" id="gift">
+        <div className="wrap">
+          <div className="h-gift-in">
+            <div className="h-gift-head">
+              <span className="tag">{t.pricing.giftTag}</span>
+              <h2>{new Date().getMonth() >= 9 ? t.gift.season : t.gift.title}</h2>
+              <p className="lead">{t.gift.lead}</p>
+            </div>
+            <ol className="h-gift-steps">
+              {t.gift.steps.map((s, i) => (
+                <li key={i}><b>{s.t}</b><span>{s.d}</span></li>
+              ))}
+            </ol>
+            <div className="h-gift-cta">
+              <Link className="btn btn-primary" href={`${start}?plan=legacy`}>{t.gift.cta}</Link>
+              <Link className="btn btn-ghost" href={`/${lang}/book`}>{t.gift.more}</Link>
+              <span className="small muted">{t.gift.note}</span>
+            </div>
           </div>
         </div>
       </section>

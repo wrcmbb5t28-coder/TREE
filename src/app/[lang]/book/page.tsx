@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { isLang, LANGS, HREFLANG } from "@/i18n";
 import type { Lang } from "@/i18n/config";
 import BookReader from "@/components/BookReader";
+import PageView from "@/components/PageView";
 import BookArt, { type BookScene } from "@/components/BookArt";
 import CrestSvg from "@/components/CrestSvg";
 import { FaceSvg } from "@/components/Face";
@@ -253,6 +254,7 @@ export default async function SampleBook({ params }: Props) {
 
   return (
     <main className="sb-root" lang={lang}>
+      <PageView name="sample_book_opened" lang={lang} />
       <header className="sb-top">
         <Link href={`/${lang}`} className="sb-back">{ui.back}</Link>
         <p className="sb-eyebrow">{ui.eyebrow} · {b.title}</p>

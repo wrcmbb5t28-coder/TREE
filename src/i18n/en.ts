@@ -97,6 +97,20 @@ const en = {
     family: { name: "Family", price: "$59", per: "per year, whole family", features: ["Unlimited interviews and voice", "Stories, chapters and translation", "Journey map and family page", "Digital family book"], cta: "Start your family plan" },
     legacy: { name: "Legacy Gift", price: "$99", per: "one time", features: ["One year of Family", "52 weekly questions for one storyteller", "One hardcover color book with voice codes", "Arrives as a beautiful card"], cta: "Give Treename" },
   },
+  gift: {
+    heroBook: "or leaf through a sample book →",
+    season: "A gift for your parents this holiday season",
+    title: "A gift that stays in the family",
+    lead: "You give a year of questions. Mum or Dad answer by voice whenever they like, and at the end of the year there is a book of their stories, with codes that play their voice.",
+    steps: [
+      { t: "Today", d: "You pay for the gift and say who it's for. They get an e-card with the first question straight away." },
+      { t: "All year", d: "A new question every week on WhatsApp. They answer by voice, in their own language — no apps, no passwords." },
+      { t: "At the end", d: "A hardcover book: the stories, the photos and voice codes on the pages." },
+    ],
+    cta: "Give it for $99",
+    more: "Leaf through a sample book",
+    note: "One payment, no subscription.",
+  },
   final: {
     title: "Above all, don’t put it off",
     body: "Ask your family while they’re still alive. We’ll help with the first question: it takes two minutes, and the answer stays with your family for good.",

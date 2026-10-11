@@ -7,6 +7,8 @@ import { db } from "./db";
  */
 export type EventName =
   | "onboarding_started"
+  | "landing_view"
+  | "sample_book_opened"
   | "crest_generated"
   | "demo_opened"
   | "server_error"
@@ -36,17 +38,38 @@ export type EventName =
   | "gift_redeemed"
   | "subscription_cancelled";
 
+const ATTRIBUTED = new Set<string>(["landing_view", "sample_book_opened", "onboarding_started", "tree_created", "signup", "checkout_started", "subscription_started", "demo_opened", "gift_purchased"]);
+
+/** The tn_src cookie set by the middleware: { src, medium, campaign, landing }. Null outside a request or when absent. */
+export async function firstTouch(): Promise<{ src: string; medium?: string; campaign?: string; landing?: string } | null> {
+  try {
+    const { cookies } = await import("next/headers");
+    const v = (await cookies()).get("tn_src")?.value;
+    if (!v) return null;
+    const [src, medium, campaign, landing] = v.split("|");
+    return { src, ...(medium ? { medium } : {}), ...(campaign ? { campaign } : {}), ...(landing ? { landing } : {}) };
+  } catch {
+    return null;
+  }
+}
+
 export async function track(
   name: EventName,
   opts: { familyId?: string | null; userId?: string | null; props?: Record<string, unknown> } = {}
 ): Promise<void> {
   try {
+    const props: Record<string, unknown> = { ...(opts.props ?? {}) };
+    // Funnel events carry the visitor's first-touch source (utm_source / ref), so channels can be compared.
+    if (ATTRIBUTED.has(name) && props.src === undefined) {
+      const src = await firstTouch();
+      if (src) Object.assign(props, src);
+    }
     await db.analyticsEvent.create({
       data: {
         name,
         familyId: opts.familyId ?? null,
         userId: opts.userId ?? null,
-        props: JSON.stringify(opts.props ?? {}),
+        props: JSON.stringify(props),
       },
     });
   } catch (e) {
