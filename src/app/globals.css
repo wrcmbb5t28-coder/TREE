@@ -897,3 +897,5 @@ a.chip:hover { background: #E2E9DA; }
 .ob-mottopage .ob-motto { font-size: 5.4cqw; max-width: 80%; }
 .ob-root { width: 100%; max-width: 100%; overflow: hidden; }
 @media (max-width: 899px) { .ob-root { padding: 0 10px 18px; } .ob-root .br-stage { --pw: min(calc(100vw - 96px), calc((100svh - 300px) * .72), 470px); } }
+.ob-cover-title { letter-spacing: .01em; max-width: 100%; overflow-wrap: anywhere; line-height: 1.05; }
+.ob-root .sb-cover-frame { padding: 5cqw 4cqw; }

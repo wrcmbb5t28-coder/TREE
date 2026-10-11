@@ -10,6 +10,7 @@ import { getDict } from "@/i18n";
 import { appUrl } from "@/lib/util";
 import { track } from "@/lib/analytics";
 import { familyLines } from "@/lib/lines";
+import { surnameKey } from "@/lib/crest";
 import { geocodeMany, placeKey } from "@/lib/geo";
 import BookReader from "@/components/BookReader";
 import BookMap, { type MapStop } from "@/components/BookMap";
@@ -75,6 +76,8 @@ function bookScene(text: string, year: number): BookScene {
   return year < 1950 ? "village" : "apartments";
 }
 
+const longestWord = (t: string) => Math.max(...t.split(/[\s-]+/).map((w) => w.length));
+
 const Folio = ({ n }: { n: number }) => <span className="sb-folio">{n}</span>;
 
 /** The family's own book, leafed through like the sample book: cover, contents, generations, map, numbers, stories. */
@@ -98,7 +101,16 @@ export default async function FlipBook() {
   await track("book_preview_opened", { familyId: family.id, userId: user.id, props: { stories: stories.length, view: "flip" } });
 
   // Title: the main family line ("Лимоновы", "The Jones Family"); a name the family typed themselves wins.
-  const line = lines[0];
+  // The book carries the surname of the person who keeps it (or of their father), not simply the most common one.
+  const self = people.find((p) => p.isSelf);
+  let ownKey = self?.lastName?.trim() ? surnameKey(self.lastName) : null;
+  if (!ownKey && self) {
+    const parentIds = (await db.relationship.findMany({ where: { childId: self.id }, select: { parentId: true } })).map((r) => r.parentId);
+    const parents = people.filter((p) => parentIds.includes(p.id) && p.lastName?.trim());
+    const father = parents.find((p) => p.gender === "m" || p.relation === "father") ?? parents[0];
+    if (father?.lastName) ownKey = surnameKey(father.lastName);
+  }
+  const line = lines.find((l) => l.key === ownKey) ?? lines[0];
   const autoName = /'s family$/i.test(family.name.trim());
   const title = !autoName ? family.name : line ? o.titleOf(line.name) : o.fallbackTitle;
   const crest = line?.config ?? null;
@@ -157,7 +169,7 @@ export default async function FlipBook() {
     <div key="cover" className="sb-cover">
       <div className="sb-cover-frame">
         {crest && <CrestSvg c={crest} size={150} idSuffix="own-cover" title={title} />}
-        <h1 className="sb-cover-title ob-cover-title">{title}</h1>
+        <h1 className="sb-cover-title ob-cover-title" style={{ fontSize: `${Math.min(12, 100 / Math.max(5, longestWord(title)))}cqw` }}>{title}</h1>
         <p className="sb-cover-sub">{subtitle}</p>
         <p className="sb-cover-years">{span}</p>
       </div>
