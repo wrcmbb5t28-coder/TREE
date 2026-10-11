@@ -504,6 +504,21 @@ export async function updateProfile(form: FormData) {
   redirect("/app/settings?saved=1");
 }
 
+/** A family member tells us their name (picked from the tree or typed). */
+export async function setMyName(form: FormData) {
+  const { user, family } = await requireFamily();
+  if (isDemoFamily(family.id)) redirect("/app?readonly=1");
+  let name = clean(form.get("name"), 60);
+  const pid = clean(form.get("person"), 40);
+  if (!name && pid) {
+    const p = await db.person.findFirst({ where: { id: pid, familyId: family.id } });
+    name = p?.firstName ?? "";
+  }
+  if (name) await db.user.update({ where: { id: user.id }, data: { name } });
+  revalidatePath("/app", "layout");
+  redirect("/app");
+}
+
 /** Language switcher in the app header. */
 export async function setUiLang(lang: string) {
   const { user, family } = await requireFamily();

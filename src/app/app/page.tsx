@@ -1,3 +1,6 @@
+import { whoami } from "@/i18n/app/whoami";
+import { familyTitle } from "@/lib/familyTitle";
+import { setMyName } from "./actions";
 import Link from "next/link";
 import { StoryCover } from "@/components/StoryArt";
 import { db } from "@/lib/db";
@@ -13,6 +16,7 @@ import ShareQuestion from "@/components/ShareQuestion";
 import { deleteQuestion } from "./actions";
 import TreeView from "@/components/TreeView";
 import { canEdit } from "@/lib/auth";
+import { isDemoFamily } from "@/lib/demo";
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ asked?: string; welcome?: string; paid?: string }> }) {
   const sp = await searchParams;
@@ -38,7 +42,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
   // Places not looked up yet: find their country after the page is sent (counts next time).
   if (countryInfo.missing.length) after(() => geocodeMany(countryInfo.missing, 5).then(() => undefined).catch(() => undefined));
   const self = await db.person.findFirst({ where: { familyId: family.id, isSelf: true } });
-  const askerName = user.name || self?.firstName || t.familyFallback;
+  // Greet the person who is signed in: the tree's creator may fall back to their card in the tree, nobody else may.
+  const ownName = user.name || (role === "owner" ? self?.firstName : null) || null;
+  const askerName = ownName || self?.firstName || t.familyFallback;
+  const w = whoami[lang];
+  const ft = await familyTitle(family, lang);
   const generations = (await db.person.findMany({ where: { familyId: family.id }, distinct: ["generation"], select: { generation: true } })).length;
   const paid = isPaid(family);
   const treePeople = await db.person.findMany({ where: { familyId: family.id, ...(canEdit(role) ? {} : { hidden: false }) }, orderBy: [{ generation: "asc" }, { createdAt: "asc" }] });
@@ -58,8 +66,22 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
       <section className="home-hero">
         <div className="stack" style={{ gap: 18 }}>
           <div className="stack" style={{ gap: 6 }}>
-            <p className="eyebrow">{family.name}</p>
-            <h1>{t.hello(askerName)}</h1>
+            <p className="eyebrow">{ft.title}</p>
+            <h1>{ownName ? t.hello(ownName) : w.hello}</h1>
+            {!ownName && !isDemoFamily(family.id) && (
+              <form action={setMyName} className="card whoami">
+                <b>{w.title}</b>
+                <span className="small muted">{w.text}</span>
+                <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+                  <select name="person" defaultValue="">
+                    <option value="">{w.pick}</option>
+                    {treePeople.filter((p) => !p.isSelf).map((p) => <option key={p.id} value={p.id}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}{p.birthYear ? `, ${p.birthYear}` : ""}</option>)}
+                  </select>
+                  <input name="name" placeholder={w.or} maxLength={60} />
+                  <button className="btn btn-primary btn-sm">{w.save}</button>
+                </div>
+              </form>
+            )}
           </div>
           <div className="kpis">
             <div className="kpi"><b>{people}</b><span>{plural(lang, people, t.kpiPeople)}</span></div>

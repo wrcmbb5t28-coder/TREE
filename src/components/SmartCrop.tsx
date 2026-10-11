@@ -51,7 +51,9 @@ async function frame(img: HTMLImageElement) {
     if (tall) {
       const free = ch - topCrop.height;
       py = free > 0 ? (topCrop.y / free) * 100 : 50;
-      py = Math.min(py, 60); // a face is almost never at the very bottom
+      // In a tall photo the head is in the upper part: skin tones lower down (arms, shoulders) must not pull
+      // the frame down and cut the head off. Keep the top third in view.
+      py = Math.min(py, 28);
     } else {
       const free = cw - topCrop.width;
       px = free > 0 ? (topCrop.x / free) * 100 : 50;

@@ -12,8 +12,7 @@ import { sampleBook } from "@/lib/sampleBook";
 import { getDict } from "@/i18n";
 import { appUrl } from "@/lib/util";
 import { track } from "@/lib/analytics";
-import { familyLines } from "@/lib/lines";
-import { surnameKey } from "@/lib/crest";
+import { familyTitle } from "@/lib/familyTitle";
 import { geocodeMany, placeKey } from "@/lib/geo";
 import BookReader from "@/components/BookReader";
 import BookMap, { type MapStop } from "@/components/BookMap";
@@ -91,7 +90,7 @@ export default async function FlipBook() {
   const ui = sampleBook(lang).ui;
   const mapTitle = sampleBook(lang).mapTitle;
 
-  const [stories, people, events, lines] = await Promise.all([
+  const [stories, people, events] = await Promise.all([
     db.story.findMany({
       where: { familyId: family.id, visibility: { not: "private" } },
       include: { answer: { include: { question: { include: { storyteller: true } } } }, photos: { orderBy: { createdAt: "asc" } }, person: true },
@@ -99,24 +98,14 @@ export default async function FlipBook() {
     }),
     db.person.findMany({ where: { familyId: family.id, hidden: false }, include: { photos: { orderBy: [{ year: "asc" }, { createdAt: "asc" }] } }, orderBy: [{ generation: "asc" }, { birthYear: "asc" }, { createdAt: "asc" }] }),
     db.lifeEvent.findMany({ where: { familyId: family.id, year: { not: null } }, include: { person: true }, orderBy: { year: "asc" } }),
-    familyLines(family.id),
   ]);
   await track("book_preview_opened", { familyId: family.id, userId: user.id, props: { stories: stories.length, view: "flip" } });
 
-  // Title: the main family line ("Лимоновы", "The Jones Family"); a name the family typed themselves wins.
-  // The book carries the surname of the person who keeps it (or of their father), not simply the most common one.
-  const self = people.find((p) => p.isSelf);
-  let ownKey = self?.lastName?.trim() ? surnameKey(self.lastName) : null;
-  if (!ownKey && self) {
-    const parentIds = (await db.relationship.findMany({ where: { childId: self.id }, select: { parentId: true } })).map((r) => r.parentId);
-    const parents = people.filter((p) => parentIds.includes(p.id) && p.lastName?.trim());
-    const father = parents.find((p) => p.gender === "m" || p.relation === "father") ?? parents[0];
-    if (father?.lastName) ownKey = surnameKey(father.lastName);
-  }
-  const line = lines.find((l) => o.titleOf(l.name) === family.name.trim()) ?? lines.find((l) => l.key === ownKey) ?? lines[0];
-  const autoName = /'s family$/i.test(family.name.trim());
-  const title = !autoName ? family.name : line ? o.titleOf(line.name) : o.fallbackTitle;
-  const crest = line?.config ?? null;
+  // Title: the couple's two surname lines, or the keeper's line; a name the family chose wins.
+  const ft = await familyTitle(family, lang);
+  const { title, crests, options } = ft;
+  const crest = crests[0] ?? null;
+  const autoName = ft.auto;
 
   const gens = [...new Set(people.map((p) => p.generation))].sort((a, b) => a - b);
   const years = people.map((p) => p.birthYear).filter((y): y is number => !!y);
@@ -191,7 +180,7 @@ export default async function FlipBook() {
   const pages: React.ReactNode[] = [
     <div key="cover" className="sb-cover">
       <div className="sb-cover-frame">
-        {crest && <CrestSvg c={crest} size={150} idSuffix="own-cover" title={title} />}
+        {crests.length > 0 && <div className={`ob-crests ob-crests-${crests.length}`}>{crests.map((c, i) => <CrestSvg key={i} c={c} size={150} idSuffix={`own-cover${i}`} title={title} />)}</div>}
         <h1 className="sb-cover-title ob-cover-title" style={{ fontSize: `${Math.min(12, 100 / Math.max(5, longestWord(title)))}cqw` }}>{title}</h1>
         <p className="sb-cover-sub">{subtitle}</p>
         <p className="sb-cover-years">{span}</p>
@@ -200,7 +189,7 @@ export default async function FlipBook() {
     </div>,
 
     <article key="title" className="sb-p sb-titlepage">
-      {crest && <CrestSvg c={{ ...crest, motto: "" }} size={64} idSuffix="own-t" title={title} />}
+      {crests.length > 0 && <div className={`ob-crests ob-crests-${crests.length}`}>{crests.map((c, i) => <CrestSvg key={i} c={{ ...c, motto: "" }} size={64} idSuffix={`own-t${i}`} title={title} />)}</div>}
       <h2>{title}</h2>
       <p className="sb-sub">{subtitle}</p>
       <p className="sb-years">{span}</p>
@@ -399,11 +388,11 @@ export default async function FlipBook() {
         <details className="ob-name">
           <summary>{o.cover}: <b>{title}</b></summary>
           <form action={setBookTitle} className="ob-name-form">
-            <select name="pick" defaultValue={autoName ? "" : lines.map((l) => o.titleOf(l.name)).includes(family.name) ? family.name : ""}>
+            <select name="pick" defaultValue={autoName ? "" : options.includes(family.name) ? family.name : ""}>
               <option value="">{o.auto}</option>
-              {lines.map((l) => <option key={l.key} value={o.titleOf(l.name)}>{o.titleOf(l.name)}</option>)}
+              {options.map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
-            <input name="custom" placeholder={o.custom} defaultValue={!autoName && !lines.map((l) => o.titleOf(l.name)).includes(family.name) ? family.name : ""} maxLength={80} />
+            <input name="custom" placeholder={o.custom} defaultValue={!autoName && !options.includes(family.name) ? family.name : ""} maxLength={80} />
             <button className="btn btn-primary btn-sm">{o.save}</button>
           </form>
         </details>

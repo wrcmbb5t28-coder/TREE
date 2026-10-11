@@ -934,3 +934,13 @@ a.chip:hover { background: #E2E9DA; }
 .ob-frame img, .ob-snap img, .sb-img, .story-photo img, .avatar img, img.avatar { object-position: 50% 22%; }
 .ob-frame { display: block; position: relative; }
 .ob-frame img, .ob-frame svg { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+.ob-crests { display: flex; justify-content: center; align-items: flex-start; gap: 4cqw; }
+.sb-cover-frame .ob-crests-2 svg { width: 25cqw; }
+.sb-titlepage .ob-crests-2 svg { width: 14cqw; }
+/* album: every photo keeps its own shape (a tall photo stays tall), only extreme ones are trimmed */
+.ob-album { align-items: center; justify-items: center; }
+.ob-snap { width: fit-content; max-width: 100%; }
+.ob-snap img, .ob-album-1 .ob-snap img { aspect-ratio: auto; width: auto; max-width: 100%; height: auto; max-height: 44cqw; object-fit: cover; background: none; }
+.ob-album-1 .ob-snap img, .ob-album-2 .ob-snap img { max-height: 70cqw; }
+.ob-album-2 { grid-template-columns: 1fr; padding: 0 4cqw; }
+.ob-album-2 .ob-snap img { max-height: 46cqw; }

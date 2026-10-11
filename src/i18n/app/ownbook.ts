@@ -5,6 +5,7 @@ type Forms = { one: string; few?: string; many?: string; other: string };
 /** Words for the family's own book (the rest comes from the sample book and the print version). */
 export const ownBook: Record<Lang, {
   titleOf: (line: string) => string;
+  titleOfPair: (a: string, b: string) => string;
   fallbackTitle: string;
   generations: Forms;
   made: (year: number) => string;
@@ -23,6 +24,7 @@ export const ownBook: Record<Lang, {
 }> = {
   ru: {
     titleOf: (l) => l,
+    titleOfPair: (a, b) => `${a} и ${b}`,
     fallbackTitle: "Наша семья",
     generations: { one: "# поколение одной семьи", few: "# поколения одной семьи", many: "# поколений одной семьи", other: "# поколения одной семьи" },
     made: (y) => `Собрано семьёй в Treename · ${y}`,
@@ -36,6 +38,7 @@ export const ownBook: Record<Lang, {
   },
   en: {
     titleOf: (l) => `The ${l} Family`,
+    titleOfPair: (a, b) => `The ${a} & ${b} Families`,
     fallbackTitle: "Our Family",
     generations: { one: "# generation of one family", other: "# generations of one family" },
     made: (y) => `Put together by the family with Treename · ${y}`,
@@ -49,6 +52,7 @@ export const ownBook: Record<Lang, {
   },
   de: {
     titleOf: (l) => `Familie ${l}`,
+    titleOfPair: (a, b) => `Familien ${a} & ${b}`,
     fallbackTitle: "Unsere Familie",
     generations: { one: "# Generation einer Familie", other: "# Generationen einer Familie" },
     made: (y) => `Von der Familie mit Treename zusammengestellt · ${y}`,
@@ -62,6 +66,7 @@ export const ownBook: Record<Lang, {
   },
   fr: {
     titleOf: (l) => `Famille ${l}`,
+    titleOfPair: (a, b) => `Familles ${a} et ${b}`,
     fallbackTitle: "Notre famille",
     generations: { one: "# génération d’une famille", other: "# générations d’une famille" },
     made: (y) => `Réuni par la famille avec Treename · ${y}`,
@@ -75,6 +80,7 @@ export const ownBook: Record<Lang, {
   },
   it: {
     titleOf: (l) => `Famiglia ${l}`,
+    titleOfPair: (a, b) => `Famiglie ${a} e ${b}`,
     fallbackTitle: "La nostra famiglia",
     generations: { one: "# generazione di una famiglia", other: "# generazioni di una famiglia" },
     made: (y) => `Raccolto dalla famiglia con Treename · ${y}`,
@@ -88,6 +94,7 @@ export const ownBook: Record<Lang, {
   },
   es: {
     titleOf: (l) => `Familia ${l}`,
+    titleOfPair: (a, b) => `Familias ${a} y ${b}`,
     fallbackTitle: "Nuestra familia",
     generations: { one: "# generación de una familia", other: "# generaciones de una familia" },
     made: (y) => `Reunido por la familia con Treename · ${y}`,
