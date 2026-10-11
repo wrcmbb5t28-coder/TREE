@@ -908,3 +908,25 @@ a.chip:hover { background: #E2E9DA; }
 .ob-name-form select option { color: #2A2420; }
 .ob-name-form input::placeholder { color: #B9AE98; }
 .ob-name-form .btn-primary { background: #D9B65E; color: #1F2E27; border-color: #D9B65E; }
+
+/* Book: portraits of the people the family has described */
+.ob-portrait { align-items: center; text-align: center; justify-content: center; gap: 2.2cqw; }
+.ob-frame { width: 52cqw; aspect-ratio: 4 / 5; border-radius: 50%; overflow: hidden; background: #EFE4CC; border: 1.4cqw solid #FFFDF7; box-shadow: 0 0 0 .5cqw #C9A659, 0 8px 20px rgba(60,40,20,.25); display: grid; place-items: center; margin: 1cqw 0 2cqw; }
+.ob-frame img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.9) sepia(.08); }
+.ob-frame svg { width: 100% !important; height: 100% !important; }
+.ob-portrait .sb-title { font-size: 7.2cqw; }
+.ob-portrait .sb-who { margin: 0; }
+.ob-bio { margin: 1cqw 4cqw 0; font-family: var(--sb-display); font-style: italic; font-size: 4.6cqw; line-height: 1.35; color: var(--sb-ink); text-wrap: balance; }
+.ob-chapter-left { text-align: left; margin-bottom: 1cqw; }
+.ob-albumpage { gap: 3cqw; }
+.ob-album { flex: 1; display: grid; gap: 5cqw 4cqw; grid-template-columns: 1fr 1fr; align-content: center; }
+.ob-album-1 { grid-template-columns: 1fr; padding: 0 6cqw; }
+.ob-album-2 { grid-template-columns: 1fr; padding: 0 12cqw; }
+.ob-snap { margin: 0; padding: 1.8cqw 1.8cqw 7cqw; }
+.ob-snap img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.ob-album-1 .ob-snap img { aspect-ratio: 4 / 5; }
+.ob-snap figcaption { font-size: 3.4cqw; left: 2.6cqw; right: 2cqw; bottom: 1.6cqw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ob-snap .tape-l { left: 30%; top: -2cqw; width: 12cqw; }
+.ob-album-1 .ob-snap img { aspect-ratio: auto; max-height: 92cqw; object-fit: contain; background: #F4ECDA; }
+.ob-album-1 .ob-snap { justify-self: center; }
+.ob-album-3 .ob-snap:last-child { grid-column: 1 / -1; justify-self: center; width: calc(50% - 2cqw); }

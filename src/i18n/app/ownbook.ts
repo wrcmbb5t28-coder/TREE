@@ -17,6 +17,9 @@ export const ownBook: Record<Lang, {
   custom: string;
   save: string;
   auto: string;
+  peopleTitle: string;
+  portrait: string;
+  album: string;
 }> = {
   ru: {
     titleOf: (l) => l,
@@ -29,6 +32,7 @@ export const ownBook: Record<Lang, {
     endCta: "Задать вопрос",
     back: "← В приложение",
     cover: "Название на обложке", custom: "или своё название", save: "Сохранить", auto: "Автоматически",
+    peopleTitle: "Люди нашей семьи", portrait: "Портрет", album: "Из семейного альбома",
   },
   en: {
     titleOf: (l) => `The ${l} Family`,
@@ -41,6 +45,7 @@ export const ownBook: Record<Lang, {
     endCta: "Ask a question",
     back: "← Back to the app",
     cover: "Name on the cover", custom: "or your own words", save: "Save", auto: "Automatic",
+    peopleTitle: "The people of our family", portrait: "Portrait", album: "From the family album",
   },
   de: {
     titleOf: (l) => `Familie ${l}`,
@@ -53,6 +58,7 @@ export const ownBook: Record<Lang, {
     endCta: "Eine Frage stellen",
     back: "← Zur App",
     cover: "Name auf dem Umschlag", custom: "oder eigener Name", save: "Speichern", auto: "Automatisch",
+    peopleTitle: "Die Menschen unserer Familie", portrait: "Porträt", album: "Aus dem Familienalbum",
   },
   fr: {
     titleOf: (l) => `Famille ${l}`,
@@ -65,6 +71,7 @@ export const ownBook: Record<Lang, {
     endCta: "Poser une question",
     back: "← Retour à l’application",
     cover: "Nom sur la couverture", custom: "ou votre propre titre", save: "Enregistrer", auto: "Automatique",
+    peopleTitle: "Les visages de notre famille", portrait: "Portrait", album: "De l’album de famille",
   },
   it: {
     titleOf: (l) => `Famiglia ${l}`,
@@ -77,6 +84,7 @@ export const ownBook: Record<Lang, {
     endCta: "Fai una domanda",
     back: "← Torna all’app",
     cover: "Nome sulla copertina", custom: "o un titolo vostro", save: "Salva", auto: "Automatico",
+    peopleTitle: "Le persone della nostra famiglia", portrait: "Ritratto", album: "Dall’album di famiglia",
   },
   es: {
     titleOf: (l) => `Familia ${l}`,
@@ -89,5 +97,6 @@ export const ownBook: Record<Lang, {
     endCta: "Hacer una pregunta",
     back: "← Volver a la app",
     cover: "Nombre en la portada", custom: "o tu propio título", save: "Guardar", auto: "Automático",
+    peopleTitle: "Las personas de nuestra familia", portrait: "Retrato", album: "Del álbum familiar",
   },
 };

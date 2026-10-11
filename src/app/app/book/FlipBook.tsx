@@ -97,7 +97,7 @@ export default async function FlipBook() {
       include: { answer: { include: { question: { include: { storyteller: true } } } }, photos: { orderBy: { createdAt: "asc" } }, person: true },
       orderBy: { createdAt: "asc" },
     }),
-    db.person.findMany({ where: { familyId: family.id, hidden: false }, orderBy: [{ generation: "asc" }, { birthYear: "asc" }, { createdAt: "asc" }] }),
+    db.person.findMany({ where: { familyId: family.id, hidden: false }, include: { photos: { orderBy: [{ year: "asc" }, { createdAt: "asc" }] } }, orderBy: [{ generation: "asc" }, { birthYear: "asc" }, { createdAt: "asc" }] }),
     db.lifeEvent.findMany({ where: { familyId: family.id, year: { not: null } }, include: { person: true }, orderBy: { year: "asc" } }),
     familyLines(family.id),
   ]);
@@ -154,11 +154,31 @@ export default async function FlipBook() {
   const life = (p: { birthYear: number | null; deathYear: number | null }) => (p.birthYear ? `${p.birthYear}${p.deathYear ? `–${p.deathYear}` : ""}` : "");
   const fullName = (p: { firstName: string; lastName: string | null }) => [p.firstName, p.lastName].filter(Boolean).join(" ");
 
-  // ---- page plan: every story opens on a left page (odd number), so it reads as a spread ----
-  const front = hasMap ? 6 : 4; // title, contents, generations, (map), numbers … then stories start at front+1
+  // ---- page plan ----
+  const front = hasMap ? 6 : 4; // title, contents, generations, (map), numbers … then portraits and stories
+
+  // Portraits: everyone the family has described gets a page with their picture and words,
+  // then their life story and the rest of their photos. Oldest generation first.
+  type Portrait = { person: (typeof people)[number]; start: number; picture: string | null; chunks: string[]; album: { path: string; caption: string }[][] };
+  const portraits: Portrait[] = [];
+  let next = front + 1;
+  for (const p of people.filter((x) => x.bio?.trim() || x.lifePath?.trim())) {
+    const picture = p.photoPath ?? p.photos[0]?.path ?? null;
+    const rest = p.photos.filter((ph) => ph.path !== picture).map((ph) => ({ path: ph.path, caption: [ph.caption, ph.year].filter(Boolean).join(", ") }));
+    const album: Portrait["album"] = [];
+    for (let i = 0; i < rest.length && album.length < 3; i += 4) album.push(rest.slice(i, i + 4));
+    const chunks = p.lifePath?.trim() ? paginate(p.lifePath, 700, 840) : [];
+    portraits.push({ person: p, start: next, picture, chunks, album });
+    next += 1 + chunks.length + album.length;
+  }
+  const peopleStart = portraits[0]?.start ?? null;
+  const peopleEnd = next;
+  if (next % 2 === 0) next += 1; // the stories open on a left page
+  const storiesStart = next;
+
+  // every story opens on a left page (odd number), so it reads as a spread
   type Piece = { story: (typeof sorted)[number]; idx: number; start: number; chunks: string[] };
   const pieces: Piece[] = [];
-  let next = front + 1;
   sorted.forEach((s, idx) => {
     const chunks = paginate(s.body, qr.has(s.id) ? 500 : 620, 840);
     pieces.push({ story: s, idx, start: next, chunks });
@@ -193,8 +213,9 @@ export default async function FlipBook() {
       <ol className="sb-toc ob-toc">
         <li><span>{t.ourFamily}</span><i /><b>3</b></li>
         {hasMap && <li><span>{mapTitle}</span><i /><b>4</b></li>}
-        {pieces.slice(0, 14).map((p) => <li key={p.story.id}><span><small>{roman(p.idx)}.</small> {p.story.title}</span><i /><b>{p.start}</b></li>)}
-        {pieces.length > 14 && <li><span>{o.more(pieces.length - 14)}</span><i /><b /></li>}
+        {peopleStart && <li><span>{o.peopleTitle}</span><i /><b>{peopleStart}</b></li>}
+        {pieces.slice(0, peopleStart ? 13 : 14).map((p) => <li key={p.story.id}><span><small>{roman(p.idx)}.</small> {p.story.title}</span><i /><b>{p.start}</b></li>)}
+        {pieces.length > (peopleStart ? 13 : 14) && <li><span>{o.more(pieces.length - (peopleStart ? 13 : 14))}</span><i /><b /></li>}
       </ol>
       <Folio n={2} />
     </article>,
@@ -238,6 +259,59 @@ export default async function FlipBook() {
     // keep the first story on a left page
     ...(hasMap ? [<article key="motto" className="sb-p sb-numbers ob-mottopage"><p className="sb-orn" aria-hidden="true">❦</p><p className="sb-mapnote ob-motto">{getDict(lang).hero.slogan}</p><Folio n={6} /></article>] : []),
   ];
+
+  for (const pt of portraits) {
+    const p = pt.person;
+    let n = pt.start;
+    const where = [life(p), p.birthPlace].filter(Boolean).join(" · ");
+    pages.push(
+      <article key={`${p.id}-portrait`} className={`sb-p ${n % 2 ? "sb-left" : "sb-right"} ob-portrait`}>
+        <p className="sb-chapter">{n === peopleStart ? o.peopleTitle : o.portrait}</p>
+        <div className="ob-frame">
+          {pt.picture
+            // eslint-disable-next-line @next/next/no-img-element
+            ? <img src={`/api/files/${pt.picture}`} alt={fullName(p)} loading="lazy" />
+            : <FaceSvg p={p} size={240} idSuffix="obp" />}
+        </div>
+        <h3 className="sb-title">{fullName(p)}</h3>
+        {where && <p className="sb-who">{where}</p>}
+        {p.bio?.trim() && <p className="ob-bio">{p.bio}</p>}
+        <Folio n={n++} />
+      </article>,
+    );
+    pt.chunks.forEach((c, k) => {
+      const last = k === pt.chunks.length - 1;
+      pages.push(
+        <article key={`${p.id}-t${k}`} className={`sb-p ${n % 2 ? "sb-left" : "sb-right"}`}>
+          {k === 0 && <p className="sb-chapter ob-chapter-left">{fullName(p)}</p>}
+          <p data-fit="" className={`ob-text${k === 0 ? " ob-first" : ""}${last ? " ob-last" : ""}`}>{c}</p>
+          <Folio n={n++} />
+        </article>,
+      );
+    });
+    pt.album.forEach((photos, k) => {
+      pages.push(
+        <article key={`${p.id}-a${k}`} className={`sb-p ${n % 2 ? "sb-left" : "sb-right"} ob-albumpage`}>
+          <p className="sb-chapter">{o.album} · {p.firstName}</p>
+          <div className={`ob-album ob-album-${photos.length}`}>
+            {photos.map((ph, i) => (
+              <figure key={ph.path} className="sb-photo ob-snap" style={{ transform: `rotate(${[-2, 1.6, 1.2, -1.4][i]}deg)` }}>
+                <span className="tape tape-l" aria-hidden="true" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/api/files/${ph.path}`} alt={ph.caption} loading="lazy" />
+                {ph.caption && <figcaption>{ph.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+          <Folio n={n++} />
+        </article>,
+      );
+    });
+  }
+  if (storiesStart !== peopleEnd) {
+    const n = peopleEnd;
+    pages.push(<article key="people-end" className={`sb-p ${n % 2 ? "sb-left" : "sb-right"} ob-filler`}><p className="sb-orn" aria-hidden="true">❦</p><Folio n={n} /></article>);
+  }
 
   for (const p of pieces) {
     const s = p.story;
