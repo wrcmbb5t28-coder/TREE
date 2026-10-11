@@ -930,3 +930,7 @@ a.chip:hover { background: #E2E9DA; }
 .ob-album-1 .ob-snap img { aspect-ratio: auto; max-height: 92cqw; object-fit: contain; background: #F4ECDA; }
 .ob-album-1 .ob-snap { justify-self: center; }
 .ob-album-3 .ob-snap:last-child { grid-column: 1 / -1; justify-self: center; width: calc(50% - 2cqw); }
+/* until a photo has been looked at (SmartCrop), tall photos are framed from the top, where the faces are */
+.ob-frame img, .ob-snap img, .sb-img, .story-photo img, .avatar img, img.avatar { object-position: 50% 22%; }
+.ob-frame { display: block; position: relative; }
+.ob-frame img, .ob-frame svg { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }

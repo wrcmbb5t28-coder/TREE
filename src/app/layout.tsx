@@ -22,6 +22,7 @@ import "./globals.css";
 import "./book.css";
 import { appUrl } from "@/lib/util";
 import { DEFAULT_THEME, THEME_COOKIE } from "@/lib/theme";
+import SmartCrop from "@/components/SmartCrop";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
@@ -45,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* The look chosen in this browser (book or classic), applied before the first paint. */}
         <script dangerouslySetInnerHTML={{ __html: `try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(book|classic)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}` }} />
       </head>
-      <body>{children}</body>
+      <body>{children}<SmartCrop /></body>
     </html>
   );
 }
