@@ -949,3 +949,4 @@ a.chip:hover { background: #E2E9DA; }
 .fix-notice ins { color: var(--accent); text-decoration: none; font-weight: 600; }
 .fix-notice small { color: var(--muted); }
 .fix-actions { margin-left: auto; display: inline-flex; gap: 6px; }
+.pr-fix { gap: 6px; display: grid; padding: 14px 16px; }

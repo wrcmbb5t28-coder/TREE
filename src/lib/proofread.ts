@@ -97,7 +97,7 @@ export type FixNotice = {
 export type Undo = { model: "person" | "story" | "event" | "user"; id: string; familyId: string; data: Record<string, string>; fixed: Record<string, string> };
 
 /** Words that changed between two versions of a text (a few, for the notice). */
-function wordDiffs(a: string, b: string): { from: string; to: string }[] {
+export function wordDiffs(a: string, b: string): { from: string; to: string }[] {
   const A = a.split(/(\s+)/), B = b.split(/(\s+)/);
   if (A.length > 3000 || B.length > 3000) return [{ from: "…", to: "…" }];
   const n = A.length, m = B.length;
@@ -115,15 +115,22 @@ function wordDiffs(a: string, b: string): { from: string; to: string }[] {
   return out;
 }
 
+/** The changes as short "was → now" pieces (whole value for short fields, changed words for long texts). */
+export function diffItems(changes: Change[]) {
+  return changes.flatMap((c) => (!/\s/.test(c.from.trim()) && c.from.length <= 60 && c.to.length <= 60 ? [{ field: c.field, from: c.from, to: c.to }] : wordDiffs(c.from, c.to).map((d) => ({ field: c.field, ...d }))));
+}
+
+/** Keeps the text as typed so the change can be undone; returns the id to undo with. */
+export async function saveUndo(undo: Undo): Promise<string> {
+  const ev = await db.analyticsEvent.create({ data: { name: "proofread_fix", familyId: undo.familyId, props: JSON.stringify(undo) } });
+  return ev.id;
+}
+
 export async function noteFixes(changes: Change[], undo?: Undo) {
   if (!changes.length) return;
-  const all = changes.flatMap((c) => (c.from.length <= 60 && c.to.length <= 60 ? [{ field: c.field, from: c.from, to: c.to }] : wordDiffs(c.from, c.to).map((d) => ({ field: c.field, ...d }))));
+  const all = diffItems(changes);
   const items = all.slice(0, 6).map((x) => ({ field: x.field, from: x.from.slice(0, 60), to: x.to.slice(0, 60) }));
   const notice: FixNotice = { items, more: Math.max(0, all.length - items.length) };
-  if (undo) {
-    // the text as typed is kept, so "undo" works for long texts too
-    const ev = await db.analyticsEvent.create({ data: { name: "proofread_fix", familyId: undo.familyId, props: JSON.stringify(undo) } });
-    notice.undo = ev.id;
-  }
+  if (undo) notice.undo = await saveUndo(undo); // the text as typed is kept, so "undo" works for long texts too
   (await cookies()).set("tn_fixed", encodeURIComponent(JSON.stringify(notice)), { path: "/", maxAge: 120, sameSite: "lax", httpOnly: false });
 }

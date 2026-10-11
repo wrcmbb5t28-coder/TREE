@@ -43,6 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               links={[
                 { href: "/app/crests", label: crestsT[lang].nav },
                 { href: "/app/keep", label: c.nav.keep },
+                { href: "/app/proofread", label: `✎ ${fixT[lang].all.link}` },
                 { href: "/app/settings", label: c.nav.settings },
                 ...(!paid ? [{ href: "/app/billing", label: `${c.plans.free} · ${c.header.upgrade}`, accent: true }] : []),
               ]}

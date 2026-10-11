@@ -1,3 +1,4 @@
+import { fixT } from "@/i18n/app/fix";
 import Link from "next/link";
 import { appContext, fmtDate } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
@@ -74,6 +75,7 @@ export default async function Settings({ searchParams }: { searchParams: Promise
         <div className="row">
           <a className="btn btn-ghost" href="/api/export?format=json">{t.downloadAll}</a>
           <a className="btn btn-ghost" href="/api/export?format=gedcom">{t.downloadTree}</a>
+          <a className="btn btn-ghost" href="/app/proofread">✎ {fixT[lang].all.link}</a>
         </div>
         <form method="post" action="/api/auth/logout"><button className="linkbtn">{t.signOut}</button></form>
       </section>
