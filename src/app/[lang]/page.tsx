@@ -135,7 +135,7 @@ export default async function Home({ params }: Props) {
             <div className="h-row">
               <div className="h-row-text"><h3>{h.show.tree.t}</h3><p>{h.show.tree.d}</p></div>
               <div className="h-frame">
-                <TreeView people={people} links={links} label={h.show.tree.t} fit />
+                <TreeView people={people} links={links} label={h.show.tree.t} fit linkTo={`/demo?lang=${lang}`} />
                 <span className="h-caption">{sp[6].first} · {sp[6].born}</span>
               </div>
             </div>

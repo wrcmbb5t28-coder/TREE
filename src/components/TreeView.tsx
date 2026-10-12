@@ -23,7 +23,8 @@ const WASH = ["#C9D9B8", "#B7CDA3", "#D7E3C6", "#AFC79B", "#C3D5B0"];
 const INK_SOFT = "#9C8164";
 const GOLD = "#B8924A";
 
-type Props = { people: Person[]; links: Relationship[]; label?: string; fit?: boolean };
+/** href: where a person links to; "/x/{id}" style is built from the id. Default: the person's page in the app. */
+type Props = { people: Person[]; links: Relationship[]; label?: string; fit?: boolean; linkTo?: string };
 
 export default function TreeView(props: Props) {
   if (props.people.length === 0) return null;
@@ -34,7 +35,7 @@ export default function TreeView(props: Props) {
     return (
       <div className="tree-wrap">
         <ul className="row" style={{ gap: 8, flexWrap: "wrap", listStyle: "none", padding: 0, margin: 0 }}>
-          {props.people.map((p) => <li key={p.id}><a className="chip-btn" href={`/app/family/${p.id}`}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}</a></li>)}
+          {props.people.map((p) => <li key={p.id}><a className="chip-btn" href={props.linkTo ?? `/app/family/${p.id}`}>{[p.firstName, p.lastName].filter(Boolean).join(" ")}</a></li>)}
         </ul>
       </div>
     );
@@ -48,7 +49,7 @@ function rng(seed: string) {
   return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
 }
 
-function drawTree({ people, links, label = "Family tree", fit = false }: Props) {
+function drawTree({ people, links, label = "Family tree", fit = false, linkTo }: Props) {
   const { nodes, couples, families, width, height: h0 } = layoutTree(people, links, { boxW: BOX_W, boxH: BOX_H, coupleGap: 30, unitGap: 34, rowGap: 46 });
   const height = h0 + GROUND;
   const seed = people.map((p) => p.id).join();
@@ -163,7 +164,7 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
           );
         })}
 
-        {nodes.map((n) => <Portrait key={n.id} n={n} cy={med(n.y)} top={n.y - BOX_H / 2} />)}
+        {nodes.map((n) => <Portrait key={n.id} n={n} cy={med(n.y)} top={n.y - BOX_H / 2} href={linkTo ?? `/app/family/${n.id}`} />)}
 
         {/* Family name on a ribbon across the trunk */}
         {familyName && (
@@ -178,7 +179,7 @@ function drawTree({ people, links, label = "Family tree", fit = false }: Props) 
   );
 }
 
-function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
+function Portrait({ n, cy, top, href }: { n: TreeNode; cy: number; top: number; href: string }) {
   const trim = (s: string, k: number) => (s.length > k ? s.slice(0, k - 1) + "…" : s);
   const cx = n.x;
   const clip = `pt-${n.id}`;
@@ -209,7 +210,7 @@ function Portrait({ n, cy, top }: { n: TreeNode; cy: number; top: number }) {
     );
   }
   return (
-    <a href={`/app/family/${n.id}`} className="tn-person" data-self={n.self ? "" : undefined}>
+    <a href={href} className="tn-person" data-self={n.self ? "" : undefined}>
       <title>{[n.first, n.last].filter(Boolean).join(" ")}</title>
       {/* generous hit area: portrait and name */}
       <rect x={cx - BOX_W / 2 + 4} y={top} width={BOX_W - 8} height={BOX_H} fill="transparent" />
