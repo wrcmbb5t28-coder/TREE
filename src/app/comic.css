@@ -105,3 +105,4 @@
 
 /* nothing smaller than 12px on a phone */
 [data-theme="comic"] :is(small, .tag, .tabs button, .facts small, .msg small, .kpi span, .photo-badge, .route-years, .charge-btn, .h-page .chap, .eyebrow, .jr-stats span, .charge-pos, .book small) { font-size: max(.75rem, 12px) !important; }
+[data-theme="comic"] .foot-langs a[aria-current="true"] { font-weight: 700; text-decoration: none; color: var(--ink); }

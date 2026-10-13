@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LANGS, LANG_LABEL, type Lang, type Dict } from "@/i18n";
 import ThemeToggle from "./ThemeToggle";
+import FooterLangs from "./FooterLangs";
 
 /** Top navigation for marketing pages. `rest` is the path after the language, e.g. "/questions". */
 export function SiteNav({ lang, t, rest = "" }: { lang: Lang; t: Dict; rest?: string }) {
@@ -33,7 +34,7 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
           <Link href={`/${lang}/questions`}>{t.footer.questions}</Link>
           <Link href={`/${lang}/privacy`}>{t.footer.privacy}</Link>
           <ThemeToggle lang={lang} />
-          <span>EN · DE · FR · IT · ES · RU</span>
+          <FooterLangs lang={lang} />
         </span>
       </footer>
     </div>
