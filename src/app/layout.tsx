@@ -18,8 +18,18 @@ import "@fontsource/lora/400.css";
 import "@fontsource/lora/400-italic.css";
 import "@fontsource/lora/500.css";
 import "@fontsource/lora/600.css";
+import "@fontsource/literata/500.css";
+import "@fontsource/literata/600.css";
+import "@fontsource/literata/700.css";
+import "@fontsource/literata/500-italic.css";
+import "@fontsource/golos-text/400.css";
+import "@fontsource/golos-text/500.css";
+import "@fontsource/golos-text/600.css";
+import "@fontsource/golos-text/700.css";
+import "@fontsource/pangolin/400.css";
 import "./globals.css";
 import "./book.css";
+import "./comic.css";
 import { appUrl } from "@/lib/util";
 import { DEFAULT_THEME, THEME_COOKIE } from "@/lib/theme";
 import SmartCrop from "@/components/SmartCrop";
@@ -43,8 +53,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <head>
-        {/* The look chosen in this browser (book or classic), applied before the first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(book|classic)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}` }} />
+        {/* The look chosen in this browser (comic, book or classic), applied before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(comic|book|classic)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}` }} />
       </head>
       <body>{children}<SmartCrop /></body>
     </html>

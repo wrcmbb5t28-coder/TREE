@@ -1,10 +1,3 @@
-import "@fontsource/literata/500.css";
-import "@fontsource/literata/600.css";
-import "@fontsource/literata/500-italic.css";
-import "@fontsource/golos-text/400.css";
-import "@fontsource/golos-text/600.css";
-import "@fontsource/golos-text/700.css";
-import "@fontsource/pangolin/400.css";
 import "./home5.css";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";

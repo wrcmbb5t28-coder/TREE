@@ -1,0 +1,107 @@
+/* =========================================================
+   "comic" look (default since Oct 2026): the style of the new
+   homepage, clear-line comic panels, sand / olive / terracotta.
+   Everything is scoped to [data-theme="comic"]; switch back with
+   SITE_THEME=book or SITE_THEME=classic in Vercel.
+   ========================================================= */
+[data-theme="comic"] {
+  --paper: #FCF8F1; --surface: #FFFFFF; --ink: #2A231E; --muted: #5A5048; --line: #E4D8C6;
+  --accent: #4A5E39; --accent-ink: #FFFFFF; --tint: #EEF2E6; --warm: #B65A35; --warm-tint: #F6E1D4; --danger: #A23B2C;
+  --display: "Literata", Georgia, serif;
+  --body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand: "Pangolin", "Caveat", cursive;
+  --k: #1E1B1A; --sand: #F5EEE3;
+}
+[data-theme="comic"] body { background: var(--paper); color: var(--ink); font-family: var(--body); }
+[data-theme="comic"] h1, [data-theme="comic"] h2, [data-theme="comic"] h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.01em; }
+[data-theme="comic"] .eyebrow { font-family: var(--display); font-style: italic; font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 1.1rem; color: var(--warm); }
+[data-theme="comic"] .muted { color: var(--muted); }
+[data-theme="comic"] .small { font-size: max(.85rem, 13px); }
+
+/* buttons */
+[data-theme="comic"] .btn { font-family: var(--body); font-weight: 600; border-radius: 12px; }
+[data-theme="comic"] .btn-primary { background: var(--accent); color: #fff; border-color: var(--k); box-shadow: 3px 3px 0 var(--k); }
+[data-theme="comic"] .btn-primary:hover { background: #3C4D2E; }
+[data-theme="comic"] .btn-primary:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--k); }
+[data-theme="comic"] .btn-ghost { background: #fff; color: var(--ink); border: 2px solid var(--k); }
+[data-theme="comic"] .btn-ghost:hover { background: var(--k); color: #fff; }
+[data-theme="comic"] .btn-danger { border: 2px solid var(--k); }
+
+/* fields */
+[data-theme="comic"] .field input, [data-theme="comic"] .field textarea, [data-theme="comic"] .field select, [data-theme="comic"] .input {
+  background: #fff; border: 2px solid var(--k); border-radius: 10px; font-family: var(--body);
+}
+[data-theme="comic"] .field input:focus, [data-theme="comic"] .field textarea:focus, [data-theme="comic"] .field select:focus, [data-theme="comic"] .input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px #CFDCBE; outline: none;
+}
+[data-theme="comic"] .field label { font-weight: 600; color: var(--ink); }
+[data-theme="comic"] .pick button, [data-theme="comic"] .pick label, [data-theme="comic"] .opts button { border: 2px solid var(--k); background: #fff; border-radius: 10px; }
+[data-theme="comic"] .pick button[aria-pressed="true"], [data-theme="comic"] .pick label:has(input:checked) { background: var(--accent); color: #fff; }
+[data-theme="comic"] .opts button[aria-pressed="true"] { background: var(--tint); box-shadow: 3px 3px 0 var(--k); }
+
+/* cards are comic panels */
+[data-theme="comic"] .card, [data-theme="comic"] .panel, [data-theme="comic"] .sheet, [data-theme="comic"] .feed-item, [data-theme="comic"] .story-card {
+  background: #fff; border: 2.5px solid var(--k); border-radius: 10px; box-shadow: 5px 5px 0 var(--k);
+}
+[data-theme="comic"] a.card:hover, [data-theme="comic"] a.feed-item:hover, [data-theme="comic"] a.story-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--k); }
+[data-theme="comic"] .card-elev { box-shadow: 6px 6px 0 var(--k); }
+[data-theme="comic"] .price.feat { border-color: var(--accent); box-shadow: 6px 6px 0 var(--accent); }
+[data-theme="comic"] .card-art { display: block; border: 2px solid var(--k); border-radius: 6px; overflow: hidden; background: #fff; }
+[data-theme="comic"] .chip { background: #FFF8D8; border: 1.5px solid var(--k); }
+[data-theme="comic"] .tag { background: var(--accent); color: #fff; border: 0; font-weight: 700; }
+[data-theme="comic"] .notice { background: #F7E27A; color: var(--ink); border: 2px solid var(--k); border-radius: 8px; box-shadow: 3px 3px 0 var(--k); }
+[data-theme="comic"] .empty { background: var(--sand); border: 2px dashed var(--k); border-radius: 10px; }
+[data-theme="comic"] .msg { border: 2px solid var(--k); border-radius: 10px; }
+[data-theme="comic"] .note-hand, [data-theme="comic"] .h-caption { font-family: var(--hand); }
+[data-theme="comic"] .band { background: var(--sand); }
+[data-theme="comic"] blockquote { border-left: 4px solid var(--warm); font-family: var(--display); font-style: italic; }
+[data-theme="comic"] table.simple th, [data-theme="comic"] table.simple td { border-color: var(--line); }
+
+/* top bar of the site pages */
+[data-theme="comic"] nav.top { border-bottom: 2.5px solid var(--k); }
+[data-theme="comic"] .logo b { font-family: var(--display); font-weight: 700; color: var(--ink); }
+[data-theme="comic"] .langs { border: 2px solid var(--k); background: #fff; }
+[data-theme="comic"] .langs a { color: var(--ink); }
+[data-theme="comic"] .langs a[aria-current="true"] { background: var(--k); color: #fff; }
+[data-theme="comic"] footer.site { border-top: 2.5px solid var(--k); color: var(--muted); }
+[data-theme="comic"] .h5 nav.top { border-bottom: 0; }
+
+/* app: header with chapter tabs becomes a comic strip of tabs */
+[data-theme="comic"] .appbar { background: var(--paper); border-bottom: 2.5px solid var(--k); }
+[data-theme="comic"] .appbar .logo b { color: var(--ink); }
+[data-theme="comic"] .appnav a { border: 2px solid transparent; border-radius: 999px; color: var(--ink); font-weight: 600; }
+[data-theme="comic"] .appnav a:hover { border-color: var(--k); background: #fff; }
+[data-theme="comic"] .appnav a[aria-current="page"] { background: var(--k); color: #fff; border-color: var(--k); }
+[data-theme="comic"] .appmenu-btn { border: 2px solid var(--k); background: #fff; color: var(--ink); }
+[data-theme="comic"] .appmenu-panel { background: #fff; border: 2.5px solid var(--k); box-shadow: 5px 5px 0 var(--k); border-radius: 10px; }
+[data-theme="comic"] .page-head { border-bottom: 2.5px solid var(--k); padding-bottom: 16px; }
+[data-theme="comic"] .section-title::after { background: var(--k); }
+[data-theme="comic"] .kpis { background: #fff; border: 2.5px solid var(--k); border-radius: 10px; box-shadow: 4px 4px 0 var(--k); }
+[data-theme="comic"] .kpi b { color: var(--accent); font-family: var(--display); }
+[data-theme="comic"] .tree-wrap { background: #fff; border: 2.5px solid var(--k); border-radius: 10px; }
+[data-theme="comic"] .tabs button { border: 2px solid var(--k); border-radius: 999px; background: #fff; }
+[data-theme="comic"] .tabs button[aria-pressed="true"] { background: var(--k); color: #fff; }
+[data-theme="comic"] .progress { border: 2px solid var(--k); background: #fff; }
+[data-theme="comic"] .progress i { background: var(--accent); }
+[data-theme="comic"] .demo-banner-in { background: #F7E27A; border: 2px solid var(--k); border-radius: 8px; color: var(--ink); }
+[data-theme="comic"] .play { background: var(--accent); color: #fff; border: 2px solid var(--k); }
+
+/* marketing pages built from the old homepage blocks */
+[data-theme="comic"] .h-frame, [data-theme="comic"] .h-honest article { background: #fff; border: 2.5px solid var(--k); border-radius: 10px; box-shadow: 5px 5px 0 var(--k); }
+[data-theme="comic"] .h-num { background: var(--accent); color: #fff; border: 2px solid var(--k); }
+[data-theme="comic"] .h-slogan { font-family: var(--display); font-style: italic; color: var(--warm); }
+
+/* the family book keeps its own paper look inside a frame */
+[data-theme="comic"] .book-sheet { border: 2.5px solid var(--k); border-radius: 8px; box-shadow: 6px 6px 0 var(--k); }
+
+@media (max-width: 720px) {
+  [data-theme="comic"] .card, [data-theme="comic"] .panel, [data-theme="comic"] .sheet, [data-theme="comic"] .feed-item, [data-theme="comic"] .story-card { box-shadow: 3px 3px 0 var(--k); }
+  [data-theme="comic"] body { font-size: 17px; }
+}
+@media print {
+  [data-theme="comic"] .card, [data-theme="comic"] .book-sheet { box-shadow: none; }
+  [data-theme="comic"] .appbar { display: none; }
+}
+
+/* nothing smaller than 12px on a phone */
+[data-theme="comic"] :is(small, .tag, .tabs button, .facts small, .msg small, .kpi span, .photo-badge, .route-years, .charge-btn, .h-page .chap, .eyebrow, .jr-stats span, .charge-pos, .book small) { font-size: max(.75rem, 12px) !important; }
