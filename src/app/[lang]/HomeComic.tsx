@@ -6,6 +6,7 @@ import { HOME5 } from "@/i18n/home5";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { appUrl } from "@/lib/util";
 import PageView from "@/components/PageView";
+import { sampleBook } from "@/lib/sampleBook";
 
 /** Illustrated homepage (comic "clear line" style): family memory first, the book as one of four results. */
 
@@ -95,7 +96,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
   const first = (s: string) => s.split(" ")[0];
   const grandpa = first(t.demo.people[1]);
   const grandma = first(t.demo.people[0]);
-  const quote = (t.demo.answer.match(/^.*?[.!?…](?=\s)/)?.[0] ?? t.demo.answer).replace(/[”»"]$/, "") + "…”";
+  const quote = (t.demo.answer.match(/^.*?[.!?…](?=\s)/)?.[0] ?? t.demo.answer).replace(/[.!?]?[”»"“]?$/, "") + "…" + (/[«„]/.test(t.demo.answer.slice(0, 2)) ? (t.demo.answer.startsWith("«") ? "»" : "“") : "”");
   const giftTitle = new Date().getMonth() >= 9 ? t.gift.season : t.gift.title;
 
   const jsonLd = {
@@ -132,6 +133,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <Link className="h5-btn h5-olive" href={start}>{t.hero.cta}</Link>
                 <a className="h5-btn h5-line" href="#inside">{x.ctaInside}</a>
               </div>
+              <Link className="h5-booklink" href={`/${lang}/book`}>{t.gift.heroBook}</Link>
               <p className="h5-fine">{t.hero.trust.join(" · ")}</p>
             </div>
             <Scene src="hero" w={1400} h={1356} label={x.heroCaption}>
@@ -222,6 +224,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                   <span className="bk"><BookCover title={h.sample.surnames[0]} sub={x.bookCover} /></span>
                 </Link>
                 <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
+                <Link className="h5-btn h5-olive h5-bookcta" href={`/${lang}/book`}>{sampleBook(lang).ui.cta}</Link>
               </article>
             </div>
           </div>

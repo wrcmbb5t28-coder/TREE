@@ -177,3 +177,6 @@
   .h5-gift .pr b { font-size: 46px; }
   .h5-final .card { padding: 30px 20px; }
 }
+
+.h5-booklink { display: inline-block; margin-top: 16px; font-family: "Pangolin", cursive; font-size: 17px; color: var(--h5-terra); text-decoration: underline; text-underline-offset: 4px; }
+.h5-bookcta { margin-top: 16px; }
