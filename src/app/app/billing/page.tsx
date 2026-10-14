@@ -4,12 +4,9 @@ import { common } from "@/i18n/app/common";
 import { more } from "@/i18n/app/more";
 import { stripe } from "@/lib/stripe";
 import { track } from "@/lib/analytics";
+import { PRICES } from "@/lib/prices";
 
-const OFFERS = [
-  { key: "family", price: "$59" },
-  { key: "legacy", price: "$99" },
-  { key: "founding", price: "$249" },
-] as const;
+const OFFERS = ["family", "legacy", "founding"] as const;
 
 export default async function Billing({ searchParams }: { searchParams: Promise<{ plan?: string; reason?: string; canceled?: string }> }) {
   const sp = await searchParams;
@@ -31,7 +28,7 @@ export default async function Billing({ searchParams }: { searchParams: Promise<
       {!configured && <div className="notice">{t.notConfigured}</div>}
       {paid && <div className="notice">{t.active}</div>}
       <div className="cards3" style={{ marginTop: 0 }}>
-        {OFFERS.map((o) => (
+        {OFFERS.map((key) => ({ key, price: PRICES[lang][key] })).map((o) => (
           <form key={o.key} method="post" action="/api/stripe/checkout" className={`card price${o.key === (sp.plan ?? "family") ? " feat" : ""}`}>
             <input type="hidden" name="product" value={o.key} />
             <h3>{c.plans[o.key]}</h3>

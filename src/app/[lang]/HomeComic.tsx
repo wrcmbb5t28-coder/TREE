@@ -7,6 +7,7 @@ import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { appUrl } from "@/lib/util";
 import PageView from "@/components/PageView";
 import { sampleBook } from "@/lib/sampleBook";
+import { PRICES } from "@/lib/prices";
 
 /** Illustrated homepage (comic "clear line" style): family memory first, the book as one of four results. */
 
@@ -103,9 +104,9 @@ export default function HomeComic({ lang }: { lang: Lang }) {
     "@context": "https://schema.org", "@type": "WebApplication", name: "Treename", url: appUrl(`/${lang}`),
     applicationCategory: "LifestyleApplication", description: t.meta.description, inLanguage: lang,
     offers: [
-      { "@type": "Offer", name: t.pricing.free.name, price: "0", priceCurrency: "USD" },
-      { "@type": "Offer", name: t.pricing.family.name, price: "59", priceCurrency: "USD" },
-      { "@type": "Offer", name: t.pricing.legacy.name, price: "99", priceCurrency: "USD" },
+      { "@type": "Offer", name: t.pricing.free.name, price: "0", priceCurrency: PRICES[lang].currency },
+      { "@type": "Offer", name: t.pricing.family.name, price: String(PRICES[lang].amount.family), priceCurrency: PRICES[lang].currency },
+      { "@type": "Offer", name: t.pricing.legacy.name, price: String(PRICES[lang].amount.legacy), priceCurrency: PRICES[lang].currency },
     ],
   };
 
