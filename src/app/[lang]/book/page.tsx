@@ -37,11 +37,6 @@ const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"
 const yearsOf = (s: string) => { const [b, d] = s.split("–"); return { birthYear: +b, deathYear: d ? +d : null }; };
 const Folio = ({ n }: { n: number }) => <span className="sb-folio">{n}</span>;
 
-function face(p: Person, gender: "m" | "f", lang: Lang) {
-  const [first, ...rest] = p[0].split(" ");
-  return <FaceSvg p={{ id: `sb-${lang}-${p[0]}`, firstName: first, lastName: rest.join(" "), gender, ...yearsOf(p[1]) }} size={34} idSuffix={`sb${lang}`} />;
-}
-
 /** A photograph: the generated picture when there is one, otherwise the drawing. */
 function Photo({ has, lang, slot, art, year, seed, caption, tilt, v, wide }: { has: boolean; lang: Lang; slot: string; art: BookScene; year: number; seed: string; caption: string; tilt: number; v: string; wide?: boolean }) {
   return (
@@ -53,6 +48,69 @@ function Photo({ has, lang, slot, art, year, seed, caption, tilt, v, wide }: { h
         : <BookArt seed={`${seed}-${slot}`} scene={art} year={year} title={caption} />}
       <figcaption>{caption}</figcaption>
     </figure>
+  );
+}
+
+/** The family line drawn as a real tree: the oldest couple at the roots, the children in the crown. */
+function TreeDrawing({ b, lang }: { b: SampleBookText; lang: Lang }) {
+  const W = 600, H = 900, cx = 300;
+  const rows = b.line.length + 1;
+  const top = 120, bottom = 800;
+  const step = (bottom - top) / (rows - 1);
+  const y = (gen: number) => bottom - gen * step; // gen 0 = oldest
+  const first = (s: string) => s.split(" ")[0];
+  const leaves = Array.from({ length: 46 }, (_, i) => {
+    const a = (i * 137.5 * Math.PI) / 180, r = 40 + ((i * 53) % 220);
+    return { x: cx + Math.cos(a) * r * 1.15, y: 150 + Math.sin(a) * r * 0.55 - 20, rot: (i * 47) % 180, s: 0.8 + ((i * 7) % 5) / 10 };
+  });
+  const Medal = ({ x, yy, p, g, k }: { x: number; yy: number; p: Person; g: "m" | "f"; k: string }) => {
+    const [fn, ...rest] = p[0].split(" ");
+    return (
+      <g key={k}>
+        <circle cx={x} cy={yy} r="33" fill="#FFFDF7" stroke="#6E5A3A" strokeWidth="2" />
+        <g transform={`translate(${x - 28} ${yy - 28})`}>
+          <FaceSvg p={{ id: `tr-${lang}-${k}`, firstName: fn, lastName: rest.join(" "), gender: g, ...yearsOf(p[1]) }} size={56} idSuffix={`tr${lang}`} />
+        </g>
+        <text x={x} y={yy + 52} textAnchor="middle" fontSize="21" fontWeight="600" fill="#2A2420" fontFamily="var(--display, Georgia, serif)">{first(p[0])}</text>
+        <text x={x} y={yy + 73} textAnchor="middle" fontSize="17" fill="#6B5D4B" fontFamily="var(--display, Georgia, serif)">{p[1]}</text>
+      </g>
+    );
+  };
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="sb-treedraw" role="img" aria-label={b.treeTitle}>
+      <ellipse cx={cx} cy="870" rx="250" ry="18" fill="#E7DCC4" />
+      <path d="M300 868 C240 872 200 882 170 890 M300 868 C360 872 400 882 430 890 M300 868 C290 880 280 888 262 896" stroke="#7A5C3E" strokeWidth="8" strokeLinecap="round" fill="none" />
+      <path d={`M272 870 C284 700 290 400 296 ${top - 10} L304 ${top - 10} C310 400 316 700 328 870 Z`} fill="#8A6A48" />
+      <path d={`M292 860 C294 700 296 450 299 ${top}`} stroke="#A98A64" strokeWidth="3" fill="none" />
+      <g opacity=".55">
+        {[[300, 150, 190], [170, 220, 120], [430, 220, 120], [230, 110, 110], [370, 110, 110], [300, 300, 150], [150, 360, 90], [450, 360, 90]].map(([x, yy, r], i) => <circle key={i} cx={x} cy={yy} r={r} fill={i % 2 ? "#C9D9AE" : "#D7E4BF"} />)}
+      </g>
+      {leaves.map((l, i) => <ellipse key={i} cx={l.x} cy={l.y} rx={14 * l.s} ry={7 * l.s} transform={`rotate(${l.rot} ${l.x} ${l.y})`} fill={i % 3 ? "#9DB27F" : "#7E9466"} opacity=".9" />)}
+      {b.line.map((g, i) => {
+        const yy = y(i);
+        return (
+          <g key={i}>
+            <path d={`M300 ${yy + 6} C260 ${yy + 2} 220 ${yy - 4} 172 ${yy}`} stroke="#8A6A48" strokeWidth="7" strokeLinecap="round" fill="none" />
+            <path d={`M300 ${yy + 6} C340 ${yy + 2} 380 ${yy - 4} 428 ${yy}`} stroke="#8A6A48" strokeWidth="7" strokeLinecap="round" fill="none" />
+            <ellipse cx="214" cy={yy - 12} rx="12" ry="6" transform={`rotate(-25 214 ${yy - 12})`} fill="#9DB27F" />
+            <ellipse cx="386" cy={yy - 12} rx="12" ry="6" transform={`rotate(25 386 ${yy - 12})`} fill="#9DB27F" />
+            <text x="40" y={yy + 8} fontSize="24" fill="#B4613A" fontStyle="italic" fontFamily="var(--display, Georgia, serif)">{ROMAN[i]}</text>
+            <Medal x={150} yy={yy} p={g.h} g="m" k={`h${i}`} />
+            <Medal x={450} yy={yy} p={g.w} g="f" k={`w${i}`} />
+          </g>
+        );
+      })}
+      <text x="40" y={y(b.line.length) + 8} fontSize="24" fill="#B4613A" fontStyle="italic" fontFamily="var(--display, Georgia, serif)">{ROMAN[b.line.length]}</text>
+      {b.children.map((c, i) => {
+        const n = b.children.length, x = n === 1 ? cx : 220 + (160 * i) / Math.max(1, n - 1);
+        return (
+          <g key={c[0]}>
+            <path d={`M300 ${y(b.line.length) + 30} Q${(300 + x) / 2} ${y(b.line.length) + 30} ${x} ${y(b.line.length) + 10}`} stroke="#8A6A48" strokeWidth="5" fill="none" />
+            <Medal x={x} yy={y(b.line.length)} p={c} g={i % 2 ? "m" : "f"} k={`c${i}`} />
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -108,21 +166,7 @@ export default async function SampleBook({ params }: Props) {
 
     <article key="line" className="sb-p">
       <h2 className="sb-h">{b.treeTitle}</h2>
-      <ol className="sb-line">
-        {b.line.map((g, i) => (
-          <li key={i} className="sb-gen">
-            <span className="sb-roman">{ROMAN[i]}</span>
-            <span className="sb-pair">{face(g.h, "m", lang)}{face(g.w, "f", lang)}</span>
-            <span className="sb-names"><b>{g.h[0]}</b> <em>{g.h[1]}</em><br /><b>{g.w[0]}</b> <em>{g.w[1]}</em></span>
-          </li>
-        ))}
-      </ol>
-      <div className="sb-kids">
-        <span className="sb-roman">{ROMAN[b.line.length]}</span>
-        {b.children.map((c, i) => (
-          <span key={c[0]} className="sb-kid">{face(c, i % 2 ? "m" : "f", lang)} <b>{c[0]}</b> <em>{c[1]}</em></span>
-        ))}
-      </div>
+      <TreeDrawing b={b} lang={lang} />
       <p className="sb-note">{b.treeNote}</p>
       <Folio n={3} />
     </article>,

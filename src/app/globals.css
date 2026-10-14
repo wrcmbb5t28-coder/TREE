@@ -950,3 +950,5 @@ a.chip:hover { background: #E2E9DA; }
 .fix-notice small { color: var(--muted); }
 .fix-actions { margin-left: auto; display: inline-flex; gap: 6px; }
 .pr-fix { gap: 6px; display: grid; padding: 14px 16px; }
+
+.sb-treedraw { display: block; height: 92cqw; width: auto; max-width: 100%; margin: 1cqw auto 0; }
