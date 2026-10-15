@@ -6,7 +6,7 @@ import { HOME5 } from "@/i18n/home5";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { appUrl } from "@/lib/util";
 import PageView from "@/components/PageView";
-import { sampleBook } from "@/lib/sampleBook";
+import { sampleBook, SAMPLE_PDF } from "@/lib/sampleBook";
 import { PRICES } from "@/lib/prices";
 
 /** Illustrated homepage (comic "clear line" style): family memory first, the book as one of four results. */
@@ -226,6 +226,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 </Link>
                 <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
                 <Link className="h5-btn h5-olive h5-bookcta" href={`/${lang}/book`}>{sampleBook(lang).ui.cta}</Link>
+                <a className="h5-bookpdf" href={SAMPLE_PDF[lang].href} download>{SAMPLE_PDF[lang].label}<small>{SAMPLE_PDF[lang].note}</small></a>
               </article>
             </div>
           </div>

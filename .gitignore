@@ -8,3 +8,4 @@ storage
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store
+scripts/sample-book/node_modules

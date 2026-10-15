@@ -9,7 +9,7 @@ import BookArt, { type BookScene } from "@/components/BookArt";
 import CrestSvg from "@/components/CrestSvg";
 import BookMap from "@/components/BookMap";
 import { FaceSvg } from "@/components/Face";
-import { sampleBook, storyArt, type SampleBookText, type Person } from "@/lib/sampleBook";
+import { sampleBook, storyArt, SAMPLE_PDF, type SampleBookText, type Person } from "@/lib/sampleBook";
 import { existingSamples, sampleUrl } from "@/lib/sampleImages";
 
 export const dynamicParams = false;
@@ -229,6 +229,7 @@ export default async function SampleBook({ params }: Props) {
       <h2>{b.endTitle}</h2>
       <p>{b.endText}</p>
       <p><Link className="btn btn-primary" href={`/${lang}/start`}>{ui.start}</Link></p>
+      <p><a className="sb-pdf" href={SAMPLE_PDF[lang].href} download>{SAMPLE_PDF[lang].label}</a></p>
       <Folio n={recipePage + 2} />
     </article>,
     <article key="colophon" className="sb-p sb-colophon">
@@ -245,6 +246,7 @@ export default async function SampleBook({ params }: Props) {
       <header className="sb-top">
         <Link href={`/${lang}`} className="sb-back">{ui.back}</Link>
         <p className="sb-eyebrow">{ui.eyebrow} · {b.title}</p>
+        <a className="sb-pdf-top" href={SAMPLE_PDF[lang].href} download title={SAMPLE_PDF[lang].note}>PDF ↓</a>
         <Link href={`/${lang}/start`} className="btn btn-primary btn-sm">{ui.start}</Link>
       </header>
       <BookReader pages={pages} labels={{ prev: ui.prev, next: ui.next, page: ui.page, of: ui.of, hint: ui.hint, open: ui.open }} />

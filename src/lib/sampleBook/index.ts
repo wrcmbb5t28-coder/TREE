@@ -24,3 +24,13 @@ export const storyArt = (lang: Lang, i: number): BookScene => ART[lang]?.[i] ?? 
 const BOOKS: Record<Lang, SampleBookText> = { ru, en, de, fr, it, es };
 /** The sample book in the visitor's language: each language has its own made-up family. */
 export const sampleBook = (lang: Lang): SampleBookText => BOOKS[lang] ?? en;
+
+/** The full printable sample book (the Jones family, 44 pages) in each site language. */
+export const SAMPLE_PDF: Record<Lang, { href: string; label: string; note: string }> = {
+  en: { href: "/books/treename-sample-book-en.pdf", label: "Download the full sample book (PDF)", note: "44 pages · 1 MB" },
+  ru: { href: "/books/treename-sample-book-ru.pdf", label: "Скачать полную книгу-пример (PDF)", note: "46 страниц · 1 МБ" },
+  de: { href: "/books/treename-sample-book-de.pdf", label: "Das ganze Beispielbuch herunterladen (PDF)", note: "46 Seiten · 1 MB" },
+  fr: { href: "/books/treename-sample-book-fr.pdf", label: "Télécharger le livre d’exemple complet (PDF)", note: "44 pages · 1 Mo" },
+  it: { href: "/books/treename-sample-book-it.pdf", label: "Scarica il libro di esempio completo (PDF)", note: "44 pagine · 1 MB" },
+  es: { href: "/books/treename-sample-book-es.pdf", label: "Descargar el libro de ejemplo completo (PDF)", note: "46 páginas · 1 MB" },
+};

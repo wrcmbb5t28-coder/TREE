@@ -956,3 +956,5 @@ a.chip:hover { background: #E2E9DA; }
 .ob-langs a { font-size: 13px; padding: 4px 3px; border-radius: 6px; color: var(--muted); text-decoration: none; }
 .ob-langs a[aria-current="true"] { color: var(--ink); font-weight: 700; background: var(--tint); }
 .panel-top .progress { flex: 1; min-width: 36px; }
+.sb-pdf { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.sb-pdf-top { font-size: 14px; font-weight: 600; padding: 6px 10px; border: 1.5px solid currentColor; border-radius: 8px; text-decoration: none; white-space: nowrap; }

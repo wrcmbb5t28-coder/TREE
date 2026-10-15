@@ -180,3 +180,5 @@
 
 .h5-booklink { display: inline-block; margin-top: 16px; font-family: "Pangolin", cursive; font-size: 17px; color: var(--h5-terra); text-decoration: underline; text-underline-offset: 4px; }
 .h5-bookcta { margin-top: 16px; }
+.h5 .h5-bookpdf { display: block; margin-top: 10px; font-weight: 600; color: var(--h5-ink, #1E1B1A); text-decoration: underline; text-underline-offset: 3px; }
+.h5 .h5-bookpdf small { display: block; font-weight: 400; font-size: 13px; opacity: .75; text-decoration: none; }

@@ -1,0 +1,10 @@
+import { chromium } from "/opt/npm-tools/node_modules/playwright/index.mjs";
+import { execSync } from "child_process";
+execSync("node build.mjs", { env: { ...process.env } });
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
+const p = await b.newPage({ viewport: { width: 756, height: 945 } });
+await p.goto("file://" + process.cwd() + "/book.html");
+await p.waitForFunction(() => window.__done, null, { timeout: 30000 });
+console.log(JSON.stringify(await p.evaluate(() => window.__report)));
+await p.pdf({ path: process.env.OUT || "The-Joneses-family-book.pdf", preferCSSPageSize: true, printBackground: true });
+await b.close();
