@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Dict, Lang } from "@/i18n";
+import { LANGS } from "@/i18n/config";
 import { fill } from "@/i18n";
 
 type Keys = "mother" | "father" | "gm1" | "gf1" | "gm2" | "gf2";
@@ -17,6 +18,7 @@ type State = {
 
 const PEOPLE: Keys[] = ["gm2", "gf2", "gm1", "gf1", "mother", "father"];
 const STEPS = 8;
+const SAVE_KEY = "tn_onboarding";
 
 export default function Onboarding({
   lang, t, questions, countries, plan, gift,
@@ -38,6 +40,26 @@ export default function Onboarding({
     countries: [], teller: "", tellerName: "", question: questions[0], channel: "whatsapp", email: "",
   });
   const set = <K extends keyof State>(k: K, v: State[K]) => setS((p) => ({ ...p, [k]: v }));
+
+  // Keep what was typed when the visitor leaves the page or switches language.
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as { s: State; step: number; qi: number };
+        const question = saved.qi >= 0 && questions[saved.qi] ? questions[saved.qi] : saved.s.question;
+        setS({ ...saved.s, question });
+        setStep(Math.min(Math.max(saved.step, 0), STEPS - 1));
+      }
+    } catch {}
+    setLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (!loaded || sent) return;
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify({ s, step, qi: questions.indexOf(s.question) })); } catch {}
+  }, [s, step, loaded, sent, questions]);
 
   useEffect(() => {
     fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "onboarding_started", props: { lang } }) }).catch(() => {});
@@ -76,6 +98,7 @@ export default function Onboarding({
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || "Error");
       setSent({ email: s.email, devLink: j.devLink });
+      try { localStorage.removeItem(SAVE_KEY); } catch {}
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error");
     } finally {
@@ -206,11 +229,18 @@ export default function Onboarding({
     );
   }
 
+  const qs = plan || gift ? "?" + new URLSearchParams({ ...(plan ? { plan } : {}), ...(gift ? { gift } : {}) }).toString() : "";
+
   return (
     <div className="sheet" style={{ position: "static", background: "transparent", minHeight: "100vh" }}>
       <div className="panel" role="dialog" aria-labelledby="ob-title">
         <div className="panel-top">
           <div className="progress" aria-hidden="true"><i style={{ width: `${Math.round(((step + 1) / STEPS) * 100)}%` }} /></div>
+          <nav className="ob-langs" aria-label="Language">
+            {LANGS.map((l) => (
+              <a key={l} href={`/${l}/start${qs}`} aria-current={l === lang ? "true" : undefined}>{l.toUpperCase()}</a>
+            ))}
+          </nav>
           <button className="x" aria-label={t.close} onClick={() => router.push(`/${lang}`)}>×</button>
         </div>
         {body}

@@ -3,16 +3,26 @@ import { db } from "@/lib/db";
 import { createSession, setCurrentFamily } from "@/lib/auth";
 import { track } from "@/lib/analytics";
 
-/** Opens a one-time sign-in link: creates the account if needed, attaches the draft family or invite. */
+/** Links already sent by email point here: show the confirm page, do not spend the link (mail scanners open links too). */
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const t = url.searchParams.get("token") ?? "";
-  const next = url.searchParams.get("next") ?? "/app";
-  const lt = await db.loginToken.findUnique({ where: { token: t } });
-  if (!lt || lt.usedAt || lt.expiresAt < new Date()) {
+  return NextResponse.redirect(new URL(`/login/open${url.search}`, req.url), 303);
+}
+
+/** A used link still works for a short while, e.g. when it was first opened in the mail app's own browser. */
+const GRACE_MS = 15 * 60 * 1000;
+
+/** Spends the sign-in link: creates the account if needed, attaches the draft family or invite. */
+export async function POST(req: Request) {
+  const form = await req.formData();
+  const t = String(form.get("token") ?? "");
+  const next = String(form.get("next") ?? "/app");
+  const lt = t ? await db.loginToken.findUnique({ where: { token: t } }) : null;
+  const now = new Date();
+  if (!lt || lt.expiresAt < now || (lt.usedAt && now.getTime() - lt.usedAt.getTime() > GRACE_MS)) {
     return NextResponse.redirect(new URL("/login?error=expired", req.url), 303);
   }
-  await db.loginToken.update({ where: { token: t }, data: { usedAt: new Date() } });
+  if (!lt.usedAt) await db.loginToken.update({ where: { token: t }, data: { usedAt: now } });
 
   let user = await db.user.findUnique({ where: { email: lt.email } });
   if (!user) {

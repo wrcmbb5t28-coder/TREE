@@ -35,7 +35,7 @@ export async function sendLoginLink(opts: {
     },
   });
   const next = opts.next && opts.next.startsWith("/app") ? `&next=${encodeURIComponent(opts.next)}` : "";
-  const link = appUrl(`/api/auth/verify?token=${t}${next}`);
+  const link = appUrl(`/login/open?token=${t}${next}`);
   const m = MAIL[isLang(opts.lang) ? opts.lang : "en"];
   const { sent } = await sendEmail(
     opts.email,
