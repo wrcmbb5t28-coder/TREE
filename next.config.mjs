@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // The archive-search skill is read from disk at run time (src/lib/research.ts).
+  outputFileTracingIncludes: { "/**": ["./skills/treename-roots/**/*"] },
   experimental: {
     serverActions: { bodySizeLimit: "30mb" },
   },
