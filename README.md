@@ -26,6 +26,7 @@
 | Оплата: Family $59/год, Legacy Gift $99, Founding Family $249, подарочные коды | `src/app/api/stripe`, `src/app/app/billing` | нужен Stripe |
 | Экспорт всего (JSON) и дерева (GEDCOM), удаление семьи | `src/app/api/export`, Settings | готово |
 | Аналитика событий и North Star (Contributing Families, 28 дней) | `src/lib/analytics.ts`, `/app/admin` | готово |
+| **Поиск в архивах** для умерших или родившихся >100 лет назад: AI ищет записи в интернете по скиллу `treename-roots` (СССР, Польша и Балтия, DACH, Швейцария, Франция и Бенилюкс, Италия, Испания и Латинская Америка, Чехия и Словакия, англоязычные страны), оценивает каждую находку, даёт следующие шаги и письмо в архив | `skills/treename-roots`, `src/lib/research.ts`, `src/components/ResearchSection.tsx` | нужен ключ Anthropic с включённым web search |
 
 Не входит в MVP (по стратегии — позже): чат «Ask Your Family» (фаза 3), AI-эмблема, заказ печатной книги, нативные приложения, перевод интерфейса приложения (сейчас приложение на английском; сайт, онбординг и страница ответа для рассказчика — на 6 языках).
 
@@ -71,7 +72,8 @@ npm run dev
 | `TRANSCRIBE_API_KEY`, `TRANSCRIBE_URL`, `TRANSCRIBE_MODEL` | расшифровка голоса |
 | `RESEND_API_KEY`, `EMAIL_FROM` | письма со ссылкой для входа и подарками |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | оплата; webhook: `https://<домен>/api/stripe/webhook`, события `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` |
-| `ADMIN_EMAILS` | доступ к странице метрик `/app/admin` |
+| `RESEARCH_MODEL` | модель для поиска в архивах (по умолчанию `ANTHROPIC_MODEL` или `claude-sonnet-5-5`). Нужен web search, включённый в Anthropic Console. Лимиты: бесплатно 1 поиск на семью, платно 20 в месяц (`RESEARCH_LIMITS` в `src/lib/research.ts`) |
+| `ADMIN_EMAILS` | доступ к странице метрик `/app/admin` (и поиск в архивах без лимита) |
 | `DATA_REGION` | `eu` или `ch` — что написано на сайте о месте хранения данных |
 
 ## Перед открытым запуском

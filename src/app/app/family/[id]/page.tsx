@@ -17,17 +17,21 @@ import PhotoUpload from "@/components/PhotoUpload";
 import EventEdit from "@/components/EventEdit";
 import VoiceFill from "@/components/VoiceFill";
 import { fixT } from "@/i18n/app/fix";
+import ResearchSection from "@/components/ResearchSection";
 import { updatePerson, deletePerson, addPersonPhoto, makeProfilePhoto, deletePersonPhoto, setPersonAvatar, setParents, addEvent, deleteEvent } from "../../actions";
+
+// Archive search keeps running after the response (runResearch via after()); give it time.
+export const maxDuration = 300;
 
 export default async function PersonPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; research?: string }>;
 }) {
   const { id } = await params;
-  const { saved } = await searchParams;
+  const { saved, research } = await searchParams;
   const { user, family, role, lang } = await appContext();
   const T = familyT[lang];
   const t = T.person;
@@ -238,6 +242,8 @@ export default async function PersonPage({
       </section>
 
       {/* ---------- Edit ---------- */}
+      <ResearchSection person={p} family={family} user={user} lang={lang} editable={editable} selectedId={research} limitHit={research === "limit"} />
+
       {editable && (
         <section id="edit" className="card stack" style={{ gap: 22 }}>
           <h2 className="section-title">{t.editProfile}</h2>

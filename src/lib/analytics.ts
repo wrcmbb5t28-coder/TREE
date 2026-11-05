@@ -36,7 +36,8 @@ export type EventName =
   | "subscription_started"
   | "gift_purchased"
   | "gift_redeemed"
-  | "subscription_cancelled";
+  | "subscription_cancelled"
+  | "research_started";
 
 const ATTRIBUTED = new Set<string>(["landing_view", "sample_book_opened", "onboarding_started", "tree_created", "signup", "checkout_started", "subscription_started", "demo_opened", "gift_purchased"]);
 

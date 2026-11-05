@@ -70,6 +70,7 @@ model Family {
   invites          Invite[]
   photos           Photo[]
   crests      Crest[]
+  researches  Research[]
 }
 
 model Membership {
@@ -120,6 +121,7 @@ model Person {
   childLinks  Relationship[] @relation("parent")
   questions   Question[]     @relation("Storyteller")
   events      LifeEvent[]
+  researches  Research[]
 }
 
 model Relationship {
@@ -304,4 +306,26 @@ model Crest {
   config    String
   updatedAt DateTime @updatedAt
   @@unique([familyId, key])
+}
+
+// Archive research for one ancestor (skills/treename-roots). Only for people who have died
+// or were born more than 100 years ago. result = JSON report (see src/lib/research.ts).
+model Research {
+  id         String    @id @default(cuid())
+  familyId   String
+  family     Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  personId   String
+  person     Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  userId     String
+  // running | done | failed
+  status     String    @default("running")
+  lang       String    @default("en")
+  regions    String    @default("")
+  result     String?
+  error      String?
+  searches   Int       @default(0)
+  createdAt  DateTime  @default(now())
+  finishedAt DateTime?
+  @@index([familyId, createdAt])
+  @@index([personId, createdAt])
 }
