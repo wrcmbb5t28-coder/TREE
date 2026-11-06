@@ -13,10 +13,16 @@ import { isPaid } from "@/lib/plans";
  *  - links in the report must come from the search results or the skill's own portal list.
  */
 
+function envInt(name: string, fallback: number): number {
+  const n = Number.parseInt(process.env[name] ?? "", 10);
+  return Number.isFinite(n) && n >= 0 ? n : fallback;
+}
+
 export const RESEARCH_LIMITS = {
-  // Free families get one search to see what it is; paid families a monthly allowance.
-  freeTotal: 1,
-  paidPerMonth: 20,
+  // Free families get a few searches to see what it is; paid families a monthly allowance.
+  // Both can be changed in Vercel without code: RESEARCH_FREE_TOTAL, RESEARCH_PAID_PER_MONTH.
+  freeTotal: envInt("RESEARCH_FREE_TOTAL", 3),
+  paidPerMonth: envInt("RESEARCH_PAID_PER_MONTH", 20),
   maxSearchesPerRun: 10,
   // A run that has not finished after this long is treated as failed.
   staleAfterMs: 6 * 60 * 1000,
