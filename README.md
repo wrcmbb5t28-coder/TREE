@@ -72,7 +72,7 @@ npm run dev
 | `TRANSCRIBE_API_KEY`, `TRANSCRIBE_URL`, `TRANSCRIBE_MODEL` | расшифровка голоса |
 | `RESEND_API_KEY`, `EMAIL_FROM` | письма со ссылкой для входа и подарками |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | оплата; webhook: `https://<домен>/api/stripe/webhook`, события `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` |
-| `RESEARCH_MODEL` | модель для поиска в архивах (по умолчанию `ANTHROPIC_MODEL` или `claude-sonnet-5-5`). Нужен web search, включённый в Anthropic Console. Лимиты: бесплатно 1 поиск на семью, платно 20 в месяц (`RESEARCH_LIMITS` в `src/lib/research.ts`) |
+| `RESEARCH_MODEL` | модель для поиска в архивах (по умолчанию `ANTHROPIC_MODEL` или `claude-sonnet-5-5`). Нужен web search, включённый в Anthropic Console. Лимиты: бесплатно 3 поиска на семью, платно 20 в месяц; меняются без кода переменными `RESEARCH_FREE_TOTAL` и `RESEARCH_PAID_PER_MONTH` |
 | `ADMIN_EMAILS` | доступ к странице метрик `/app/admin` (и поиск в архивах без лимита) |
 | `DATA_REGION` | `eu` или `ch` — что написано на сайте о месте хранения данных |
 

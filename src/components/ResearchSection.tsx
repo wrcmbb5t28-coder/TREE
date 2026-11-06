@@ -69,7 +69,7 @@ export default async function ResearchSection({
       {lastFailed && !running && <p className="notice small">{t.failed}</p>}
       {limitHit && left !== null && left <= 0 && (
         <p className="notice small">
-          {t.limit} <Link href="/app/billing">{t.plans}</Link>
+          {t.limit(RESEARCH_LIMITS.paidPerMonth)} <Link href="/app/billing">{t.plans}</Link>
         </p>
       )}
 
@@ -145,7 +145,7 @@ export default async function ResearchSection({
           {left !== null && !running && (
             <span className="small muted">
               {t.left(left)}
-              {!isPaid(family) && <> · {t.freeNote}</>}
+              {!isPaid(family) && <> · {t.freeNote(RESEARCH_LIMITS.freeTotal, RESEARCH_LIMITS.paidPerMonth)}</>}
               {left <= 0 && <> <Link href="/app/billing">{t.plans}</Link></>}
             </span>
           )}

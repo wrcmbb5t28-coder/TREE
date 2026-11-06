@@ -12,8 +12,8 @@ export const researchT: Record<
     start: (name: string) => string;
     again: string;
     left: (n: number) => string;
-    freeNote: string;
-    limit: string;
+    freeNote: (free: number, paid: number) => string;
+    limit: (paid: number) => string;
     plans: string;
     editorsOnly: string;
     running: string;
@@ -38,8 +38,8 @@ export const researchT: Record<
     start: (n) => `Search the archives for ${n}`,
     again: "Search again",
     left: (n) => `Searches left: ${n}`,
-    freeNote: "Your first search is free. The Family plan includes 20 searches a month.",
-    limit: "You have used all your searches. The Family plan includes 20 searches a month.",
+    freeNote: (f, p) => `${f} free searches per family. The Family plan includes ${p} a month.`,
+    limit: (p) => `You have used all your free searches. The Family plan includes ${p} searches a month.`,
     plans: "See plans",
     editorsOnly: "Only family members who can edit the tree can start a search.",
     running: "Searching the archives… This takes one to three minutes. You can leave this page: the result will be saved here.",
@@ -63,8 +63,8 @@ export const researchT: Record<
     start: (n) => `Archive nach ${n} durchsuchen`,
     again: "Erneut suchen",
     left: (n) => `Verbleibende Suchen: ${n}`,
-    freeNote: "Die erste Suche ist kostenlos. Im Familienplan sind 20 Suchen pro Monat enthalten.",
-    limit: "Sie haben alle Suchen aufgebraucht. Im Familienplan sind 20 Suchen pro Monat enthalten.",
+    freeNote: (f, p) => `${f} kostenlose Suchen pro Familie. Im Familienplan sind ${p} pro Monat enthalten.`,
+    limit: (p) => `Sie haben alle kostenlosen Suchen aufgebraucht. Im Familienplan sind ${p} Suchen pro Monat enthalten.`,
     plans: "Pläne ansehen",
     editorsOnly: "Eine Suche können nur Familienmitglieder starten, die den Stammbaum bearbeiten dürfen.",
     running: "Die Archive werden durchsucht… Das dauert ein bis drei Minuten. Sie können die Seite verlassen, das Ergebnis wird hier gespeichert.",
@@ -88,8 +88,8 @@ export const researchT: Record<
     start: (n) => `Chercher ${n} dans les archives`,
     again: "Relancer la recherche",
     left: (n) => `Recherches restantes : ${n}`,
-    freeNote: "La première recherche est offerte. La formule Famille comprend 20 recherches par mois.",
-    limit: "Vous avez utilisé toutes vos recherches. La formule Famille comprend 20 recherches par mois.",
+    freeNote: (f, p) => `${f} recherches offertes par famille. La formule Famille en comprend ${p} par mois.`,
+    limit: (p) => `Vous avez utilisé toutes vos recherches offertes. La formule Famille comprend ${p} recherches par mois.`,
     plans: "Voir les formules",
     editorsOnly: "Seuls les membres qui peuvent modifier l’arbre peuvent lancer une recherche.",
     running: "Recherche dans les archives… Cela prend une à trois minutes. Vous pouvez quitter la page : le résultat sera enregistré ici.",
@@ -113,8 +113,8 @@ export const researchT: Record<
     start: (n) => `Cerca ${n} negli archivi`,
     again: "Cerca di nuovo",
     left: (n) => `Ricerche rimaste: ${n}`,
-    freeNote: "La prima ricerca è gratuita. Il piano Famiglia include 20 ricerche al mese.",
-    limit: "Hai usato tutte le ricerche. Il piano Famiglia include 20 ricerche al mese.",
+    freeNote: (f, p) => `${f} ricerche gratuite per famiglia. Il piano Famiglia ne include ${p} al mese.`,
+    limit: (p) => `Hai usato tutte le ricerche gratuite. Il piano Famiglia include ${p} ricerche al mese.`,
     plans: "Vedi i piani",
     editorsOnly: "Solo chi può modificare l’albero può avviare una ricerca.",
     running: "Ricerca negli archivi in corso… Ci vogliono da uno a tre minuti. Puoi lasciare la pagina: il risultato verrà salvato qui.",
@@ -138,8 +138,8 @@ export const researchT: Record<
     start: (n) => `Buscar a ${n} en los archivos`,
     again: "Buscar de nuevo",
     left: (n) => `Búsquedas restantes: ${n}`,
-    freeNote: "La primera búsqueda es gratis. El plan Familia incluye 20 búsquedas al mes.",
-    limit: "Has usado todas tus búsquedas. El plan Familia incluye 20 búsquedas al mes.",
+    freeNote: (f, p) => `${f} búsquedas gratis por familia. El plan Familia incluye ${p} al mes.`,
+    limit: (p) => `Has usado todas tus búsquedas gratis. El plan Familia incluye ${p} búsquedas al mes.`,
     plans: "Ver planes",
     editorsOnly: "Solo quienes pueden editar el árbol pueden iniciar una búsqueda.",
     running: "Buscando en los archivos… Tarda de uno a tres minutos. Puedes salir de la página: el resultado se guardará aquí.",
@@ -163,8 +163,8 @@ export const researchT: Record<
     start: (n) => `Искать в архивах: ${n}`,
     again: "Искать ещё раз",
     left: (n) => `Осталось поисков: ${n}`,
-    freeNote: "Первый поиск бесплатный. В тарифе «Семейный» 20 поисков в месяц.",
-    limit: "Поиски закончились. В тарифе «Семейный» 20 поисков в месяц.",
+    freeNote: (f, p) => `Бесплатных поисков на семью: ${f}. В тарифе «Семейный» ${p} в месяц.`,
+    limit: (p) => `Бесплатные поиски закончились. В тарифе «Семейный» ${p} поисков в месяц.`,
     plans: "Посмотреть тарифы",
     editorsOnly: "Начать поиск могут только те, кто может редактировать древо.",
     running: "Ищем в архивах… Это займёт одну–три минуты. Страницу можно закрыть: результат сохранится здесь.",
