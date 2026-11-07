@@ -15,7 +15,7 @@ export function SiteNav({ lang, t, rest = "" }: { lang: Lang; t: Dict; rest?: st
       <div className="row">
         <div className="langs" role="group" aria-label="Language">
           {LANGS.map((l) => (
-            <a key={l} href={`/${l}${rest}`} hrefLang={l} aria-current={l === lang ? "true" : undefined}>
+            <a key={l} data-lang={l} href={`/${l}${rest}`} hrefLang={l} aria-current={l === lang ? "true" : undefined}>
               {LANG_LABEL[l]}
             </a>
           ))}

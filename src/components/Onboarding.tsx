@@ -238,7 +238,7 @@ export default function Onboarding({
           <div className="progress" aria-hidden="true"><i style={{ width: `${Math.round(((step + 1) / STEPS) * 100)}%` }} /></div>
           <nav className="ob-langs" aria-label="Language">
             {LANGS.map((l) => (
-              <a key={l} href={`/${l}/start${qs}`} aria-current={l === lang ? "true" : undefined}>{l.toUpperCase()}</a>
+              <a key={l} data-lang={l} href={`/${l}/start${qs}`} aria-current={l === lang ? "true" : undefined}>{l.toUpperCase()}</a>
             ))}
           </nav>
           <button className="x" aria-label={t.close} onClick={() => router.push(`/${lang}`)}>×</button>

@@ -981,3 +981,8 @@ a.chip:hover { background: #E2E9DA; }
 .beta-done { font-weight: 700; color: #3F4A22; }
 .beta-after { display: inline-block; margin-left: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border: 1.5px solid currentColor; border-radius: 6px; padding: 1px 6px; vertical-align: middle; opacity: .8; }
 @media (max-width: 560px) { .beta-box { padding: 18px 16px; } .beta-btn { flex: 1 1 100%; } }
+
+/* Russian hidden for visitors from the EU and Switzerland (set by middleware cookie tn_noru) */
+html[data-noru] [data-lang="ru"] { display: none !important; }
+.foot-lang + .foot-lang::before { content: " · "; }
+html[data-noru] .foot-lang[data-lang="es"] + .foot-lang[data-lang="ru"]::before { content: none; }

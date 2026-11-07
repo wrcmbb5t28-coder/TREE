@@ -54,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <head>
         {/* The look chosen in this browser (comic, book or classic), applied before the first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(comic|book|classic)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(comic|book|classic)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}try{if(/(?:^|; )tn_noru=1/.test(document.cookie))document.documentElement.dataset.noru="1"}catch(e){}` }} />
       </head>
       <body>{children}<SmartCrop /></body>
     </html>

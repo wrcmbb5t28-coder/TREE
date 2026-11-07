@@ -10,9 +10,8 @@ export default function FooterLangs({ lang }: { lang: string }) {
   const rest = isLang(parts[1]) ? "/" + parts.slice(2).join("/") : "";
   return (
     <span className="foot-langs" role="group" aria-label="Language">
-      {LANGS.map((l, i) => (
-        <span key={l}>
-          {i > 0 && " · "}
+      {LANGS.map((l) => (
+        <span key={l} data-lang={l} className="foot-lang">
           <a href={`/${l}${rest === "/" ? "" : rest}`} hrefLang={l} aria-current={l === lang ? "true" : undefined}>{LANG_LABEL[l]}</a>
         </span>
       ))}
