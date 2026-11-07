@@ -6,6 +6,7 @@ import { storageCheck } from "@/lib/storage";
 import SampleImagesPanel from "@/components/SampleImagesPanel";
 import { ALL_LANGS, existingSamples, imageKey, sampleSlots } from "@/lib/sampleImages";
 import { sampleBook } from "@/lib/sampleBook";
+import { paymentsLive } from "@/lib/payments";
 
 /**
  * Founder metrics. Visible only to emails listed in ADMIN_EMAILS (comma-separated).
@@ -37,6 +38,7 @@ export default async function Admin() {
     ["Sample book illustrations (OPENAI_API_KEY)", !!imageKey()],
     ["Email (RESEND_API_KEY)", !!process.env.RESEND_API_KEY],
     ["Payments (STRIPE_SECRET_KEY)", !!process.env.STRIPE_SECRET_KEY],
+    ["Payments switched on (PAYMENTS_MODE=live) — off means free beta", paymentsLive()],
     ["Sign-in links on screen (SHOW_LOGIN_LINKS) — remove before launch", process.env.SHOW_LOGIN_LINKS === "1"],
   ];
   const n = (name: string) => events.find((e) => e.name === name)?._count._all ?? 0;
@@ -69,10 +71,31 @@ export default async function Admin() {
     ["Paid (subscription or gift)", n("subscription_started") + n("gift_purchased")],
   ] as const;
   const top = Math.max(1, funnel[0][1]);
+  const [waitCounts, waitRecent] = await Promise.all([
+    db.waitlist.groupBy({ by: ["plan"], _count: { _all: true } }),
+    db.waitlist.findMany({ orderBy: { createdAt: "desc" }, take: 30 }),
+  ]);
+  const wc = (plan: string) => waitCounts.find((w) => w.plan === plan)?._count._all ?? 0;
 
   return (
     <div className="stack" style={{ gap: 24 }}>
       <div className="page-head"><div><p className="eyebrow">Last 28 days</p><h1>Metrics</h1></div></div>
+      <section className="card stack" style={{ gap: 10 }}>
+        <h2 style={{ fontSize: "1.2rem" }}>Beta waitlist {paymentsLive() ? "(payments are live)" : "(free beta)"}</h2>
+        <p className="small">
+          Founding reserved: <b>{wc("founding")}</b> / 500 · Launch e-mail: <b>{wc("launch")}</b> · Family: <b>{wc("family")}</b> · Gift: <b>{wc("legacy")}</b>
+        </p>
+        {waitRecent.length > 0 && (
+          <div style={{ overflowX: "auto" }}>
+            <table className="small" style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead><tr><th align="left">E-mail</th><th align="left">Plan</th><th align="left">Lang</th><th align="left">Date</th></tr></thead>
+              <tbody>{waitRecent.map((w) => (
+                <tr key={w.id}><td>{w.email}</td><td>{w.plan}</td><td>{w.lang}</td><td>{w.createdAt.toISOString().slice(0, 10)}</td></tr>
+              ))}</tbody>
+            </table>
+          </div>
+        )}
+      </section>
       <section className="card stack" style={{ gap: 10 }}>
         <h2 style={{ fontSize: "1.2rem" }}>System check</h2>
         <p className={storage.ok ? "small" : "notice small"}>

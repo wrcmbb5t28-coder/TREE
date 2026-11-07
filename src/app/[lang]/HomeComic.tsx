@@ -8,6 +8,9 @@ import { appUrl } from "@/lib/util";
 import PageView from "@/components/PageView";
 import { sampleBook, SAMPLE_PDF } from "@/lib/sampleBook";
 import { PRICES } from "@/lib/prices";
+import { paymentsLive } from "@/lib/payments";
+import { BETA } from "@/i18n/beta";
+import BetaNotify from "@/components/BetaNotify";
 
 /** Illustrated homepage (comic "clear line" style): family memory first, the book as one of four results. */
 
@@ -98,6 +101,8 @@ export default function HomeComic({ lang }: { lang: Lang }) {
   const grandpa = first(t.demo.people[1]);
   const grandma = first(t.demo.people[0]);
   const quote = (t.demo.answer.match(/^.*?[.!?…](?=\s)/)?.[0] ?? t.demo.answer).replace(/[.!?]?[”»"“]?$/, "") + "…" + (/[«„]/.test(t.demo.answer.slice(0, 2)) ? (t.demo.answer.startsWith("«") ? "»" : "“") : "”");
+  const live = paymentsLive();
+  const b = BETA[lang];
   const giftTitle = new Date().getMonth() >= 9 ? t.gift.season : t.gift.title;
 
   const jsonLd = {
@@ -120,7 +125,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
     <div className="h5">
       <PageView name="landing_view" lang={lang} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <a className="h5-promo" href="#gift">{giftTitle} — <b>{t.pricing.legacy.price}</b></a>
+      {live ? <a className="h5-promo" href="#gift">{giftTitle} — <b>{t.pricing.legacy.price}</b></a> : <a className="h5-promo" href="#notify"><b>{b.tag}</b> · {b.homeTitle}</a>}
       <div className="h5-bar"><div className="wrap"><SiteNav lang={lang} t={t} /></div></div>
 
       <main>
@@ -262,9 +267,9 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <h2>{giftTitle}</h2>
                 <p className="h5-l">{t.gift.lead}</p>
                 <ol>{t.gift.steps.map((s, i) => <li key={i}><span className="n">{i + 1}</span><span><b>{s.t}</b>{s.d}</span></li>)}</ol>
-                <div className="pr"><b>{t.pricing.legacy.price}</b><span>{t.gift.note}</span></div>
+                <div className="pr"><b>{t.pricing.legacy.price}{!live && <span className="beta-after">{b.afterLaunch}</span>}</b><span>{t.gift.note}</span></div>
                 <div className="act">
-                  <Link className="h5-btn h5-terra" href={`${start}?plan=legacy`}>{t.gift.cta}</Link>
+                  {live ? <Link className="h5-btn h5-terra" href={`${start}?plan=legacy`}>{t.gift.cta}</Link> : <a className="h5-btn h5-terra" href="#notify">{b.giftCta}</a>}
                   <Link className="h5-btn h5-line" href={`/${lang}/book`}>{t.gift.more}</Link>
                 </div>
               </div>
@@ -275,6 +280,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
         <section className="h5-sec h5-inside" id="pricing">
           <div className="h5-wrap">
             <div className="h5-head"><p className="h5-eyebrow">{t.pricing.eyebrow}</p><h2>{t.pricing.title}</h2></div>
+            {!live && <BetaNotify lang={lang} foundingPrice={PRICES[lang].founding} next={`/${lang}`} />}
             <div className="h5-prices">
               {(["free", "family", "legacy"] as const).map((k) => {
                 const p = t.pricing[k];
@@ -283,9 +289,15 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                     {k === "family" && <span className="tag">{t.pricing.popular}</span>}
                     {k === "legacy" && <span className="tag gift">{t.pricing.giftTag}</span>}
                     <h3>{p.name}</h3>
-                    <div className="amt">{p.price} {p.per && <small>{p.per}</small>}</div>
+                    <div className="amt">{p.price} {p.per && <small>{p.per}</small>}{!live && k !== "free" && <span className="beta-after">{b.afterLaunch}</span>}</div>
                     <ul>{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
-                    <Link className={`h5-btn ${k === "family" ? "h5-olive" : k === "legacy" ? "h5-terra" : "h5-line"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
+                    {live ? (
+                      <Link className={`h5-btn ${k === "family" ? "h5-olive" : k === "legacy" ? "h5-terra" : "h5-line"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
+                    ) : k === "legacy" ? (
+                      <a className="h5-btn h5-terra" href="#notify">{b.giftCta}</a>
+                    ) : (
+                      <Link className={`h5-btn ${k === "family" ? "h5-olive" : "h5-line"}`} href={start}>{b.startCta}</Link>
+                    )}
                   </article>
                 );
               })}

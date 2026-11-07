@@ -11,7 +11,8 @@ import { common, chapterName } from "@/i18n/app/common";
 import { storiesT } from "@/i18n/app/stories";
 import { appUrl, fmtDuration } from "@/lib/util";
 import { getDict, fill } from "@/i18n";
-import { FREE_LIMITS, isPaid } from "@/lib/plans";
+import { FREE_LIMITS } from "@/lib/plans";
+import { hasFullAccess } from "@/lib/payments";
 import ShareQuestion from "@/components/ShareQuestion";
 import { deleteQuestion } from "./actions";
 import TreeView from "@/components/TreeView";
@@ -48,7 +49,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ a
   const w = whoami[lang];
   const ft = await familyTitle(family, lang);
   const generations = (await db.person.findMany({ where: { familyId: family.id }, distinct: ["generation"], select: { generation: true } })).length;
-  const paid = isPaid(family);
+  const paid = hasFullAccess(family);
   const treePeople = await db.person.findMany({ where: { familyId: family.id, ...(canEdit(role) ? {} : { hidden: false }) }, orderBy: [{ generation: "asc" }, { createdAt: "asc" }] });
   const treeLinks = treePeople.length > 1
     ? await db.relationship.findMany({ where: { parentId: { in: treePeople.map((p) => p.id) }, childId: { in: treePeople.map((p) => p.id) } } })

@@ -329,3 +329,16 @@ model Research {
   @@index([familyId, createdAt])
   @@index([personId, createdAt])
 }
+
+/** E-mails left during the free beta: "tell me at launch" or a reserved Founding Family place. */
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String
+  plan      String   // launch | family | legacy | founding
+  lang      String   @default("en")
+  familyId  String?
+  createdAt DateTime @default(now())
+
+  @@unique([email, plan])
+  @@index([plan])
+}

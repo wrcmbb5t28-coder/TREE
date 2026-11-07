@@ -9,6 +9,10 @@ import type { CrestConfig } from "@/lib/crest";
 import { appUrl } from "@/lib/util";
 import { sampleBook } from "@/lib/sampleBook";
 import PageView from "@/components/PageView";
+import { PRICES } from "@/lib/prices";
+import { paymentsLive } from "@/lib/payments";
+import { BETA } from "@/i18n/beta";
+import BetaNotify from "@/components/BetaNotify";
 
 /** The homepage as it was until October 2026. Shown when HOME_DESIGN=classic. */
 /** Example crests for the three sample family lines. */
@@ -23,6 +27,8 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
   const t = getDict(lang);
   const h = t.home;
   const start = `/${lang}/start`;
+  const live = paymentsLive();
+  const b = BETA[lang];
   const sb = sampleBook(lang);
 
   // The example family, drawn by the real tree component.
@@ -191,6 +197,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
         <div className="wrap">
           <p className="eyebrow">{t.pricing.eyebrow}</p>
           <h2>{t.pricing.title}</h2>
+          {!live && <BetaNotify lang={lang} foundingPrice={PRICES[lang].founding} next={`/${lang}`} />}
           <div className="cards3">
             {(["free", "family", "legacy"] as const).map((k) => {
               const p = t.pricing[k];
@@ -199,10 +206,16 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
                   {k === "family" && <span className="tag" style={{ alignSelf: "flex-start" }}>{t.pricing.popular}</span>}
                   {k === "legacy" && <span className="tag" style={{ alignSelf: "flex-start" }}>{t.pricing.giftTag}</span>}
                   <h3>{p.name}</h3>
-                  <div className="amt">{p.price} {p.per && <small>{p.per}</small>}</div>
+                  <div className="amt">{p.price} {p.per && <small>{p.per}</small>}{!live && k !== "free" && <span className="beta-after">{b.afterLaunch}</span>}</div>
                   <ul>{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
                   {k === "legacy" && <Link className="small" href={`/${lang}/book`}>{sb.ui.cta} →</Link>}
-                  <Link className={`btn ${k === "family" ? "btn-primary" : "btn-ghost"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
+                  {live ? (
+                    <Link className={`btn ${k === "family" ? "btn-primary" : "btn-ghost"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
+                  ) : k === "legacy" ? (
+                    <a className="btn btn-ghost" href="#notify">{b.giftCta}</a>
+                  ) : (
+                    <Link className={`btn ${k === "family" ? "btn-primary" : "btn-ghost"}`} href={start}>{b.startCta}</Link>
+                  )}
                 </article>
               );
             })}
@@ -224,7 +237,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
               ))}
             </ol>
             <div className="h-gift-cta">
-              <Link className="btn btn-primary" href={`${start}?plan=legacy`}>{t.gift.cta}</Link>
+              {live ? <Link className="btn btn-primary" href={`${start}?plan=legacy`}>{t.gift.cta}</Link> : <a className="btn btn-primary" href="#notify">{b.giftCta}</a>}
               <Link className="btn btn-ghost" href={`/${lang}/book`}>{t.gift.more}</Link>
               <span className="small muted">{t.gift.note}</span>
             </div>

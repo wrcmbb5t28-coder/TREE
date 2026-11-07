@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { fmtDate, type Lang } from "@/i18n/app";
 import { researchT } from "@/i18n/app/research";
 import { canResearch, researchesLeft, readReport, RESEARCH_LIMITS, type FindingStatus } from "@/lib/research";
-import { isPaid } from "@/lib/plans";
+import { hasFullAccess } from "@/lib/payments";
 import { startResearch } from "@/app/app/research-actions";
 import AutoRefresh from "./AutoRefresh";
 
@@ -145,7 +145,7 @@ export default async function ResearchSection({
           {left !== null && !running && (
             <span className="small muted">
               {t.left(left)}
-              {!isPaid(family) && <> · {t.freeNote}</>}
+              {!hasFullAccess(family) && <> · {t.freeNote}</>}
               {left <= 0 && <> <Link href="/app/billing">{t.plans}</Link></>}
             </span>
           )}

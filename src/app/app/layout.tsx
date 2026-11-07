@@ -4,6 +4,8 @@ import AppNav from "@/components/AppNav";
 import LangSwitch from "@/components/LangSwitch";
 import AppMenu from "@/components/AppMenu";
 import { isPaid } from "@/lib/plans";
+import { paymentsLive } from "@/lib/payments";
+import { BETA } from "@/i18n/beta";
 import { appContext } from "@/i18n/app";
 import { common } from "@/i18n/app/common";
 import { setUiLang, undoFix } from "./actions";
@@ -45,7 +47,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 { href: "/app/keep", label: c.nav.keep },
                 { href: "/app/proofread", label: `✎ ${fixT[lang].all.link}` },
                 { href: "/app/settings", label: c.nav.settings },
-                ...(!paid ? [{ href: "/app/billing", label: `${c.plans.free} · ${c.header.upgrade}`, accent: true }] : []),
+                ...(!paymentsLive()
+                  ? [{ href: "/app/billing", label: BETA[lang].menu, accent: true }]
+                  : !paid ? [{ href: "/app/billing", label: `${c.plans.free} · ${c.header.upgrade}`, accent: true }] : []),
               ]}
             >
               <label className="appmenu-lang">

@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { db } from "@/lib/db";
-import { isPaid } from "@/lib/plans";
+import { hasFullAccess } from "@/lib/payments";
 
 /**
  * Archive research for one ancestor, powered by the treename-roots skill (skills/treename-roots).
@@ -53,7 +53,7 @@ export async function researchesLeft(
   user: { email?: string | null },
 ): Promise<number | null> {
   if (isAdmin(user.email)) return null;
-  if (isPaid(family)) {
+  if (hasFullAccess(family)) {
     const since = new Date(Date.now() - 30 * 24 * 3600 * 1000);
     const used = await db.research.count({ where: { familyId: family.id, createdAt: { gte: since }, status: { not: "failed" } } });
     return Math.max(0, RESEARCH_LIMITS.paidPerMonth - used);

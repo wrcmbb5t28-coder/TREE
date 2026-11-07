@@ -13,7 +13,8 @@ import { avatarById } from "@/lib/avatars";
 import { normalizeCrest, type CrestConfig } from "@/lib/crest";
 import { crestFromText } from "@/lib/crestAi";
 import { relationById } from "@/i18n/questions";
-import { FREE_LIMITS, isPaid } from "@/lib/plans";
+import { FREE_LIMITS } from "@/lib/plans";
+import { hasFullAccess } from "@/lib/payments";
 import { isLang } from "@/i18n/config";
 import { uiLang } from "@/i18n/app";
 import { familyT } from "@/i18n/app/family";
@@ -198,7 +199,7 @@ export async function addPersonPhoto(id: string, form: FormData): Promise<{ erro
   if (!(file instanceof Blob) || file.size === 0) return { error: msg.choose };
   if (file.size > MAX_UPLOAD_BYTES) return { error: msg.tooLarge };
   if (!file.type.startsWith("image/")) return { error: msg.format };
-  if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
+  if (!hasFullAccess(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
     return { error: msg.freeLimit(FREE_LIMITS.photos), limit: true };
   }
   try {
@@ -404,7 +405,7 @@ export async function uploadPhoto(form: FormData) {
   const file = form.get("photo");
   if (!(file instanceof File) || file.size === 0) throw new Error("Choose a photo.");
   if (file.size > MAX_UPLOAD_BYTES) throw new Error("Photo is larger than 4 MB. Please use a smaller photo.");
-  if (!isPaid(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
+  if (!hasFullAccess(family) && (await db.photo.count({ where: { familyId: family.id } })) >= FREE_LIMITS.photos) {
     await track("paywall_viewed", { familyId: family.id, userId: user.id, props: { trigger: "photos" } });
     redirect("/app/billing?reason=photos");
   }
