@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { LANGS, HREFLANG } from "@/i18n/config";
 import { appUrl } from "@/lib/util";
 
-const PATHS = ["", "/questions", "/privacy"];
+const PATHS = ["", "/questions", "/privacy", "/imprint"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PATHS.flatMap((p) =>

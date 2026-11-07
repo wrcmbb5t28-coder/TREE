@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LEGAL } from "@/i18n/legal";
 import { LANGS, LANG_LABEL, type Lang, type Dict } from "@/i18n";
 import ThemeToggle from "./ThemeToggle";
 import FooterLangs from "./FooterLangs";
@@ -33,6 +34,7 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
         <span className="row">
           <Link href={`/${lang}/questions`}>{t.footer.questions}</Link>
           <Link href={`/${lang}/privacy`}>{t.footer.privacy}</Link>
+          <Link href={`/${lang}/imprint`}>{LEGAL[lang].imprint.link}</Link>
           <ThemeToggle lang={lang} />
           <FooterLangs lang={lang} />
         </span>
