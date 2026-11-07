@@ -13,7 +13,7 @@ export const OPERATOR = {
   register: "CH-130.4.031.657-1",
   manager: "Egor Lavrishchev",
   privacy: "privacy@treename.ai",
-  hello: "hello@treename.ai",
+  hello: "support@treename.ai",
 };
 
 type Section = { h: string; p: string[] };
