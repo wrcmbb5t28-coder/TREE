@@ -209,3 +209,19 @@
 [data-theme="book"] .demo-banner p { font-family: var(--body, Lora, serif); }
 [data-theme="book"] .demo-banner-hl .demo-banner-in { background: #F3D58A; }
 [data-theme="book"] .h-slogan { font-family: var(--hand); font-style: normal; font-weight: 700; font-size: clamp(1.6rem, 2.8vw, 2.1rem); line-height: 1.15; color: #8A2E26; transform: rotate(-1.2deg); transform-origin: left; }
+
+/* ---------- text pages (privacy, imprint, questions, family page):
+   the text sits on a sheet of paper, never straight on the dark desk ---------- */
+[data-theme="book"] main.narrow {
+  background: linear-gradient(90deg, #E9DDC5 0, #F3EAD7 14px, #F7F0E1 46px, #F6EEDD 100%);
+  color: var(--ink);
+  border-radius: 4px 10px 10px 4px;
+  box-shadow: var(--page-shadow);
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  margin: 18px auto 64px;
+  padding-inline: clamp(20px, 5vw, 64px);
+}
+@media (max-width: 640px) {
+  [data-theme="book"] main.narrow { width: calc(100% - 16px); padding-inline: 18px; }
+}
