@@ -7,7 +7,7 @@ import TreeView from "@/components/TreeView";
 import CrestSvg from "@/components/CrestSvg";
 import type { CrestConfig } from "@/lib/crest";
 import { appUrl } from "@/lib/util";
-import { sampleBook } from "@/lib/sampleBook";
+import { sampleBook, SAMPLE_PDF } from "@/lib/sampleBook";
 import PageView from "@/components/PageView";
 import { PRICES } from "@/lib/prices";
 import { paymentsLive } from "@/lib/payments";
@@ -77,7 +77,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
               <Link className="btn btn-primary" href={start}>{t.hero.cta}</Link>
               <a className="btn btn-ghost" href={`/demo?lang=${lang}`}>{t.hero.cta2}</a>
             </div>
-            <Link className="h-booklink h-reveal d2" href={`/${lang}/book`}>{t.gift.heroBook}</Link>
+            <a className="h-booklink h-reveal d2" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.heroBook}</a>
             <div className="trust h-reveal d3">{t.hero.trust.map((x) => <span key={x}>{x}</span>)}</div>
           </div>
           <div className="h-reveal d2"><HeroDemo d={t.demo} /></div>
@@ -137,9 +137,9 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
             <div className="h-row">
               <div className="h-row-text">
                 <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
-                <p><Link className="btn btn-primary" href={`/${lang}/book`}>{sb.ui.cta}</Link></p>
+                <p><a className="btn btn-primary" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a></p>
               </div>
-              <Link href={`/${lang}/book`} className="h-book h-book-link" aria-label={sb.ui.cta}>
+              <a href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener" className="h-book h-book-link" aria-label={SAMPLE_PDF[lang].open}>
                 <div className="h-page">
                   <span className="chap">{h.bookChapter}</span>
                   <h4>{h.bookTitle}</h4>
@@ -156,7 +156,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
                     <span>{h.bookScan}</span>
                   </div>
                 </div>
-              </Link>
+              </a>
             </div>
 
             <div className="h-row flip">
@@ -208,7 +208,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
                   <h3>{p.name}</h3>
                   <div className="amt">{p.price} {p.per && <small>{p.per}</small>}{!live && k !== "free" && <span className="beta-after">{b.afterLaunch}</span>}</div>
                   <ul>{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
-                  {k === "legacy" && <Link className="small" href={`/${lang}/book`}>{sb.ui.cta} →</Link>}
+                  {k === "legacy" && <a className="small" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open} →</a>}
                   {live ? (
                     <Link className={`btn ${k === "family" ? "btn-primary" : "btn-ghost"}`} href={k === "free" ? start : `${start}?plan=${k}`}>{p.cta}</Link>
                   ) : k === "legacy" ? (
@@ -238,7 +238,7 @@ export default function HomeClassic({ lang }: { lang: Lang }) {
             </ol>
             <div className="h-gift-cta">
               {live ? <Link className="btn btn-primary" href={`${start}?plan=legacy`}>{t.gift.cta}</Link> : <a className="btn btn-primary" href="#notify">{b.giftCta}</a>}
-              <Link className="btn btn-ghost" href={`/${lang}/book`}>{t.gift.more}</Link>
+              <a className="btn btn-ghost" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.more}</a>
               <span className="small muted">{t.gift.note}</span>
             </div>
           </div>

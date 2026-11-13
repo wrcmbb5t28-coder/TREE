@@ -6,7 +6,7 @@ import { HOME5 } from "@/i18n/home5";
 import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 import { appUrl } from "@/lib/util";
 import PageView from "@/components/PageView";
-import { sampleBook, SAMPLE_PDF } from "@/lib/sampleBook";
+import { SAMPLE_PDF } from "@/lib/sampleBook";
 import { PRICES } from "@/lib/prices";
 import { paymentsLive } from "@/lib/payments";
 import { BETA } from "@/i18n/beta";
@@ -139,7 +139,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <Link className="h5-btn h5-olive" href={start}>{t.hero.cta}</Link>
                 <a className="h5-btn h5-line" href="#inside">{x.ctaInside}</a>
               </div>
-              <Link className="h5-booklink" href={`/${lang}/book`}>{t.gift.heroBook}</Link>
+              <a className="h5-booklink" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.heroBook}</a>
               <p className="h5-fine">{t.hero.trust.join(" · ")}</p>
             </div>
             <Scene src="hero" w={1400} h={1356} label={x.heroCaption}>
@@ -225,13 +225,13 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <h3>{h.show.map.t}</h3><p>{h.show.map.d}</p>
               </article>
               <article className="h5-fc">
-                <Link className="h5-bv" href={`/${lang}/book`} aria-label={h.show.book.t}>
+                <a className="h5-bv" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener" aria-label={h.show.book.t}>
                   <Scene src="photo" w={973} h={733} label={t.demo.note} className="ph" />
                   <span className="bk"><BookCover title={h.sample.surnames[0]} sub={x.bookCover} /></span>
-                </Link>
+                </a>
                 <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
-                <Link className="h5-btn h5-olive h5-bookcta" href={`/${lang}/book`}>{sampleBook(lang).ui.cta}</Link>
-                <a className="h5-bookpdf" href={SAMPLE_PDF[lang].href} download>{SAMPLE_PDF[lang].label}<small>{SAMPLE_PDF[lang].note}</small></a>
+                <a className="h5-btn h5-olive h5-bookcta" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a>
+                <p className="h5-bookpdf"><small>PDF · {SAMPLE_PDF[lang].note}</small></p>
               </article>
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <div className="pr"><b>{t.pricing.legacy.price}{!live && <span className="beta-after">{b.afterLaunch}</span>}</b><span>{t.gift.note}</span></div>
                 <div className="act">
                   {live ? <Link className="h5-btn h5-terra" href={`${start}?plan=legacy`}>{t.gift.cta}</Link> : <a className="h5-btn h5-terra" href="#notify">{b.giftCta}</a>}
-                  <Link className="h5-btn h5-line" href={`/${lang}/book`}>{t.gift.more}</Link>
+                  <a className="h5-btn h5-line" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.more}</a>
                 </div>
               </div>
             </div>
