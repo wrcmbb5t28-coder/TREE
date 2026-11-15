@@ -986,3 +986,13 @@ a.chip:hover { background: #E2E9DA; }
 html[data-noru] [data-lang="ru"] { display: none !important; }
 .foot-lang + .foot-lang::before { content: " · "; }
 html[data-noru] .foot-lang[data-lang="es"] + .foot-lang[data-lang="ru"]::before { content: none; }
+
+/* brand logo (image) */
+.logo .brand-logo { display: block; height: 40px; width: auto; }
+.appbar .logo .brand-logo { height: 34px; }
+.answer-card .logo .brand-logo { height: 36px; }
+nav.top .logo { align-items: center; }
+@media (max-width: 520px) {
+  nav.top .logo .brand-logo { height: 32px; }
+  .appbar .logo .brand-logo { height: 28px; }
+}

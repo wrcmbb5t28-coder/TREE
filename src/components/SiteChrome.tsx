@@ -2,14 +2,15 @@ import Link from "next/link";
 import { LEGAL } from "@/i18n/legal";
 import { LANGS, LANG_LABEL, type Lang, type Dict } from "@/i18n";
 import ThemeToggle from "./ThemeToggle";
+import BrandLogo from "./BrandLogo";
 import FooterLangs from "./FooterLangs";
 
 /** Top navigation for marketing pages. `rest` is the path after the language, e.g. "/questions". */
 export function SiteNav({ lang, t, rest = "" }: { lang: Lang; t: Dict; rest?: string }) {
   return (
     <nav className="top" aria-label="Main">
-      <Link className="logo" href={`/${lang}`}>
-        <b>Treename</b>
+      <Link className="logo" href={`/${lang}`} aria-label="Treename.ai">
+        <BrandLogo priority />
         <span>{t.nav.tagline}</span>
       </Link>
       <div className="row">

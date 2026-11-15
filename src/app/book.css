@@ -225,3 +225,6 @@
 @media (max-width: 640px) {
   [data-theme="book"] main.narrow { width: calc(100% - 16px); padding-inline: 18px; }
 }
+
+/* dark "book" theme: put the logo on a light label so the brown wordmark stays readable */
+[data-theme="book"] .logo .brand-logo { background: #F7F0E1; border-radius: 10px; padding: 4px 10px; box-sizing: content-box; }

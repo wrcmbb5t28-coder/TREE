@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import { authT, visitorLang } from "@/i18n/app/auth";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -15,7 +16,7 @@ export default async function OpenLink({ searchParams }: { searchParams: Promise
   return (
     <main className="answer-page">
       <div className="answer-card card-elev">
-        <Link className="logo" href="/"><b>Treename</b></Link>
+        <Link className="logo" href="/" aria-label="Treename.ai"><BrandLogo /></Link>
         <form className="stack" method="post" action="/api/auth/verify">
           <h1 style={{ fontSize: "2rem" }}>{t.openTitle}</h1>
           <p className="muted">{t.openText}</p>

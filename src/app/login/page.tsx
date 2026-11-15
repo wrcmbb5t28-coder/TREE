@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import { redirect } from "next/navigation";
 import { getRealUser } from "@/lib/auth";
 import { authT, visitorLang } from "@/i18n/app/auth";
@@ -20,7 +21,7 @@ export default async function Login({
   return (
     <main className="answer-page">
       <div className="answer-card card-elev">
-        <Link className="logo" href="/"><b>Treename</b></Link>
+        <Link className="logo" href="/" aria-label="Treename.ai"><BrandLogo /></Link>
         {sp.sent ? (
           <div className="stack">
             <h1 style={{ fontSize: "2rem" }}>{t.checkInbox}</h1>
