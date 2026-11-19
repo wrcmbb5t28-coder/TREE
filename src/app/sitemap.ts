@@ -4,13 +4,17 @@ import { appUrl } from "@/lib/util";
 
 const PATHS = ["", "/questions", "/privacy", "/imprint"];
 
+// Russian pages are hidden and redirected for visitors from the EU and Switzerland
+// (see middleware), so they are left out of the sitemap to avoid redirecting URLs.
+const SITEMAP_LANGS = LANGS.filter((l) => l !== "ru");
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return PATHS.flatMap((p) =>
-    LANGS.map((lang) => ({
+    SITEMAP_LANGS.map((lang) => ({
       url: appUrl(`/${lang}${p}`),
       changeFrequency: "weekly" as const,
       priority: p === "" ? 1 : 0.7,
-      alternates: { languages: Object.fromEntries(LANGS.map((l) => [HREFLANG[l], appUrl(`/${l}${p}`)])) },
+      alternates: { languages: Object.fromEntries(SITEMAP_LANGS.map((l) => [HREFLANG[l], appUrl(`/${l}${p}`)])) },
     }))
   );
 }

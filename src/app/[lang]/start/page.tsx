@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { getDict, isLang, COUNTRY_CODES, countryName } from "@/i18n";
 import Onboarding from "@/components/Onboarding";
 
-export const metadata: Metadata = { robots: { index: false } };
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const t = getDict(lang);
+  return { title: `${t.hero.cta} | Treename`, description: t.meta.description, robots: { index: false } };
+}
 
 export default async function Start({
   params,
