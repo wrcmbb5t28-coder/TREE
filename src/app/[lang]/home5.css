@@ -183,3 +183,15 @@
 .h5 .h5-bookpdf { display: block; margin-top: 8px; color: var(--h5-ink, #1E1B1A); }
 .h5 .h5-bookpdf small { display: block; font-weight: 400; font-size: 13px; opacity: .75; text-decoration: none; }
 .h5-hero-en { display: block; width: 100%; height: auto; }
+/* EN, phone: eyebrow + title, then the picture, then the text and buttons */
+@media (max-width: 960px) {
+  .h5-hero-en-grid { display: flex; flex-direction: column; gap: 0; }
+  .h5-hero-en-grid > div { display: contents; }
+  .h5-hero-en-grid .h5-eyebrow { order: 1; }
+  .h5-hero-en-grid h1 { order: 2; }
+  .h5-hero-en-grid .h5-hero-en { order: 3; margin-top: 24px; }
+  .h5-hero-en-grid .h5-lead { order: 4; }
+  .h5-hero-en-grid .h5-actions { order: 5; }
+  .h5-hero-en-grid .h5-booklink { order: 6; align-self: flex-start; }
+  .h5-hero-en-grid .h5-fine { order: 7; }
+}

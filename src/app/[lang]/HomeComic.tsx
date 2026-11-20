@@ -130,7 +130,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
 
       <main>
         <section className="h5-hero">
-          <div className="h5-wrap h5-hero-grid">
+          <div className={`h5-wrap h5-hero-grid${lang === "en" ? " h5-hero-en-grid" : ""}`}>
             <div>
               <p className="h5-eyebrow">{x.eyebrow}</p>
               <h1>{x.title}</h1>
