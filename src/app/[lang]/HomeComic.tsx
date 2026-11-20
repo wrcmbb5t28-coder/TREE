@@ -156,43 +156,55 @@ export default function HomeComic({ lang }: { lang: Lang }) {
         <section className="h5-sec" id="how">
           <div className="h5-wrap">
             <div className="h5-head"><p className="h5-eyebrow">{h.stepsEyebrow}</p><h2>{x.stepsTitle}</h2></div>
-            <ol className="h5-strip">
-              <li>
-                <Scene src="ch1" w={890} h={765} label={h.steps[0].t}>
-                  <Cap p={{ l: 2, t: 2.5 }}>{fill(x.ch1Caption, { city: route[3].place })}</Cap>
-                  <Bal p={{ l: 44, t: 6 }}>{t.demo.question}</Bal>
-                  <div className="h5-ov h5-chips" style={at({ r: 3, t: 44 })}>{x.chips.map((c) => <span key={c} className="h5-chip">{c}</span>)}</div>
-                </Scene>
-                <h3><span className="n">1</span>{h.steps[0].t}</h3>
-                <p>{h.steps[0].d}</p>
-              </li>
-              <li>
-                <Scene src="ch2" w={890} h={765} label={h.steps[1].t}>
-                  <Cap p={{ l: 2, b: 3 }}>{fill(x.ch2Caption, { city: t.demo.place })}</Cap>
-                  <div className="h5-ov" style={at({ l: 38, t: 5 })}><Voice time="1:24" /></div>
-                </Scene>
-                <h3><span className="n">2</span>{h.steps[1].t}</h3>
-                <p>{h.steps[1].d}</p>
-              </li>
-              <li>
-                <div className="h5-scene h5-ui3">
-                  <span className="h5-cap">{x.step3Caption}</span>
-                  <div className="sto">
-                    <p className="st">{x.storyLabel}</p>
-                    <h4>{h.bookTitle}</h4>
-                    <p className="by">{fill(x.toldBy, { name: grandma })}</p>
-                    <p className="tx">{quote}</p>
+            {lang === "en" ? (
+              <div className="h5-how-en">
+                <img src="/home5/how-en.webp" width={690} height={694} alt="How Treename works: 1. Invite your family. 2. They answer by voice. 3. AI turns the answers into stories. 4. You get a family tree and a book." loading="lazy" decoding="async" />
+                <ol>
+                  <li><span className="n">1</span><span><b>Invite your family</b>Choose who to ask: parents, grandparents, aunts and uncles. We suggest the questions, or you write your own.</span></li>
+                  <li><span className="n">2</span><span><b>They answer by voice</b>One question a week arrives on WhatsApp. They answer by voice whenever they like. No app, no password.</span></li>
+                  <li><span className="n">3</span><span><b>AI turns the answers into stories</b>Treename transcribes each recording and writes it up as a story, without inventing anything.</span></li>
+                  <li><span className="n">4</span><span><b>You get a family tree and a book</b>Names, places and dates go into your tree and onto the map, and the stories become a family book.</span></li>
+                </ol>
+              </div>
+            ) : (
+              <ol className="h5-strip">
+                <li>
+                  <Scene src="ch1" w={890} h={765} label={h.steps[0].t}>
+                    <Cap p={{ l: 2, t: 2.5 }}>{fill(x.ch1Caption, { city: route[3].place })}</Cap>
+                    <Bal p={{ l: 44, t: 6 }}>{t.demo.question}</Bal>
+                    <div className="h5-ov h5-chips" style={at({ r: 3, t: 44 })}>{x.chips.map((c) => <span key={c} className="h5-chip">{c}</span>)}</div>
+                  </Scene>
+                  <h3><span className="n">1</span>{h.steps[0].t}</h3>
+                  <p>{h.steps[0].d}</p>
+                </li>
+                <li>
+                  <Scene src="ch2" w={890} h={765} label={h.steps[1].t}>
+                    <Cap p={{ l: 2, b: 3 }}>{fill(x.ch2Caption, { city: t.demo.place })}</Cap>
+                    <div className="h5-ov" style={at({ l: 38, t: 5 })}><Voice time="1:24" /></div>
+                  </Scene>
+                  <h3><span className="n">2</span>{h.steps[1].t}</h3>
+                  <p>{h.steps[1].d}</p>
+                </li>
+                <li>
+                  <div className="h5-scene h5-ui3">
+                    <span className="h5-cap">{x.step3Caption}</span>
+                    <div className="sto">
+                      <p className="st">{x.storyLabel}</p>
+                      <h4>{h.bookTitle}</h4>
+                      <p className="by">{fill(x.toldBy, { name: grandma })}</p>
+                      <p className="tx">{quote}</p>
+                    </div>
+                    <ul className="res">
+                      {[[grandpa, "#A3CF8E"], [t.demo.place, "#D9503F"], [t.demo.year, "#F2C744"], [`${x.voice} 1:24`, "#7DB9DE"]].map(([v, c], i) => (
+                        <li key={i}><i style={{ background: c }} /><b>{v}</b><span>→ {x.results[i]}</span></li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="res">
-                    {[[grandpa, "#A3CF8E"], [t.demo.place, "#D9503F"], [t.demo.year, "#F2C744"], [`${x.voice} 1:24`, "#7DB9DE"]].map(([v, c], i) => (
-                      <li key={i}><i style={{ background: c }} /><b>{v}</b><span>→ {x.results[i]}</span></li>
-                    ))}
-                  </ul>
-                </div>
-                <h3><span className="n">3</span>{h.steps[2].t}</h3>
-                <p>{h.steps[2].d}</p>
-              </li>
-            </ol>
+                  <h3><span className="n">3</span>{h.steps[2].t}</h3>
+                  <p>{h.steps[2].d}</p>
+                </li>
+              </ol>
+            )}
           </div>
         </section>
 

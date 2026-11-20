@@ -195,3 +195,12 @@
   .h5-hero-en-grid .h5-booklink { order: 6; align-self: flex-start; }
   .h5-hero-en-grid .h5-fine { order: 7; }
 }
+/* EN: "How it works" — the comic on the left, the four steps as text on the right */
+.h5-how-en { margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.h5-how-en > img { display: block; width: 100%; height: auto; }
+.h5-how-en ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 26px; }
+.h5-how-en li { display: flex; gap: 16px; align-items: flex-start; }
+.h5-how-en .n { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--h5-olive); color: #fff; font: 600 19px/40px "Golos Text", sans-serif; text-align: center; }
+.h5-how-en li b { display: block; font-family: "Literata", serif; font-size: 23px; line-height: 1.25; color: var(--h5-ink); margin-bottom: 4px; }
+.h5-how-en li span:last-child { font-size: 17px; color: var(--h5-muted); }
+@media (max-width: 960px) { .h5-how-en { grid-template-columns: 1fr; gap: 32px; max-width: 560px; margin-left: auto; margin-right: auto; } }
