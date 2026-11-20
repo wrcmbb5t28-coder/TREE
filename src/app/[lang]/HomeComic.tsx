@@ -217,7 +217,6 @@ export default function HomeComic({ lang }: { lang: Lang }) {
             <div className="h5-wrap">
               <div className="h5-head"><h2>Four reasons to start your story in Treename</h2></div>
               <div className="h5-reasons">
-                <img src="/home5/reasons-left.webp" width={1254} height={1254} alt="An old photo of a young couple: How did your grandparents meet? Do you know how your grandparents met? Most of us don't, until it's too late to ask." loading="lazy" decoding="async" />
                 <ol>
                   <li><span className="n">1</span><span><b>An archive of voices</b>Every story keeps its recording. In twenty years your grandchildren will hear how Grandma laughed, not just read it.</span></li>
                   <li><span className="n">2</span><span><b>A tree where everyone has a face and a voice</b>Couples side by side, children below their parents. Tap anyone to read their stories.</span></li>
