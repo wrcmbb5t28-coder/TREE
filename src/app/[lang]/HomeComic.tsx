@@ -2,6 +2,13 @@ import "./home5.css";
 import "@fontsource/nunito/latin-500.css";
 import "@fontsource/nunito/latin-700.css";
 import "@fontsource/nunito/latin-800.css";
+import "@fontsource/nunito/latin-ext-500.css";
+import "@fontsource/nunito/latin-ext-700.css";
+import "@fontsource/nunito/latin-ext-800.css";
+import "@fontsource/nunito/cyrillic-500.css";
+import "@fontsource/nunito/cyrillic-700.css";
+import "@fontsource/nunito/cyrillic-800.css";
+import { COMIC } from "./comicCopy";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { getDict, fill, type Lang } from "@/i18n";
@@ -124,8 +131,9 @@ export default function HomeComic({ lang }: { lang: Lang }) {
     [[6, "egor", "#A3CF8E"], [7, "masha", "#F4A983"]],
   ];
 
-  const comic = lang === "en" || lang === "de";
-  const de = lang === "de";
+  const cx = COMIC[lang];
+  const comic = lang === "en" || !!cx;
+  const img = (n: "hero" | "how" | "gift" | "family" | "reasons-right") => ({ src: `/home5/${n}-${lang}.webp`, width: cx!.dims[n][0], height: cx!.dims[n][1] });
   return (
     <div className={`h5${comic ? " h5-en-font" : ""}`}>
       <PageView name="landing_view" lang={lang} />
@@ -147,8 +155,8 @@ export default function HomeComic({ lang }: { lang: Lang }) {
               <a className="h5-booklink" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.heroBook}</a>
               <p className="h5-fine">{t.hero.trust.join(" · ")}</p>
             </div>
-            {de ? (
-              <img className="h5-hero-en" src="/home5/hero-de.webp" width={1254} height={1254} alt="Eine Großmutter am Telefon sagt: 1962 sind wir nach Zürich gezogen. Your grandmother's stories shouldn't disappear with her. Free during beta." loading="eager" decoding="async" />
+            {cx ? (
+              <img className="h5-hero-en" {...img("hero")} alt={cx.alt.hero} loading="eager" decoding="async" />
             ) : lang === "en" ? (
               <img className="h5-hero-en" src="/home5/hero-en.webp" width={1254} height={1254} alt="A grandmother on the phone says: In 1962 we moved to Zurich. Your grandmother's stories shouldn't disappear with her. Treename helps your family record them, by voice or text, and turns them into a family book. Free during beta." loading="eager" decoding="async" />
             ) : (
@@ -163,14 +171,11 @@ export default function HomeComic({ lang }: { lang: Lang }) {
         <section className="h5-sec" id="how">
           <div className="h5-wrap">
             <div className="h5-head"><p className="h5-eyebrow">{h.stepsEyebrow}</p><h2>{x.stepsTitle}</h2></div>
-            {de ? (
+            {cx ? (
               <div className="h5-how-en">
-                <img src="/home5/how-de.webp" width={1254} height={1254} alt="So funktioniert Treename: 1. Familie einladen. 2. Sie antworten per Sprachnachricht. 3. KI verwandelt Antworten in Geschichten. 4. Es entsteht ein Stammbaum und ein Buch." loading="lazy" decoding="async" />
+                <img {...img("how")} alt={cx.alt.how} loading="lazy" decoding="async" />
                 <ol>
-                  <li><span className="n">1</span><span><b>Laden Sie Ihre Familie ein</b>Wählen Sie, wen Sie fragen möchten: Eltern, Großeltern, Tanten und Onkel. Wir schlagen die Fragen vor, oder Sie schreiben eigene.</span></li>
-                  <li><span className="n">2</span><span><b>Sie antworten per Sprachnachricht</b>Einmal pro Woche kommt eine Frage per WhatsApp. Geantwortet wird per Sprachnachricht, wann es passt. Keine App, kein Passwort.</span></li>
-                  <li><span className="n">3</span><span><b>KI verwandelt Antworten in Geschichten</b>Treename schreibt jede Aufnahme ab und macht daraus eine Geschichte, ohne etwas zu erfinden.</span></li>
-                  <li><span className="n">4</span><span><b>Es entsteht ein Stammbaum und ein Buch</b>Namen, Orte und Daten kommen in Ihren Stammbaum und auf die Karte, und aus den Geschichten wird ein Familienbuch.</span></li>
+                  {cx.steps.map((st, i) => <li key={i}><span className="n">{i + 1}</span><span><b>{st.t}</b>{st.d}</span></li>)}
                   <li className="h5-how-en-cta"><a className="h5-btn h5-olive" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a></li>
                 </ol>
               </div>
@@ -227,18 +232,15 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           </div>
         </section>
 
-        {de ? (
+        {cx ? (
           <section className="h5-sec h5-inside" id="inside">
             <div className="h5-wrap">
-              <div className="h5-head"><h2>Vier Gründe, Ihre Geschichte mit Treename zu beginnen</h2></div>
+              <div className="h5-head"><h2>{cx.reasonsTitle}</h2></div>
               <div className="h5-reasons">
                 <ol>
-                  <li><span className="n">1</span><span><b>Ein Archiv der Stimmen</b>Jede Geschichte behält ihre Aufnahme. In zwanzig Jahren hören Ihre Enkel, wie Oma gelacht hat, und lesen es nicht nur.</span></li>
-                  <li><span className="n">2</span><span><b>Ein Stammbaum, in dem jeder ein Gesicht und eine Stimme hat</b>Paare nebeneinander, Kinder unter ihren Eltern. Tippen Sie auf eine Person, um ihre Geschichten zu lesen.</span></li>
-                  <li><span className="n">3</span><span><b>Wo Ihre Familie gelebt hat</b>Orte und Jahre auf einer Karte, mit den Namen der Menschen, die dort gelebt haben.</span></li>
-                  <li><span className="n">4</span><span><b>Ein Familienbuch zum Anfassen</b>Alle Geschichten nach Kapiteln, mit dem Stammbaum und auf jeder Seite einem Code, der die echte Stimme abspielt. Zum Ausdrucken oder als PDF.</span></li>
+                  {cx.reasons.map((st, i) => <li key={i}><span className="n">{i + 1}</span><span><b>{st.t}</b>{st.d}</span></li>)}
                 </ol>
-                <img src="/home5/reasons-right-de.webp" width={1254} height={1254} alt="Eine Familie am Laptop: Wir sind in der kostenlosen Beta. Alles funktioniert, und bisher kostet es nichts. Jetzt starten." loading="lazy" decoding="async" />
+                <img {...img("reasons-right")} alt={cx.alt.reasons} loading="lazy" decoding="async" />
               </div>
             </div>
           </section>
@@ -306,8 +308,8 @@ export default function HomeComic({ lang }: { lang: Lang }) {
 
         <section className="h5-sec" id="family">
           <div className="h5-wrap h5-fam">
-            {de ? (
-              <img className="h5-family-en" src="/home5/family-de.webp" width={1254} height={1254} alt="Opa spricht Italienisch, die Kinder sprechen Deutsch, du sprichst beides. Treename funktioniert in 6 Sprachen, jeder erzählt seine Geschichte in seiner eigenen Sprache." loading="lazy" decoding="async" />
+            {cx ? (
+              <img className="h5-family-en" {...img("family")} alt={cx.alt.family} loading="lazy" decoding="async" />
             ) : lang === "en" ? (
               <img className="h5-family-en" src="/home5/family-en.webp" width={684} height={685} alt="A family at a table by a lake: grandpa speaks Italian, the kids speak German, mum speaks Russian. Treename works in several languages, everyone tells their story in their own." loading="lazy" decoding="async" />
             ) : (
@@ -332,8 +334,8 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           <div className="h5-wrap">
             <div className="h5-gift">
               <div className="ill">
-                {de ? (
-                  <img className="h5-gift-en" src="/home5/gift-de.webp" width={1254} height={1254} alt="Familie Müller: So sehen die Erinnerungen einer Familie aus, wenn sie endlich aufgeschrieben werden. Dein Buch, deine Namen, deine Geschichten." loading="lazy" decoding="async" />
+                {cx ? (
+                  <img className="h5-gift-en" {...img("gift")} alt={cx.alt.gift} loading="lazy" decoding="async" />
                 ) : lang === "en" ? (
                   <img className="h5-gift-en" src="/home5/gift-en.webp" width={696} height={702} alt="An open family book, The Müller Family Book, with photos and a story: This is what a family's memory looks like when someone finally writes it down. Your book, your names, your stories." loading="lazy" decoding="async" />
                 ) : (

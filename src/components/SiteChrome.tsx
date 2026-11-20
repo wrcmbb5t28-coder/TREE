@@ -10,7 +10,7 @@ export function SiteNav({ lang, t, rest = "" }: { lang: Lang; t: Dict; rest?: st
   return (
     <nav className="top" aria-label="Main">
       <Link className="logo" href={`/${lang}`} aria-label="Treename.ai">
-        <BrandLogo priority comic={lang === "en" || lang === "de"} />
+        <BrandLogo priority comic />
         <span>{t.nav.tagline}</span>
       </Link>
       <div className="row">
