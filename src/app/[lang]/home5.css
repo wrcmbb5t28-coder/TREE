@@ -207,3 +207,9 @@
 .h5-gift-en { display: block; width: 100%; height: auto; }
 .h5-family-en { display: block; width: 100%; height: auto; }
 .h5-md.h5-md-photo { align-items: stretch; } .h5-md.h5-md-photo img { width: 100%; height: 100%; margin: 0; object-fit: cover; }
+/* EN: every text in the comic font (rounded sans, like the lettering in the comics) */
+.h5.h5-en-font, .h5.h5-en-font * { font-family: "Nunito", "Golos Text", sans-serif !important; }
+.h5.h5-en-font { font-weight: 500; }
+.h5.h5-en-font h1, .h5.h5-en-font h2, .h5.h5-en-font h3 { font-weight: 800; letter-spacing: -.01em; }
+.h5.h5-en-font b, .h5.h5-en-font strong, .h5.h5-en-font .h5-btn { font-weight: 700; }
+.h5.h5-en-font .h5-eyebrow { font-style: normal; font-weight: 700; }

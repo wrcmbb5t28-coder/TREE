@@ -1,4 +1,7 @@
 import "./home5.css";
+import "@fontsource/nunito/latin-500.css";
+import "@fontsource/nunito/latin-700.css";
+import "@fontsource/nunito/latin-800.css";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { getDict, fill, type Lang } from "@/i18n";
@@ -122,7 +125,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
   ];
 
   return (
-    <div className="h5">
+    <div className={`h5${lang === "en" ? " h5-en-font" : ""}`}>
       <PageView name="landing_view" lang={lang} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {live ? <a className="h5-promo" href="#gift">{giftTitle} — <b>{t.pricing.legacy.price}</b></a> : <a className="h5-promo" href="#notify"><b>{b.tag}</b> · {b.homeTitle}</a>}
