@@ -161,7 +161,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
             <div className="h5-head"><p className="h5-eyebrow">{h.stepsEyebrow}</p><h2>{x.stepsTitle}</h2></div>
             {lang === "en" ? (
               <div className="h5-how-en">
-                <img src="/home5/how-en.webp" width={690} height={694} alt="How Treename works: 1. Invite your family. 2. They answer by voice. 3. AI turns the answers into stories. 4. You get a family tree and a book." loading="lazy" decoding="async" />
+                <img src="/home5/how-en.webp" width={1254} height={1254} alt="How Treename works: 1. Invite your family. 2. They answer by voice. 3. AI turns the answers into stories. 4. You get a family tree and a book." loading="lazy" decoding="async" />
                 <ol>
                   <li><span className="n">1</span><span><b>Invite your family</b>Choose who to ask: parents, grandparents, aunts and uncles. We suggest the questions, or you write your own.</span></li>
                   <li><span className="n">2</span><span><b>They answer by voice</b>One question a week arrives on WhatsApp. They answer by voice whenever they like. No app, no password.</span></li>
