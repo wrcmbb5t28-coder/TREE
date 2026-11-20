@@ -142,9 +142,9 @@ export default function HomeComic({ lang }: { lang: Lang }) {
               <a className="h5-booklink" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.heroBook}</a>
               <p className="h5-fine">{t.hero.trust.join(" · ")}</p>
             </div>
-            <Scene src="hero" w={1600} h={1053} label={x.heroCaption}>
-              <Cap p={{ l: 2, t: 2 }}>{x.heroCaption}</Cap>
-              <Bal p={{ l: 20, t: 9 }}>{fill(x.heroBubble, { name: grandpa })}</Bal>
+            <Scene src="hero" w={1600} h={933} label={`${grandma}: ${quote}`}>
+              {/* the speech bubble is drawn in the picture; the localized words sit inside it */}
+              <div className="h5-ov h5-btext" style={at({ l: 57, t: 7 })}>{quote}</div>
             </Scene>
           </div>
         </section>
@@ -258,7 +258,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           <div className="h5-wrap">
             <div className="h5-gift">
               <div className="ill">
-                <Scene src="gift" w={1100} h={1013} label={giftTitle}>
+                <Scene src="gift" w={1100} h={916} label={giftTitle}>
                   <Bal p={{ l: 3, t: 6 }} tail="right">{x.giftBubble}</Bal>
                 </Scene>
               </div>
