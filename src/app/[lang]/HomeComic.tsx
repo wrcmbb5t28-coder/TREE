@@ -212,50 +212,68 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           </div>
         </section>
 
-        <section className="h5-sec h5-inside" id="inside">
-          <div className="h5-wrap">
-            <div className="h5-head"><p className="h5-eyebrow">{x.insideEyebrow}</p><h2>{x.insideTitle}</h2><p>{x.insideSub}</p></div>
-            <div className="h5-feat">
-              <article className="h5-fc">
-                <ul className="h5-arc">
-                  {([[1, "anna", "#F2C744", t.demo.question, "1:24"], [0, "pyotr", "#7DB9DE", t.library.work.q[0], "3:10"], [5, "irina", "#F4A983", t.library.love.q[0], "2:05"]] as const).map(([i, f, bg, q, d]) => (
-                    <li key={f}><Face who={f} bg={bg} /><span><b>{sp[i].first}</b>{q}</span><em><i className="p" />{d}</em></li>
-                  ))}
-                </ul>
-                <h3>{x.archive.t}</h3><p>{x.archive.d}</p>
-              </article>
-              <article className="h5-fc">
-                <div className="h5-tree" role="img" aria-label={h.show.tree.t}>
-                  {tree.map((row, r) => (
-                    <div key={r} className="tg">
-                      {row.map(([i, f, bg, tag]) => (
-                        <div key={i} className={`tp${tag ? " nw" : ""}`}>
-                          <Face who={f} bg={bg} cls={tag ? "new" : ""} />
-                          <b>{sp[i].first}</b>
-                          <small>{tag ?? sp[i].born}</small>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-                <h3>{h.show.tree.t}</h3><p>{h.show.tree.d}</p>
-              </article>
-              <article className="h5-fc">
-                <FamilyMap route={route} label={h.show.map.t} />
-                <h3>{h.show.map.t}</h3><p>{h.show.map.d}</p>
-              </article>
-              <article className="h5-fc">
-                <a className="h5-bv" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener" aria-label={h.show.book.t}>
-                  <Scene src="photo" w={973} h={733} label={t.demo.note} className="ph" />
-                  <span className="bk"><BookCover title={h.sample.surnames[0]} sub={x.bookCover} /></span>
-                </a>
-                <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
-                <a className="h5-btn h5-olive h5-bookcta" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a>
-                <p className="h5-bookpdf"><small>PDF · {SAMPLE_PDF[lang].note}</small></p>
-              </article>
+        {lang === "en" ? (
+          <section className="h5-sec h5-inside" id="inside">
+            <div className="h5-wrap">
+              <div className="h5-head"><h2>Four reasons to start your story in Treename</h2></div>
+              <div className="h5-reasons">
+                <img src="/home5/reasons-left.webp" width={1254} height={1254} alt="An old photo of a young couple: How did your grandparents meet? Do you know how your grandparents met? Most of us don't, until it's too late to ask." loading="lazy" decoding="async" />
+                <ol>
+                  <li><span className="n">1</span><span><b>An archive of voices</b>Every story keeps its recording. In twenty years your grandchildren will hear how Grandma laughed, not just read it.</span></li>
+                  <li><span className="n">2</span><span><b>A tree where everyone has a face and a voice</b>Couples side by side, children below their parents. Tap anyone to read their stories.</span></li>
+                  <li><span className="n">3</span><span><b>Where your family lived</b>Towns and years on a map, with the names of who lived there.</span></li>
+                  <li><span className="n">4</span><span><b>A family book you can hold</b>All the stories by chapter, with the tree and a code on every page that plays the real voice. Print it or save it as PDF.</span></li>
+                </ol>
+                <img src="/home5/reasons-right.webp" width={1254} height={1254} alt="A family around a laptop: We're in free beta. Everything works, nothing costs money yet. Start your family's story today and help us make it better." loading="lazy" decoding="async" />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ) : (
+          <section className="h5-sec h5-inside" id="inside">
+            <div className="h5-wrap">
+              <div className="h5-head"><p className="h5-eyebrow">{x.insideEyebrow}</p><h2>{x.insideTitle}</h2><p>{x.insideSub}</p></div>
+              <div className="h5-feat">
+                <article className="h5-fc">
+                  <ul className="h5-arc">
+                    {([[1, "anna", "#F2C744", t.demo.question, "1:24"], [0, "pyotr", "#7DB9DE", t.library.work.q[0], "3:10"], [5, "irina", "#F4A983", t.library.love.q[0], "2:05"]] as const).map(([i, f, bg, q, d]) => (
+                      <li key={f}><Face who={f} bg={bg} /><span><b>{sp[i].first}</b>{q}</span><em><i className="p" />{d}</em></li>
+                    ))}
+                  </ul>
+                  <h3>{x.archive.t}</h3><p>{x.archive.d}</p>
+                </article>
+                <article className="h5-fc">
+                  <div className="h5-tree" role="img" aria-label={h.show.tree.t}>
+                    {tree.map((row, r) => (
+                      <div key={r} className="tg">
+                        {row.map(([i, f, bg, tag]) => (
+                          <div key={i} className={`tp${tag ? " nw" : ""}`}>
+                            <Face who={f} bg={bg} cls={tag ? "new" : ""} />
+                            <b>{sp[i].first}</b>
+                            <small>{tag ?? sp[i].born}</small>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  <h3>{h.show.tree.t}</h3><p>{h.show.tree.d}</p>
+                </article>
+                <article className="h5-fc">
+                  <FamilyMap route={route} label={h.show.map.t} />
+                  <h3>{h.show.map.t}</h3><p>{h.show.map.d}</p>
+                </article>
+                <article className="h5-fc">
+                  <a className="h5-bv" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener" aria-label={h.show.book.t}>
+                    <Scene src="photo" w={973} h={733} label={t.demo.note} className="ph" />
+                    <span className="bk"><BookCover title={h.sample.surnames[0]} sub={x.bookCover} /></span>
+                  </a>
+                  <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
+                  <a className="h5-btn h5-olive h5-bookcta" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a>
+                  <p className="h5-bookpdf"><small>PDF · {SAMPLE_PDF[lang].note}</small></p>
+                </article>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="h5-sec" id="family">
           <div className="h5-wrap h5-fam">
