@@ -4,26 +4,11 @@ export type ComicCopy = { dims: Record<"hero" | "how" | "gift" | "family" | "rea
 export const COMIC: Partial<Record<string, ComicCopy>> = {
   "de": {
     "dims": {
-      "hero": [
-        1254,
-        1254
-      ],
-      "how": [
-        1254,
-        1254
-      ],
-      "gift": [
-        1254,
-        1254
-      ],
-      "family": [
-        1254,
-        1254
-      ],
-      "reasons-right": [
-        1254,
-        1254
-      ]
+      "hero": [1254, 1254],
+      "how": [1254, 1254],
+      "gift": [1254, 1254],
+      "family": [1254, 1254],
+      "reasons-right": [1254, 1254]
     },
     "steps": [
       {
@@ -72,26 +57,11 @@ export const COMIC: Partial<Record<string, ComicCopy>> = {
   },
   "ru": {
     "dims": {
-      "hero": [
-        792,
-        756
-      ],
-      "how": [
-        816,
-        756
-      ],
-      "gift": [
-        678,
-        756
-      ],
-      "family": [
-        669,
-        756
-      ],
-      "reasons-right": [
-        630,
-        756
-      ]
+      "hero": [1254, 1254],
+      "how": [1254, 1254],
+      "gift": [1254, 1254],
+      "family": [1254, 1254],
+      "reasons-right": [1254, 1254]
     },
     "steps": [
       {
@@ -140,26 +110,11 @@ export const COMIC: Partial<Record<string, ComicCopy>> = {
   },
   "es": {
     "dims": {
-      "hero": [
-        792,
-        738
-      ],
-      "how": [
-        816,
-        738
-      ],
-      "gift": [
-        678,
-        738
-      ],
-      "family": [
-        669,
-        738
-      ],
-      "reasons-right": [
-        630,
-        738
-      ]
+      "hero": [1254, 1254],
+      "how": [1254, 1254],
+      "gift": [1254, 1254],
+      "family": [1254, 1254],
+      "reasons-right": [1254, 1254]
     },
     "steps": [
       {
@@ -208,26 +163,11 @@ export const COMIC: Partial<Record<string, ComicCopy>> = {
   },
   "fr": {
     "dims": {
-      "hero": [
-        792,
-        741
-      ],
-      "how": [
-        816,
-        741
-      ],
-      "gift": [
-        678,
-        741
-      ],
-      "family": [
-        669,
-        741
-      ],
-      "reasons-right": [
-        630,
-        741
-      ]
+      "hero": [1254, 1254],
+      "how": [1254, 1254],
+      "gift": [1254, 1254],
+      "family": [1254, 1254],
+      "reasons-right": [1254, 1254]
     },
     "steps": [
       {
@@ -276,26 +216,11 @@ export const COMIC: Partial<Record<string, ComicCopy>> = {
   },
   "it": {
     "dims": {
-      "hero": [
-        792,
-        735
-      ],
-      "how": [
-        816,
-        735
-      ],
-      "gift": [
-        678,
-        735
-      ],
-      "family": [
-        669,
-        735
-      ],
-      "reasons-right": [
-        630,
-        735
-      ]
+      "hero": [1254, 1254],
+      "how": [1254, 1254],
+      "gift": [1254, 1254],
+      "family": [1254, 1254],
+      "reasons-right": [1254, 1254]
     },
     "steps": [
       {
