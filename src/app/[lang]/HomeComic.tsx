@@ -267,7 +267,8 @@ export default function HomeComic({ lang }: { lang: Lang }) {
               <ul className="h5-feed">
                 {([[4, "sergey", "#A3CF8E", route[4].place], [5, "irina", "#F4A983", route[3].place], [6, "egor", "#7DB9DE", ""], [7, "masha", "#F2C744", ""]] as const).map(([i, f, bg, city], k) => {
                   const [who, what] = fill(x.feed[k], { name: sp[i].first, city }).split(/:\s/);
-                  return <li key={f}><Face who={f} bg={bg} /><span><b>{who}</b>{what}</span></li>;
+                  const enFace = { sergey: "grandpa", irina: "mother", egor: "boy", masha: "girl" }[f];
+                  return <li key={f}>{lang === "en" ? <span className="h5-md h5-md-photo"><img src={`/home5/face-${enFace}.webp`} alt="" width={240} height={240} loading="lazy" /></span> : <Face who={f} bg={bg} />}<span><b>{who}</b>{what}</span></li>;
                 })}
               </ul>
             </div>
