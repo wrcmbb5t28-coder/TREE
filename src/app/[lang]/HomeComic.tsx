@@ -274,9 +274,13 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           <div className="h5-wrap">
             <div className="h5-gift">
               <div className="ill">
-                <Scene src="gift" w={1285} h={1380} label={giftTitle}>
-                  <Bal p={{ l: 3, t: 6 }} tail="right">{x.giftBubble}</Bal>
-                </Scene>
+                {lang === "en" ? (
+                  <img className="h5-gift-en" src="/home5/gift-en.webp" width={696} height={702} alt="An open family book, The Müller Family Book, with photos and a story: This is what a family's memory looks like when someone finally writes it down. Your book, your names, your stories." loading="lazy" decoding="async" />
+                ) : (
+                  <Scene src="gift" w={1285} h={1380} label={giftTitle}>
+                    <Bal p={{ l: 3, t: 6 }} tail="right">{x.giftBubble}</Bal>
+                  </Scene>
+                )}
               </div>
               <div className="txt">
                 <p className="h5-eyebrow">{t.pricing.giftTag}</p>
