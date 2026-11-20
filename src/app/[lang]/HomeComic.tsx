@@ -14,6 +14,18 @@ import BetaNotify from "@/components/BetaNotify";
 
 /** Illustrated homepage (comic "clear line" style): family memory first, the book as one of four results. */
 
+/**
+ * English-only trial: square comic panels from the ad campaign. They carry baked-in English text,
+ * so they are shown on /en only. Remove this block or replace with text-free versions for other languages.
+ */
+const EN_COMICS: { src: string; alt: string }[] = [
+  { src: "grandmother", alt: "A grandmother on the phone says: In 1962 we moved to Zurich. Your grandmother's stories shouldn't disappear with her. Treename helps your family record them, by voice or text, and turns them into a family book." },
+  { src: "how", alt: "How it works: 1. Invite your family. 2. They answer by voice. 3. AI turns answers into stories. 4. Get a family tree and book." },
+  { src: "languages", alt: "A family at a table by a lake: grandpa speaks Italian, the kids speak German, mum speaks Russian. Treename works in several languages, everyone tells their story in their own." },
+  { src: "book", alt: "An open family book with photos and a story: This is what a family's memory looks like when someone finally writes it down." },
+  { src: "beta", alt: "A family around a laptop: We're in free beta. Everything works, nothing costs money yet." },
+];
+
 type Pos = { l?: number; t?: number; r?: number; b?: number };
 const at = (p: Pos): CSSProperties => ({
   left: p.l != null ? `${p.l}%` : undefined, top: p.t != null ? `${p.t}%` : undefined,
@@ -191,6 +203,19 @@ export default function HomeComic({ lang }: { lang: Lang }) {
             </ol>
           </div>
         </section>
+
+        {lang === "en" && (
+          <section className="h5-sec h5-comics" id="comics" aria-labelledby="comics-title">
+            <div className="h5-wrap">
+              <div className="h5-head"><p className="h5-eyebrow">Treename in pictures</p><h2 id="comics-title">Family memory, one story at a time</h2></div>
+              <ul className="h5-comics-grid">
+                {EN_COMICS.map((c) => (
+                  <li key={c.src}><img src={`/home5/comics/${c.src}.webp`} width={900} height={900} alt={c.alt} loading="lazy" decoding="async" /></li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         <section className="h5-sec h5-inside" id="inside">
           <div className="h5-wrap">
