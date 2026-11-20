@@ -142,10 +142,14 @@ export default function HomeComic({ lang }: { lang: Lang }) {
               <a className="h5-booklink" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{t.gift.heroBook}</a>
               <p className="h5-fine">{t.hero.trust.join(" · ")}</p>
             </div>
-            <Scene src="hero" w={1600} h={933} label={`${grandma}: ${quote}`}>
-              {/* the speech bubble is drawn in the picture; the localized words sit inside it */}
-              <div className="h5-ov h5-btext" style={at({ l: 57, t: 7 })}>{quote}</div>
-            </Scene>
+            {lang === "en" ? (
+              <img className="h5-hero-en" src="/home5/hero-en.webp" width={1254} height={1254} alt="A grandmother on the phone says: In 1962 we moved to Zurich. Your grandmother's stories shouldn't disappear with her. Treename helps your family record them, by voice or text, and turns them into a family book. Free during beta." loading="eager" decoding="async" />
+            ) : (
+              <Scene src="hero" w={1400} h={1356} label={x.heroCaption}>
+                <Cap p={{ l: 2, t: 2 }}>{x.heroCaption}</Cap>
+                <Bal p={{ l: 2, t: 22 }}>{fill(x.heroBubble, { name: grandpa })}</Bal>
+              </Scene>
+            )}
           </div>
         </section>
 
@@ -157,7 +161,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                 <Scene src="ch1" w={890} h={765} label={h.steps[0].t}>
                   <Cap p={{ l: 2, t: 2.5 }}>{fill(x.ch1Caption, { city: route[3].place })}</Cap>
                   <Bal p={{ l: 44, t: 6 }}>{t.demo.question}</Bal>
-                  <div className="h5-ov h5-chips" style={at({ r: 3, t: 38 })}>{x.chips.map((c) => <span key={c} className="h5-chip">{c}</span>)}</div>
+                  <div className="h5-ov h5-chips" style={at({ r: 3, t: 44 })}>{x.chips.map((c) => <span key={c} className="h5-chip">{c}</span>)}</div>
                 </Scene>
                 <h3><span className="n">1</span>{h.steps[0].t}</h3>
                 <p>{h.steps[0].d}</p>
@@ -226,7 +230,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
               </article>
               <article className="h5-fc">
                 <a className="h5-bv" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener" aria-label={h.show.book.t}>
-                  <Scene src="photo" w={980} h={519} label={t.demo.note} className="ph" />
+                  <Scene src="photo" w={973} h={733} label={t.demo.note} className="ph" />
                   <span className="bk"><BookCover title={h.sample.surnames[0]} sub={x.bookCover} /></span>
                 </a>
                 <h3>{h.show.book.t}</h3><p>{h.show.book.d}</p>
@@ -239,7 +243,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
 
         <section className="h5-sec" id="family">
           <div className="h5-wrap h5-fam">
-            <Scene src="family" w={1600} h={539} label={x.familyTitle} />
+            <Scene src="family" w={1400} h={849} label={x.familyTitle} />
             <div>
               <p className="h5-eyebrow">{x.familyEyebrow}</p>
               <h2>{x.familyTitle}</h2>
@@ -258,7 +262,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
           <div className="h5-wrap">
             <div className="h5-gift">
               <div className="ill">
-                <Scene src="gift" w={1100} h={916} label={giftTitle}>
+                <Scene src="gift" w={1285} h={1380} label={giftTitle}>
                   <Bal p={{ l: 3, t: 6 }} tail="right">{x.giftBubble}</Bal>
                 </Scene>
               </div>
