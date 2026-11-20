@@ -205,3 +205,4 @@
 .h5-how-en li span:last-child { font-size: 17px; color: var(--h5-muted); }
 @media (max-width: 960px) { .h5-how-en { grid-template-columns: 1fr; gap: 32px; max-width: 560px; margin-left: auto; margin-right: auto; } }
 .h5-gift-en { display: block; width: 100%; height: auto; }
+.h5-family-en { display: block; width: 100%; height: auto; }

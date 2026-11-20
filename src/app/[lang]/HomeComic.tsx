@@ -255,7 +255,11 @@ export default function HomeComic({ lang }: { lang: Lang }) {
 
         <section className="h5-sec" id="family">
           <div className="h5-wrap h5-fam">
-            <Scene src="family" w={1400} h={849} label={x.familyTitle} />
+            {lang === "en" ? (
+              <img className="h5-family-en" src="/home5/family-en.webp" width={684} height={685} alt="A family at a table by a lake: grandpa speaks Italian, the kids speak German, mum speaks Russian. Treename works in several languages, everyone tells their story in their own." loading="lazy" decoding="async" />
+            ) : (
+              <Scene src="family" w={1400} h={849} label={x.familyTitle} />
+            )}
             <div>
               <p className="h5-eyebrow">{x.familyEyebrow}</p>
               <h2>{x.familyTitle}</h2>
