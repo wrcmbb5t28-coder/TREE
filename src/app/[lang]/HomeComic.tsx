@@ -167,6 +167,7 @@ export default function HomeComic({ lang }: { lang: Lang }) {
                   <li><span className="n">2</span><span><b>They answer by voice</b>One question a week arrives on WhatsApp. They answer by voice whenever they like. No app, no password.</span></li>
                   <li><span className="n">3</span><span><b>AI turns the answers into stories</b>Treename transcribes each recording and writes it up as a story, without inventing anything.</span></li>
                   <li><span className="n">4</span><span><b>You get a family tree and a book</b>Names, places and dates go into your tree and onto the map, and the stories become a family book.</span></li>
+                  <li className="h5-how-en-cta"><a className="h5-btn h5-olive" href={SAMPLE_PDF[lang].href} target="_blank" rel="noopener">{SAMPLE_PDF[lang].open}</a></li>
                 </ol>
               </div>
             ) : (
