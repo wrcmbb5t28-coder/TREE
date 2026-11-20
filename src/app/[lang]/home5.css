@@ -223,3 +223,10 @@
 .h5-reasons li b { display: block; font-size: 23px; line-height: 1.25; color: var(--h5-ink); margin-bottom: 4px; }
 .h5-reasons li span:last-child { font-size: 17px; color: var(--h5-muted); }
 @media (max-width: 960px) { .h5-reasons { grid-template-columns: 1fr; gap: 32px; max-width: 560px; margin-left: auto; margin-right: auto; } }
+
+/* EN: full-width alternating section backgrounds with straight edges */
+.h5-en-font main > section:nth-of-type(odd) { background: var(--h5-paper); }
+.h5-en-font main > section:nth-of-type(even) { background: var(--h5-sand); }
+.h5-en-font main > section#gift { background: #F6E1D4; }
+.h5-en-font main > section.h5-final { background: #DCE8EA; border-radius: 0; }
+.h5-en-font #gift .h5-gift { background: transparent; border-radius: 0; overflow: visible; }
