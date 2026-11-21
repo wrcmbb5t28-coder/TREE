@@ -7,8 +7,8 @@
 [data-theme="comic"] {
   --paper: #FCF8F1; --surface: #FFFFFF; --ink: #2A231E; --muted: #5A5048; --line: #E4D8C6;
   --accent: #4A5E39; --accent-ink: #FFFFFF; --tint: #EEF2E6; --warm: #B65A35; --warm-tint: #F6E1D4; --danger: #A23B2C;
-  --display: "Literata", Georgia, serif;
-  --body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display: "Nunito", "Golos Text", system-ui, sans-serif;
+  --body: "Nunito", "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
   --hand: "Pangolin", "Caveat", cursive;
   --k: #1E1B1A; --sand: #F5EEE3;
 }
@@ -106,3 +106,10 @@
 /* nothing smaller than 12px on a phone */
 [data-theme="comic"] :is(small, .tag, .tabs button, .facts small, .msg small, .kpi span, .photo-badge, .route-years, .charge-btn, .h-page .chap, .eyebrow, .jr-stats span, .charge-pos, .book small) { font-size: max(.75rem, 12px) !important; }
 [data-theme="comic"] .foot-langs a[aria-current="true"] { font-weight: 700; text-decoration: none; color: var(--ink); }
+
+/* New design (Nov 2026): Nunito everywhere, like the comic homepage */
+[data-theme="comic"] body { font-weight: 500; }
+[data-theme="comic"] h1, [data-theme="comic"] h2, [data-theme="comic"] h3 { font-weight: 800; }
+[data-theme="comic"] b, [data-theme="comic"] strong, [data-theme="comic"] .btn { font-weight: 700; }
+[data-theme="comic"] .eyebrow, [data-theme="comic"] blockquote, [data-theme="comic"] .h-slogan, [data-theme="comic"] .q { font-style: normal; }
+[data-theme="comic"] .eyebrow { font-weight: 700; }

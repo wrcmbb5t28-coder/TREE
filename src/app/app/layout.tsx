@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="appbar">
         <div className="wrap">
           <Link className="logo" href="/app" aria-label="Treename">
-            <BrandLogo priority />
+            <BrandLogo priority comic />
           </Link>
           <AppNav labels={c.nav} />
           <div className="appbar-right">

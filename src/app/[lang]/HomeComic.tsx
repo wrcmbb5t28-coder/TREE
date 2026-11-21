@@ -1,13 +1,4 @@
 import "./home5.css";
-import "@fontsource/nunito/latin-500.css";
-import "@fontsource/nunito/latin-700.css";
-import "@fontsource/nunito/latin-800.css";
-import "@fontsource/nunito/latin-ext-500.css";
-import "@fontsource/nunito/latin-ext-700.css";
-import "@fontsource/nunito/latin-ext-800.css";
-import "@fontsource/nunito/cyrillic-500.css";
-import "@fontsource/nunito/cyrillic-700.css";
-import "@fontsource/nunito/cyrillic-800.css";
 import { COMIC } from "./comicCopy";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";

@@ -16,7 +16,7 @@ export default async function OpenLink({ searchParams }: { searchParams: Promise
   return (
     <main className="answer-page">
       <div className="answer-card card-elev">
-        <Link className="logo" href="/" aria-label="Treename.ai"><BrandLogo /></Link>
+        <Link className="logo" href="/" aria-label="Treename.ai"><BrandLogo comic /></Link>
         <form className="stack" method="post" action="/api/auth/verify">
           <h1 style={{ fontSize: "2rem" }}>{t.openTitle}</h1>
           <p className="muted">{t.openText}</p>
